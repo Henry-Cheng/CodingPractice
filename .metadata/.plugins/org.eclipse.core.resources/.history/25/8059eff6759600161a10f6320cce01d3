@@ -1,0 +1,91 @@
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String text = getOnlyStrings(scanner.nextLine());
+        int k = Integer.parseInt(scanner.nextLine());
+        List<String> tokens = new ArrayList<String>(); 
+        for (int i = 0; i < k; i++) {
+            tokens.add(scanner.nextLine());
+        }
+        String[] wordArray = text.split("\\s+");
+        List<String> wordList = Arrays.asList(wordArray);
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (int i = 1; i <= tokens.size(); i++) {
+            map.put(tokens.get(i-1).toUpperCase(), i);
+        }
+        k = map.keySet().size(); // NOTE: the k tokens may have duplicate words
+        List<String> finalString = new ArrayList<String>();
+        Set<Integer> set = new HashSet<Integer>();
+        for (int nextLoopStartPos = 0; nextLoopStartPos < wordList.size(); nextLoopStartPos++) {
+            set.clear();
+            List<String> tmpString = new ArrayList<String>();
+            boolean startCounting = false;
+            boolean findNotMatched = false;
+            boolean dupicateExist = false;
+            for (int i = nextLoopStartPos; i < wordList.size(); i++) {
+                if (map.containsKey(wordList.get(i).toUpperCase())) {
+                    if (tmpString.isEmpty()) {
+                        startCounting = true;
+                    }
+                    tmpString.add(wordList.get(i));
+                    if (set.contains(map.get(wordList.get(i).toUpperCase()))) {
+                        dupicateExist = true;
+                    } else {
+                        set.add(map.get(wordList.get(i).toUpperCase()));
+                    }
+                } else {
+                    if (startCounting) {
+                        tmpString.add(wordList.get(i));
+                        if (!findNotMatched) {
+                            nextLoopStartPos = i;
+                            findNotMatched = true;
+                        }
+                    }   
+                }
+                if (set.size() == k) {
+                    break;
+                }
+            }
+            if (set.size() == k) {
+                if (finalString.size() == 0 || tmpString.size() < finalString.size()) {
+                    finalString = tmpString;
+                }
+                // NOTE: we should not simply break here, 
+                //       b/c there could be duplicate items in temString
+                //       i.e. "a", "b", "a", "c"
+                //            is worse than
+                //                  "b", "a", "c"
+                if (!findNotMatched && !dupicateExist) {
+                    break; // find the minimum already
+                }
+            }
+            if (!startCounting ) {
+                break; //NO SUBSEGMENT FOUND
+            }
+        }
+        if (finalString.size() == 0) {
+            System.out.println("NO SUBSEGMENT FOUND");
+        } else {
+            System.out.println(String.join(" ", finalString));
+        }
+    }
+    
+    public static String getOnlyDigits(String s) {
+        Pattern pattern = Pattern.compile("[^0-9]");
+        Matcher matcher = pattern.matcher(s);
+        String number = matcher.replaceAll("");
+        return number;
+     }
+     public static String getOnlyStrings(String s) {
+        Pattern pattern = Pattern.compile("[^a-z A-Z]");
+        Matcher matcher = pattern.matcher(s);
+        String text = matcher.replaceAll("");
+        return text;
+     }
+}

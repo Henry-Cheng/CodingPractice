@@ -1,0 +1,71 @@
+
+
+// Definition for singly-linked list.
+  class ListNode {
+      int val;
+      ListNode next;
+      ListNode(int x) { val = x; }
+  }
+ 
+ // Definition for a binary tree node.
+  class TreeNode {
+      int val;
+      TreeNode left;
+      TreeNode right;
+      TreeNode(int x) { val = x; }
+  }
+ 
+public class LinkedListToBST {
+	
+	public static void main() {
+		int[] a = {2,3,5};
+		ListNode head = arrayToList(a);
+		ListNode current = head;
+		TreeNode root = sortedListToBST(head);
+		printTreeInOrder(root);
+	}
+	
+    public static TreeNode sortedListToBST(ListNode head) {
+        int len = 0;
+        ListNode traverse = head;
+        while (traverse != null) {
+            len++;
+            traverse = traverse.next;
+        }
+        traverse = head;
+        return buildTree(traverse, 0, len - 1);
+    }
+    
+    public static TreeNode buildTree(ListNode head, int low, int high) {
+        if (low > high) {
+            return null;
+        }
+        int mid = (int) Math.ceil((low + high) /2);
+        TreeNode left = buildTree(head, low, mid-1);
+        TreeNode parent = new TreeNode(head.val);
+        parent.left = left;
+        TreeNode right = buildTree(head.next, mid+1, high);
+        parent.right = right;
+        return parent;
+    }
+    
+    public static ListNode arrayToList(int[] a) {
+		ListNode head = new ListNode(a[0]);
+		ListNode current = head;
+		for (int i = 1; i < a.length; i++) {
+			ListNode next = new ListNode(a[i]);
+			current.next = next;
+			current = current.next;
+		}
+		return head;
+    }
+    
+    public static void printTreeInOrder(TreeNode root) {
+    	if (root == null) {
+    		return;
+    	}
+    	System.out.print(root.val + " ");
+    	printTreeInOrder(root.left);
+    	printTreeInOrder(root.right);
+    }
+}

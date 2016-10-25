@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;run&apos; to &apos;Leetcode&apos;&#x0A;- Original project: &apos;Leetcode&apos;&#x0A;- Original element: &apos;run&apos;&#x0A;- Renamed element: &apos;Leetcode&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;run&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;{run.java[run" matchStrategy="1" name="Leetcode" qualified="false" references="true" similarDeclarations="false" stamp="1476925014054" textual="false" version="1.0"/>
+</session>
