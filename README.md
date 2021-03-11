@@ -35,10 +35,31 @@ Goes through all the way from left to right to find min price at each day (store
 
 ## Tree
 ### Default
+#### 94. Binary Tree Inorder Traversal
+https://leetcode.com/problems/binary-tree-inorder-traversal/
+
 #### 515. Find Largest Value in Each Tree Row
 https://leetcode.com/problems/find-largest-value-in-each-tree-row/
 
 Be careful when using ++variable, it would addup the variable itself! It's better to use variable + 1 most of the time;
+
+
+## Recursion
+### Default
+https://www.cnblogs.com/liuzhen1995/p/11748881.html
+
+#### [LC] 1137. N-th Tribonacci Number
+https://leetcode.com/problems/n-th-tribonacci-number/
+
+Be careful to store result that has already been calculated to save effort on re-calculation.
+
+## Sort
+### Default
+#### [LintCode] 850. Employee Free Time
+
+https://www.lintcode.com/problem/850/
+
+Use custom comapritor, and be careful when union two intervals, set the end of the new interval to be the max one of original two intervals.
 
 ## HashMap
 ### Default
@@ -52,6 +73,10 @@ Why "two sum" is not a two-pointers problem? To use two-pointers, we need to kno
 https://leetcode.com/problems/add-two-numbers/
 
 Be careful on the corner case, like carryOver may result in a new node.
+
+
+#### [LC] 109. Convert Sorted List to Binary Search Tree
+https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
 
 #### [LC] 24. Swap Nodes in Pairs
 https://leetcode.com/problems/swap-nodes-in-pairs/
