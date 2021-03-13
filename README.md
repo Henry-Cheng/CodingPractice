@@ -33,20 +33,61 @@ https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
 Goes through all the way from left to right to find min price at each day (store in new array), then goes through all the way from right to left to find max price at each day (store in new array), thne goes throw both new arrays together to get the max gap.
 
+#### [LC] 344. Reverse String
+https://leetcode.com/problems/reverse-string/
+
+#### [LC] 345. Reverse Vowels of a String
+https://leetcode.com/problems/reverse-vowels-of-a-string/
+
+Be careful when using hashmap, only when map.get(key) != null means key exists.
+
 ## Tree
 ### Default
 #### 94. Binary Tree Inorder Traversal
 https://leetcode.com/problems/binary-tree-inorder-traversal/
 
-#### 515. Find Largest Value in Each Tree Row
+Remember:
+Time complexity : O(n)  
+The time complexity is O(n) because the recursive function is   
+T(n) = 2 * T(n/2) + 1
+
+Space complexity : 
+The worst case space required is O(n), and in the average case it's O(logn) where n is number of nodes.
+
+NOTE: can also use stack to do the inOrder traverse
+#### [LC] 515. Find Largest Value in Each Tree Row
 https://leetcode.com/problems/find-largest-value-in-each-tree-row/
 
 Be careful when using ++variable, it would addup the variable itself! It's better to use variable + 1 most of the time;
 
+#### [LC] 144. Binary Tree Preorder Traversal
+https://leetcode.com/problems/binary-tree-preorder-traversal/
+
+
+#### 236. Lowest Common Ancestor of a Binary Tree
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+
+The trick is: if root is p or q, return root; if left or right is p or q, return left or right. The idea is that left or right can represent the top node of a subtree that contains p or q.
+
+<algorithm>
+if the root is p or q, just return root; 
+If root is not p or q, check if left or right exsits p or q (check if it is null);
+If left and right both exists, then current root is LCA, return current root;
+If left or right exists, return left or right;
+
+NOTE: the time complexity is O(n) since it traverse all nodes, but its space complexity is also O(n), since even though there is no heap space, the stack space would be O(n) if it is a skewed tree (like the height of the tree equals to number of nodes).
+
 
 ## Recursion
 ### Default
-https://www.cnblogs.com/liuzhen1995/p/11748881.html
+https://www.jianshu.com/p/1395fae8a1ae
+How to think about recursion algorithm?
+1. Find termination condition
+
+#### [LC] 24. Swap Nodes in Pairs
+https://leetcode.com/problems/swap-nodes-in-pairs/
+
+Handle the first 2 nodes, call recursion function on 3rd ndoe, then point 1st node next to recursion result of 3rd node.  
 
 #### [LC] 1137. N-th Tribonacci Number
 https://leetcode.com/problems/n-th-tribonacci-number/
@@ -81,6 +122,6 @@ https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution
 #### [LC] 24. Swap Nodes in Pairs
 https://leetcode.com/problems/swap-nodes-in-pairs/
 
-Simple version is to swithc node value, harder version is to switch nodes, remember to add preHead node.
+Simple version is to swithc node value, harder version is to switch nodes, remember to add preHead node, super version is to do it recursively.
 
 

@@ -10,7 +10,7 @@ public List<Integer> preorderTraversal(TreeNode root) {
             root = root.left;
         } else {
             root = stack.pop();
-            root = node.right;   
+            root = root.right;   
         }
     }
     return result;
@@ -33,17 +33,20 @@ public List<Integer> inorderTraversal(TreeNode root) {
 }
 
 public List<Integer> postorderTraversal(TreeNode root) {
-    LinkedList<Integer> result = new LinkedList<>();
-    Deque<TreeNode> stack = new ArrayDeque<>();
+    // define result
+    Deque<Integer> result = new LinkedList<>();
+    // define a stack
+    Deque<TreeNode> stack = new LinkedList<>();
     while(!stack.isEmpty() || root != null) {
-        if(root != null) {
+        if (root != null) {
             stack.push(root);
-            result.addFirst(root.val);     // Reverse the process of preorder
-            root = root.right;             // Reverse the process of preorder
+            // visit root
+            result.addFirst(root.val); // reverse of preorder
+            root = root.right; // reverse of preorder
         } else {
             root = stack.pop();
-            root = root.left;             // Reverse the process of preorder
+            root = root.left; // reverse of preorder
         }
     }
-    return result;
+    return new ArrayList(Arrays.asList(result.toArray()));
 }
