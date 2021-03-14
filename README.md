@@ -174,37 +174,37 @@ Be careful to store result that has already been calculated to save effort on re
 Difference between Recursion and Backtracking:
 - In recursion, the function calls itself, until it reaches a `base case`. 
 - In backtracking, we use recursion to explore all the possibilities, until we get the best result for the problem
- - usually used for bi-directional-array-like problem:
-  - there should be multiple `steps` to complete one posisble solution
-  - at each step, there would be multiple `options` in searching space
-   - each `option` can be selected when it meets `searching conditions`
-    - e.g. left parentheses is less than total available parentheses
-  - after one `option` is executed, call recusive function (with void return type) to go next `step`, then prune the effect of current `option`
-  - there is a termination condition when a solution meet target
-   - e.g. path length equals to expected string length
+  - usually used for bi-directional-array-like problem:
+    - there should be multiple `steps` to complete one posisble solution
+      - at each step, there would be multiple `options` in searching space
+      - each `option` can be selected when it meets `searching conditions`
+        - e.g. left parentheses is less than total available parentheses
+    - after one `option` is executed, call recusive function (with void return type) to go next `step`, then prune the effect of current `option`
+    - there is a termination condition when a solution meet target
+      - e.g. path length equals to expected string length
 
 Algorithm Pseudocode (all the keywords below are important when thinking about algorihtm): 
 - maintain a recursive function with void return type
- - recursive function at least has 2 params to help us move to next `step`
+  - recursive function at least has 2 params to help us move to next `step`
   - `currentSolution` that stores current latest solution
-   - `currentSolution` is mutable, since we need to prune dead or redundant branches or current `option` in search space 
+    - `currentSolution` is mutable, since we need to prune dead or redundant branches or current `option` in search space 
   - `status` or new `searching conditions` that tells where we are now
-   - e.g. it could be the index in a map-like search space
-   - e.g. it could be the number of left parantheses in current status 
- - inside recursive funtion
-  - 1. check if `currentSolution` meet target
-   - the termination conditions are somthing like "path lenght meet target length", "found exit of maze", etc.
-    - if meet, do 2 things:
-     - 1) add `currentSolution` to global `globalSolution` 
-      - there will be a global variable `globalSolution` to record all possible solutions 
-     - 2) return
-    - if not meet, do nothing, let it go to next line of code
-  - 2. at each `step`, there should be multiple `options`
-   	- for each option (could be a iterative for loop)
-   	 - process the option by mutating `currentSolution`
-   	 - then call recusive function by `step + 1` or a updated `searching condition`
-   	 - prune the `currentSolution` to remove effect of current `step`
-     - try next option
+    - e.g. it could be the index in a map-like search space
+    - e.g. it could be the number of left parantheses in current status 
+  - inside recursive funtion
+    - 1. check if `currentSolution` meet target
+      - the termination conditions are somthing like "path lenght meet target length", "found exit of maze", etc.
+      - if meet, do 2 things:
+        - 1) add `currentSolution` to global `globalSolution` 
+          - there will be a global variable `globalSolution` to record all possible solutions 
+        - 2) return
+      - if not meet, do nothing, let it go to next line of code
+    - 2. at each `step`, there should be multiple `options`
+   	  - for each option (could be a iterative for loop)
+   	    - process the option by mutating `currentSolution`
+   	    - then call recusive function by `step + 1` or a updated `searching condition`
+   	    - prune the `currentSolution` to remove effect of current `step`
+        - try next option
 
 Example:
 1. options
