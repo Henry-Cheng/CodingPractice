@@ -148,6 +148,20 @@ https://leetcode.com/problems/swap-nodes-in-pairs/
 
 Handle the first 2 nodes, call recursion function on 3rd ndoe, then point 1st node next to recursion result of 3rd node.  
 
+#### [LC] 46. Permutations
+https://leetcode.com/problems/permutations/
+
+Explicitly define LinkedList instead of List, since generic List would loose the ability to `addFirst` and `addLast`. Just remember to add LinkedList back to list like
+```
+return result.stream().map(linkedList -> linkedList).collect(Collectors.toList());
+```
+
+List can do `remove(indexToRemove)` to remove element.
+
+If you want to remove element of list iteratively, the traverse from end to start.
+
+Be careful on Java pass-by-reference: when remove element from list, if the other rounds need to use the same list, you need to copy the list to new space and remove it there
+
 #### [LC] 83. Remove Duplicates from Sorted List
 https://leetcode.com/problems/remove-duplicates-from-sorted-list/
 
@@ -175,21 +189,26 @@ Difference between Recursion and Backtracking:
 - In recursion, the function calls itself, until it reaches a `base case`. 
 - In backtracking, we use recursion to explore all the possibilities, until we get the best result for the problem
   - usually used for bi-directional-array-like problem:
-    - there should be multiple `steps` to complete one posisble solution
-      - at each step, there would be multiple `options` in searching space
+    - the final solution consists of multiple `spots`
+      - for each spot, there would be multiple `options` in searching space
       - each `option` can be selected when it meets `searching conditions`
         - e.g. left parentheses is less than total available parentheses
-    - after one `option` is executed, call recusive function (with void return type) to go next `step`, then prune the effect of current `option`
+        - e.g. the option is not visited before
+    - after one `option` is executed, call recusive function (with void return type, and updated `search conditions`) to move to next `spot`
+      - it is not required, but try pruning it first, maybe no need recusive move to next `spot`
+    - need to remove the effect of current `option` in `currentSolution` and `searching conditions` before moving to next `option`
     - there is a termination condition when a solution meet target
       - e.g. path length equals to expected string length
 
 Algorithm Pseudocode (all the keywords below are important when thinking about algorihtm): 
 - maintain a recursive function with void return type
-  - recursive function at least has 2 params to help us move to next `step`
+  - recursive function has at least has 3 params to help us move to next `spot`
   - `currentSolution` that stores current latest solution
     - `currentSolution` is mutable, since we need to prune dead or redundant branches or current `option` in search space 
-  - `status` or new `searching conditions` that tells where we are now
+  - `status` that tells where we are now (this can be combined with `currentSolution`, like to use length of `currentSolution` to tell whiech `spot` we are working on)
     - e.g. it could be the index in a map-like search space
+  - `search conditions` that tells the available and valid `options` for this `spot`
+    - e.g. it could be a visited array
     - e.g. it could be the number of left parantheses in current status 
   - inside recursive funtion
     - 1. check if `currentSolution` meet target
@@ -199,11 +218,17 @@ Algorithm Pseudocode (all the keywords below are important when thinking about a
           - there will be a global variable `globalSolution` to record all possible solutions 
         - 2) return
       - if not meet, do nothing, let it go to next line of code
-    - 2. at each `step`, there should be multiple `options`
-   	  - for each option (could be a iterative for loop)
+    - 2. for each `spot`, there should be multiple `options`
+   	  - for each `option` (could be a iterative for loop)
    	    - process the option by mutating `currentSolution`
-   	    - then call recusive function by `step + 1` or a updated `searching condition`
-   	    - prune the `currentSolution` to remove effect of current `step`
+   	    - then call recusive function to move to `next spot` with
+          - updated `status` (or tell what new `spot` we will move to by length of  `currentSolution`)
+          - update `searching condition`
+          - prune it if possible
+            - e.g. if the sum of subarray is already larger than target, no need to do this recursion again
+   	    - before trying another `option`, do 
+          - update the `currentSolution` to remove effect of current `option`
+          - update the `search condition` to remove effect of current `option`
         - try next option
 
 Example:
@@ -214,11 +239,88 @@ Example:
 3. termination condition
  - for "22. Generate Parentheses", when # of parenthese reaches 2 * n
 
-#### #### [LC] 17. Letter Combinations of a Phone Number
+#### [LC] 17. Letter Combinations of a Phone Number
 https://leetcode.com/problems/letter-combinations-of-a-phone-number/
 
 It can also be done by recursion + hashmap. But backtracking is faster than pure recursion.
 Remember to use `StringBuilder` to remove character by `currentSolution.deleteCharAt(currentSolution.length() - 1);`.
+
+#### [LC] 37. Sudoku Solver
+https://leetcode.com/problems/sudoku-solver/
+
+Be careful the rowNums, colNums, sectionNums need to be intialized no matter it has filled number or not.
+
+For the output board (which is also input), we cannot reassign board, but can only replace board element in-place.
+
+Convert int to char `char c = (char) (i + 48);`
+
+To split num by digits
+```
+    public int getRow(int spot) {
+        return (int)(spot / 10) - 1;
+    }
+            
+    public int getCol(int spot) {
+        return spot % 10 - 1;
+    }
+```
+
+#### [LC] 46. Permutations
+https://leetcode.com/problems/permutations/
+
+- think about the problem in this way:
+- there are n spots for the final result:
+  - e.g. n == 3, spots are: [] [] []
+- for each spot, there could be options 1, 2, 3
+- after we fix one option in one spot, we move to next spot
+- and next spot would have a new "search conditions" that the previously visited option cannot be reused
+- after all "avaialble and valid options" are exausted, remove current option and reset "search conditions" 
+
+#### [LC] 51. N-Queens
+https://leetcode.com/problems/n-queens/
+
+Be careful that string is immutable, using StringBuilder to make it mutable.
+
+When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `row--,col++`, `row++,col--`.
+
+## DFS
+### Default
+
+Depth-First-Search (DFS) is a specific form of backtracking (backtracking is like a brute-force solution):
+- when it is bactracking?
+  - implicit tree
+  - need to prune but not have to (e.g. when sun of subarray is larger than target, no need to move forward)
+  - work with global variable
+- when it is DFS?
+  - explicit tree
+  - no need to prune (tree structure already throws/prunes unacceptable cases)
+  - can work with both global variable or local variable
+- when it is Dynamic Programming (DP)?
+  - top-to-bottom DP is like a backtracking/DFS with memory
+  - bottom-to-top DP need to have `optimial sub-structure` and `overlapping subproblem`
+  - not all problem can be resolved by DP
+    - e.g. N-Queens problem can be resolved by DP, though it has optimial sub-structure, but it has no `overlapping subproblem`, so with DP memory we cannot optimze anything. It's better to just use backtracking.
+
+
+## DP
+### Default
+https://www.jianshu.com/p/4e4ad368ae15
+
+Dynamic Programming (DP) has 2 implementations
+- Top-to-bottom
+  - the same as DFS with memory, which relies on revusion
+  - Top-to-bottom DP is nothing else than ordinary recursion, enhanced with memorizing the solutions for intermediate sub-problems. When a given sub-problem arises second (third, fourth...) time, it is not solved from scratch, but instead the previously memorized solution is used right away. This technique is known under the name memoization (no 'r' before 'i').
+  - e.g. Fibonacci. 
+    - Just use the recursive formula for Fibonacci sequence, but build the table of fib(i) values along the way, and you get a Top-to-bottom DP algorithm for this problem (so that, for example, if you need to calculate fib(5) second time, you get it from the table instead of calculating it again).
+- Bottom-to-top
+  - it's an improvement on top-to-bottom to avoid stack overflow, which relies on iteration
+  - Bottom-to-top DP is also based on storing sub-solutions in memory, but they are solved in a different order (from smaller to bigger), and the resultant general structure of the algorithm is not recursive. 
+  - Bottom-to-top DP algorithms are usually more efficient, but they are generally harder (**and sometimes impossible**) to build, since it is not always easy to predict which primitive sub-problems you are going to need to solve the whole original problem, and which path you have to take from small sub-problems to get to the final solution in the most efficient way.
+  - e.g. Longest common subsequence (LCS) problem is a classic Bottom-to-top DP example.
+
+
+
+
 
 ## Sort
 ### Default
