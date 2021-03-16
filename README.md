@@ -31,7 +31,52 @@ Move both front and end pointers when the corresponding wall is lower.
 #### [LC] 121. Best Time to Buy and Sell Stock
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
-Goes through all the way from left to right to find min price at each day (store in new array), then goes through all the way from right to left to find max price at each day (store in new array), thne goes throw both new arrays together to get the max gap.
+```
+origin: 3 2 6 5 0 3
+if we sell at this point, what would be the lowest buy price
+left:   3 2 2 2 0 0
+if we buy at this point, what would be the highest sell price
+right:  6 6 6 5 3 3
+```
+Goes through all the way from left to right to find min price at each day (store in new array), then goes through all the way from right to left to find max price at each day (store in new array), then goes through both new arrays together to get the max gap.
+
+#### [LC] 209. Minimum Size Subarray Sum
+https://leetcode.com/problems/minimum-size-subarray-sum/
+All nums are positive.
+
+```
+        // 2,3,1,2,4,3 --> 7
+        // 2 --> < target, move right
+        // 2,3 --> < target, move right
+        // 2,3,1 --> < target, move right
+        // 2,3,1,2 --> record it, >= target, move left
+        //   3,1,2 --> < target, move right
+        //   3,1,2,4 --> record it, >= target, move left
+        //     1,2,4 --> record it, >= target, move left
+        //       2,4 --> < target, move right
+        //       2,4,3 --> record it, >= target, move left
+        //         4,3 --> record it, >= target, move left
+        //           3 --> < target, at the end
+```
+
+#### [LC 340. Longest Substring with At Most K Distinct Characters
+https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
+
+```
+        // e c e b a --> k ==2
+        // e --> 1 <= 2, record 1, expand
+        // e c --> 2 <= 2, record 2, expand
+        // e c e --> 2 <= 2, record 3, expand
+        // e c e b --> 3 > 2, shrink
+        //   c e b --> 3 > 2, shrink
+        //     e b --> 2 <=2, record 2, expand
+        //     e b a --> 3 >= 2 shrink
+        //       b a --> 2 <= 2, record 2, end
+```
+NOTE:
+- using HashSet instead of HashMap if no need to store values
+- HashSet contains() has O(1) average time complexity, and O(lgn) worst time complexity, since HashSet is backed by HashMap
+- after doing `right++` in while loop, right could be over index, be careful to check the range before using it
 
 #### [LC] 344. Reverse String
 https://leetcode.com/problems/reverse-string/
@@ -40,6 +85,31 @@ https://leetcode.com/problems/reverse-string/
 https://leetcode.com/problems/reverse-vowels-of-a-string/
 
 Be careful when using hashmap, only when map.get(key) != null means key exists.
+
+#### [LC] 560. Subarray Sum Equals K
+https://leetcode.com/problems/subarray-sum-equals-k/
+
+Be careful
+- preSum length is nums length + 1
+- initially map needs to map.put(k, 1) for preSum[0]
+- if multiple occurence of num + k, count all of them
+- check if preSum exists in map before adding `preSum[i] + k` to map!!
+
+#### [LC] 862. Shortest Subarray with Sum at Least K
+[https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)
+
+Nums could be positive or negative.
+
+Solution in Chinese version: [https://github.com/Shellbye/Shellbye.github.io/issues/41](https://github.com/Shellbye/Shellbye.github.io/issues/41)
+
+
+NOTE:
+- cannot directly use two pointers after prefixSum array!!!
+  - the reason is that the prefixSum array is not sorted, so when we reach to index i that is less than index i-1, the left pointer would stuck at index i wihtout moving any more! (see [https://www.taodudu.cc/news/show-2093248.html](https://www.taodudu.cc/news/show-2093248.html))
+  - we have to delete such an element at index i, that is why we use Deque!!
+- using long here since Integer.MAX_VALUE is 2.1*10^9, but A[i] * A.length < 5*10^9
+- prefixSum[0] = 0; // set it to be 0, which means sum before index 0 is 0
+
 
 ## Tree
 ### Default
@@ -297,30 +367,49 @@ Depth-First-Search (DFS) is a specific form of backtracking (backtracking is lik
   - can work with both global variable or local variable
 - when it is Dynamic Programming (DP)?
   - top-to-bottom DP is like a backtracking/DFS with memory
-  - bottom-to-top DP need to have `optimial sub-structure` and `overlapping subproblem`
+  - bottom-to-top DP need to have `optimial substructure` and `overlapping subproblem`
   - not all problem can be resolved by DP
     - e.g. N-Queens problem can be resolved by DP, though it has optimial sub-structure, but it has no `overlapping subproblem`, so with DP memory we cannot optimze anything. It's better to just use backtracking.
 
 
 ## DP
 ### Default
+https://blog.csdn.net/weixin_26723981/article/details/108892305
+
 https://www.jianshu.com/p/4e4ad368ae15
 
 Dynamic Programming (DP) has 2 implementations
-- Top-to-bottom
-  - the same as DFS with memory, which relies on revusion
-  - Top-to-bottom DP is nothing else than ordinary recursion, enhanced with memorizing the solutions for intermediate sub-problems. When a given sub-problem arises second (third, fourth...) time, it is not solved from scratch, but instead the previously memorized solution is used right away. This technique is known under the name memoization (no 'r' before 'i').
+- Top-down
+  - the same as DFS with `memorization`, which relies on revusion
+  - Top-down DP is nothing else than ordinary recursion, enhanced with memorizing the solutions for intermediate sub-problems. When a given sub-problem arises second (third, fourth...) time, it is not solved from scratch, but instead the previously memorized solution is used right away. This technique is known under the name memoization (no 'r' before 'i').
   - e.g. Fibonacci. 
-    - Just use the recursive formula for Fibonacci sequence, but build the table of fib(i) values along the way, and you get a Top-to-bottom DP algorithm for this problem (so that, for example, if you need to calculate fib(5) second time, you get it from the table instead of calculating it again).
-- Bottom-to-top
-  - it's an improvement on top-to-bottom to avoid stack overflow, which relies on iteration
-  - Bottom-to-top DP is also based on storing sub-solutions in memory, but they are solved in a different order (from smaller to bigger), and the resultant general structure of the algorithm is not recursive. 
-  - Bottom-to-top DP algorithms are usually more efficient, but they are generally harder (**and sometimes impossible**) to build, since it is not always easy to predict which primitive sub-problems you are going to need to solve the whole original problem, and which path you have to take from small sub-problems to get to the final solution in the most efficient way.
-  - e.g. Longest common subsequence (LCS) problem is a classic Bottom-to-top DP example.
+    - Just use the recursive formula for Fibonacci sequence, but build the table of fib(i) values along the way, and you get a Top-down DP algorithm for this problem (so that, for example, if you need to calculate fib(5) second time, you get it from the table instead of calculating it again).
+- Bottom-top
+  - it's an improvement on Top-down to avoid stack overflow, which relies on iteration and `tabulation`
+  - Bottom-top DP is also based on storing sub-solutions in memory, but they are solved in a different order (from smaller to bigger), and the resultant general structure of the algorithm is not recursive. 
+  - Bottom-top DP algorithms are usually more efficient, but they are generally harder (**and sometimes impossible**) to build, since it is not always easy to predict which primitive sub-problems you are going to need to solve the whole original problem, and which path you have to take from small sub-problems to get to the final solution in the most efficient way.
+  - e.g. Longest common subsequence (LCS) problem is a classic Bottom-top DP example.
 
 
+#### [LC] 53. Maximum Subarray
+https://leetcode.com/problems/maximum-subarray/
 
+[Kadane's algorithm](https://leetcode.com/problems/maximum-subarray/discuss/369797/kadanes-algorithm-with-detailed-explanation-and-example-python)
 
+#### [LC] 121. Best Time to Buy and Sell Stock
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+
+Also using Kadane's algorithm, by converting the prices array into gap array, and treate it as max subarray problem:
+```
+convert to Kadane's algorithm by calculating the gaps
+prices:  7   1   5   3   6   4
+  gaps:  -6  4   -2  3   -2
+
+meaning: -6: buy at day 0 and sell at day 1
+          4: buy at day 1 and sell at day 2
+     -6 + 4: buy at day 0 and sell at day 2 (buy and sell same day would off-set)   
+convert it to find max sum of subarray
+``` 
 
 ## Sort
 ### Default
