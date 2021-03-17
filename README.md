@@ -142,6 +142,12 @@ https://leetcode.com/problems/maximum-depth-of-binary-tree/
 #### [LC] 110. Balanced Binary Tree
 https://leetcode.com/problems/balanced-binary-tree/
 
+#### [LC] 112. Path Sum
+https://leetcode.com/problems/path-sum/
+
+When using recusion, be careful to check both `root == null` and `root.left == null && root.right == null`.
+
+When using iterative, prepare another stack to remember the current sum.
 
 #### [LC] 144. Binary Tree Preorder Traversal
 https://leetcode.com/problems/binary-tree-preorder-traversal/
@@ -353,7 +359,7 @@ Be careful that string is immutable, using StringBuilder to make it mutable.
 
 When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `row--,col++`, `row++,col--`.
 
-## DFS
+## DFS and BFS
 ### Default
 
 Depth-First-Search (DFS) is a specific form of backtracking (backtracking is like a brute-force solution):
@@ -370,6 +376,63 @@ Depth-First-Search (DFS) is a specific form of backtracking (backtracking is lik
   - bottom-to-top DP need to have `optimial substructure` and `overlapping subproblem`
   - not all problem can be resolved by DP
     - e.g. N-Queens problem can be resolved by DP, though it has optimial sub-structure, but it has no `overlapping subproblem`, so with DP memory we cannot optimze anything. It's better to just use backtracking.
+
+NOTE:
+- in graph, DFS and BFS are bit different, since graph could have circles, so need to maintain a visited array/map
+- 
+
+BFS template
+```
+    public voic BFS(Node node) {
+        if (node == null) {
+            return node;
+        }
+
+        // Put the first node in the queue
+        Deque<Node> queue = new LinkedList<Node> ();
+        queue.offer(node);
+
+        // visit the node
+        Set<Node> visited = new HashSet<>();
+        visited.add(node); // initial visited node, record it!!!
+
+        // Start BFS traversal
+        while (!queue.isEmpty()) {
+            Node n = queue.poll();
+            // do the processing here!!!!!
+            for (Node neighbor: n.neighbors) {
+                if (!visited.contains(neighbor)) {
+                    queue.offer(neighbor);
+                    visited.add(neighbor); // already pushed to queue, record visited!!!
+                }
+            }
+        }
+    }
+```
+
+DFS template
+```
+    private Set<Node> visited = new HashSet<>();
+    public void DFS(Node node) {
+        if (visited.contains(node)) {
+            return;
+        }
+        // add visiting logic here!!!
+        // visited node
+        visited.add(node);
+        // traverse all neightbors
+        for (Node neighbor : node.neighbors) {
+            DFS(neighbor);
+        }
+    }
+```
+#### [LC] 133. Clone Graph
+https://leetcode.com/problems/clone-graph/
+
+Both DFS and BFS are T(M + N) and S(N), where N is the number of nodes and M is number of edges.
+
+- BFS solution is to convert visited set to be a hashmap that stores original node to clone node mapping
+  - be carefule hashmap uses `containsKey()` while hashset only uses `contains`
 
 
 ## DP
@@ -433,12 +496,17 @@ https://leetcode.com/problems/add-two-numbers/
 Be careful on the corner case, like carryOver may result in a new node.
 
 
-#### [LC] 109. Convert Sorted List to Binary Search Tree
-https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
-
 #### [LC] 24. Swap Nodes in Pairs
 https://leetcode.com/problems/swap-nodes-in-pairs/
 
 Simple version is to swithc node value, harder version is to switch nodes, remember to add preHead node, super version is to do it recursively.
 
 
+#### [LC] 21. Merge Two Sorted Lists
+https://leetcode.com/problems/merge-two-sorted-lists/
+
+Just find the head node first, then add node in l1 or l2 sequencially (compare their val) to the head.next.
+
+
+#### [LC] 109. Convert Sorted List to Binary Search Tree
+https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
