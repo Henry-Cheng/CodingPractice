@@ -40,6 +40,12 @@ right:  6 6 6 5 3 3
 ```
 Goes through all the way from left to right to find min price at each day (store in new array), then goes through all the way from right to left to find max price at each day (store in new array), then goes through both new arrays together to get the max gap.
 
+
+#### [LC] 125. Valid Palindrome 
+https://leetcode.com/problems/valid-palindrome/
+
+Be careful that left or right could go beyond the boundary.
+
 #### [LC] 209. Minimum Size Subarray Sum
 https://leetcode.com/problems/minimum-size-subarray-sum/
 All nums are positive.
@@ -94,6 +100,15 @@ Be careful
 - initially map needs to map.put(k, 1) for preSum[0]
 - if multiple occurence of num + k, count all of them
 - check if preSum exists in map before adding `preSum[i] + k` to map!!
+
+#### [LC] 680. Valid Palindrome II
+https://leetcode.com/problems/valid-palindrome-ii/
+
+- use a global boolean variable to check whether the chance to skip has been used
+- use recusion to do something like this when encountering 1st mismatch in two-pointer round.
+```
+return validPalindrome(s, left + 1, right) || validPalindrome(s, left, right-1);  
+``` 
 
 #### [LC] 862. Shortest Subarray with Sum at Least K
 [https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)
@@ -459,6 +474,28 @@ https://leetcode.com/problems/maximum-subarray/
 
 [Kadane's algorithm](https://leetcode.com/problems/maximum-subarray/discuss/369797/kadanes-algorithm-with-detailed-explanation-and-example-python)
 
+#### [LC] 62. Unique Paths
+https://leetcode.com/problems/unique-paths/
+
+- `T(m*n)`
+- `S(m*n)`
+
+#### [LC] 64. Minimum Path Sum
+https://leetcode.com/problems/minimum-path-sum/
+
+- backtracking/brute-force
+  - T(2 ^ (m+n)) since for each move we have at most 2 options
+  - S(m+n) since recusion depth is m + n
+- top-down DP with memorization
+  - T(mn) since each node would have recursive stack push
+  - S(mn) since we use a dp matrix
+- bottom-up DP with in-place matrix update
+  - T(mn) since each node would be processed
+  - S(1) since no extra space
+
+
+Be careful to check boundary scenarios when `i == -1 && j == -1`.
+
 #### [LC] 121. Best Time to Buy and Sell Stock
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
@@ -474,13 +511,50 @@ meaning: -6: buy at day 0 and sell at day 1
 convert it to find max sum of subarray
 ``` 
 
+#### [LC] 139. Word Break
+https://leetcode.com/problems/word-break/
+
+dp[i] = dp[j] && substring(j,i) in wordDict
+
+- Time complexity : O(n^3). There are two nested loops, and substring computation at each iteration. Overall that results in O(n^3) time complexity.
+- Space complexity : O(n). Length of dp array is n+1
+
+#### [LC] 403. Frog Jump
+https://leetcode.com/problems/frog-jump/
+
+Define a bi-dimensional boolean array to record on stone i whether by step j we can reach it.  
+e.g.   
+if we have 7 stones, then we can at most make 7 distance per one jump, so we can create a `7*7` array to record true/false we can reach it.
+
+NOTE:  
+- though there were 3-layer for loop, the time complexity is acutally O(n^2)
+
 ## Sort
 ### Default
+
+#### [LC] 56. Merge Intervals
+https://leetcode.com/problems/merge-intervals/
+
+Sort arrays or bi-directional array:
+```
+Arrays.sort(arrays, (a, b) -> {
+  return a[0] - b[0]; // ascending -- positive means b->a, negative means a->b
+});
+```
+
+Sort objects:
+```
+Collections.sort(posList, (a, b) -> {
+  return a.index - b.index; // return positive means b->a, negateive means a->b
+});
+```
+
 #### [LintCode] 850. Employee Free Time
 
 https://www.lintcode.com/problem/850/
 
 Use custom comapritor, and be careful when union two intervals, set the end of the new interval to be the max one of original two intervals.
+
 
 ## HashMap
 ### Default
@@ -510,3 +584,85 @@ Just find the head node first, then add node in l1 or l2 sequencially (compare t
 
 #### [LC] 109. Convert Sorted List to Binary Search Tree
 https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
+
+## Topological Sort
+### Default
+Psudocode:
+```
+1. prepare node to ingressCountMap, and node to egreeDependencyMap
+2. traverse once for all possible nodes, and find 0-ingress node (the node that is not in ingressCountMap), record the node in a queue
+3. while queue is not empty, poll each node, output the node, and check all dependencies of the node and prune the ingress of the dependency; if found new 0-ingress node, enqueue it
+```
+
+NOTE:
+- Remember to use hashmap.getOrDefault() to cover possible not existing value in the map, e.g.
+
+```
+// put ingressMap
+Integer count = ingressMap.getOrDefault(to, 0);
+ingressMap.put(to, count + 1);//0->1//1->0
+// put egressMap
+List<Integer> egressArcs = egressMap.getOrDefault(from, new LinkedList<>());
+egressArcs.add(to);
+```
+
+- the question does not require to return a "patial path", so either return full path or empty (if there is cycle inside)
+- convert List<Integer> to int[] by `resultList.stream().mapToInt(i->i).toArray()`
+
+#### [LC] 207. Course Schedule
+https://leetcode.com/problems/course-schedule/
+
+#### [LC] 210. Course Schedule II
+https://leetcode.com/problems/course-schedule-ii/
+
+## String
+### Default
+
+#### [LC] 616. Add Bold Tag in String
+https://leetcode.com/problems/add-bold-tag-in-string/
+
+It is the same as   
+[LC] 758. Bold Words in String  
+https://leetcode.com/problems/bold-words-in-string/
+
+
+It is a combination of problem "find matched substring" and problem "merge interval".
+1. solution 1: find and store all label pairs and do interval merge
+  1. define a new object Pos to store index and left-or-right flag
+    1. NOTE: cannot use TreeMap since pairs could share index 
+  2. find all pairs of labels by traversing the string -- O(MNK) where M is # of characters in string, N is # of dict words and K is average size of dict words
+    1. can use `int foundIndex = s.indexOf(key, index);`, where index is the starting position in string
+  3. sort the list of Pos object by index
+  4. do interval merge by stack
+  5. add label to string by using `stringbuilder.insert(offset, "<br>")`
+2. solution 2: define a boolean array to record whether character is in dict
+  1. use `s.substring(i, i + dictWord.length()).equals(dictWord)`
+
+NOTE:  
+1. The complexity of Java's implementation of indexOf is O(m*n) where n and m are the length of the search string and pattern respectively.
+2. The insert operation on a StringBuffer is O(n). This is because it must shift up to n characters out of the way to make room for the element to be inserted.
+3. A faster way to match substring is to use trie, or using KMP algorithm to reach O(n) (which is too hard to remember during interview).
+  1. https://www.tutorialspoint.com/Knuth-Morris-Pratt-Algorithm#:~:text=Knuth%20Morris%20Pratt%20(KMP)%20is,KMP%20is%20O(n).
+
+
+Way to compare object:
+```
+        Collections.sort(positions, new Comparator<Pos>() {
+            @Override
+            public int compare(Pos p1, Pos p2) {
+                if (p1.index > p2.index) {
+                    return 1; // p2 before p1
+                } else if (p1.index == p2.index) {
+                    if (p1.isLeft) {
+                        return -1; // p1 before p2
+                    } else {
+                        return 1; // p2 before p1
+                    }
+                } else {
+                    return -1; // p1 before p2
+                }
+            }
+        });
+```
+
+
