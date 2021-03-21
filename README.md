@@ -730,4 +730,14 @@ Way to compare object:
         });
 ```
 
+## Stack
+### Default
+#### [LC] 20. Valid Parentheses
 
+https://leetcode.com/problems/valid-parentheses/
+
+## Array
+### Default
+#### [LC] 41. First Missing Positive
+
+The trick is: the max possible "min positve num" is `nums.length + 1`.
