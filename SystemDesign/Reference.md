@@ -9,6 +9,7 @@ System design interview is a happy show-off of our knowledge on technologies and
 
 
 [DevOps Tools](https://www.ctl.io/developers/blog/post/60-best-open-source-tools-to-do-devops/) (another one in Chinese [DevOps Tools](https://www.gaott.top/toolkit/)
+![Image](https://github.com/Henry-Cheng/CodingPractice/raw/master/SystemDesign/Images/Cloud-Application-Manager-DevOps_Open_Source_Tools.png)
 - Configuration Management
   - [Puppet](https://puppet.com/) – Puppet is an open-source configuration management tool.
   - [SaltStack](https://www.vmware.com/support/acquisitions/saltstack.html) - package distribution/installation
