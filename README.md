@@ -450,6 +450,19 @@ Both DFS and BFS are T(M + N) and S(N), where N is the number of nodes and M is 
   - be carefule hashmap uses `containsKey()` while hashset only uses `contains`
 
 
+#### [LC] 200. Number of Islands
+https://leetcode.com/problems/number-of-islands/
+
+Traverse all grids, if found 1, trigger dfs to find all 1s -- could return sum of 1 in dfs.
+
+Time complexity : O(M * N) where M is the number of rows and N is the number of columns.
+Space complexity : worst case  O(M * N) in case that the grid map is filled with lands where DFS goes by M * N deep.
+
+#### [LC] 695. Max Area of Island
+https://leetcode.com/problems/max-area-of-island/
+
+Same solutin as LC 200.
+
 ## DP
 ### Default
 https://blog.csdn.net/weixin_26723981/article/details/108892305
@@ -468,6 +481,34 @@ Dynamic Programming (DP) has 2 implementations
   - Bottom-top DP algorithms are usually more efficient, but they are generally harder (**and sometimes impossible**) to build, since it is not always easy to predict which primitive sub-problems you are going to need to solve the whole original problem, and which path you have to take from small sub-problems to get to the final solution in the most efficient way.
   - e.g. Longest common subsequence (LCS) problem is a classic Bottom-top DP example.
 
+#### [LC] 39. Combination Sum
+https://leetcode.com/problems/combination-sum/
+
+```
+    split target into an array
+    dp[0, 1 , 2, 3, .., target - 1, target]
+    dp[i] points to all the combination whose sum is i
+    e.g.
+    candidates = [2,3,5], target = 8
+    now build dp array from 1 to 8
+        dp[0] = [] // dummy head node
+        dp[1] = [] // no combination
+        dp[2] = [[2]] // (dp[1] + dp[1]), dp[2]
+        dp[3] = [[3]] // (dp[1] + dp[2]), dp[3]
+        dp[4] = [[2,2]] // (dp[1] + dp[3]), (dp[2] + dp[2]), dp[4]
+        dp[5] = [[2,3],[5]] // dp[1] + dp[4], dp[2] + dp[3], dp[5]
+        dp[6] = [[2,2,2],[3,3]] // 
+        dp[7] = [[2,2,3],[2,5]] // dp[2] + dp[5], dp[3]+dp[4], has duplicate for [2,2,3]
+        dp[8] = [[2,2,2,2],[2,3,3],[3,5]] // could have duplicate, dp[3]+dp[5] has duplicate with dp[2] + dp[6] for [2,3,3]
+        for duplicate combination, we can use HashSet<List<Integer>> to cover it
+```
+
+#### [LC] 40. Combination Sum II
+https://leetcode.com/problems/combination-sum-ii/
+
+NOTE:
+- using HashSet to dedupe List<Integer>
+- convert hashset to list by `hashset.stream().collect(Collectors.toList())`
 
 #### [LC] 53. Maximum Subarray
 https://leetcode.com/problems/maximum-subarray/
@@ -496,6 +537,22 @@ https://leetcode.com/problems/minimum-path-sum/
 
 Be careful to check boundary scenarios when `i == -1 && j == -1`.
 
+#### [LC] 77. Combinations
+https://leetcode.com/problems/combinations/
+
+Pseudo code:
+```
+combo(candidates=1234, k = 3) = 1 * combo(candidates=234, k = 2) + combo (candidates=234, k = 3);
+```
+- be careful when using memory in recusion!! Need to do deep copy of list!!!
+- you can use memory like this `List<List<Integer>>[][] memory = new LinkedList[n+2][k+2];`
+
+
+For similar question like [39. Combination Sum](https://leetcode.com/problems/combination-sum/), we can have this pseudo code (each num can be reused):
+```
+(candidates=1234, sum=5) = 1 * (candiates=1234, sum=4) + (candidates=234, sum=5)
+```
+
 #### [LC] 121. Best Time to Buy and Sell Stock
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
@@ -518,6 +575,14 @@ dp[i] = dp[j] && substring(j,i) in wordDict
 
 - Time complexity : O(n^3). There are two nested loops, and substring computation at each iteration. Overall that results in O(n^3) time complexity.
 - Space complexity : O(n). Length of dp array is n+1
+
+#### [LC] 140. Word Break II
+https://leetcode.com/problems/word-break-ii/
+
+Using the same recursion way as 139, but add a beautiful step to append current found word to all of the previous found word list.
+
+NOTE:
+-  using hashmap computeIfAbsent: `allWordPos.computeIfAbsent(i, words-> new ArrayList<String>());`, if key `i` does not exist, put i and new object there
 
 #### [LC] 403. Frog Jump
 https://leetcode.com/problems/frog-jump/
