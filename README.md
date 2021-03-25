@@ -65,7 +65,7 @@ All nums are positive.
         //           3 --> < target, at the end
 ```
 
-#### [LC 340. Longest Substring with At Most K Distinct Characters
+#### [LC] 340. Longest Substring with At Most K Distinct Characters
 https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
 
 ```
@@ -91,6 +91,28 @@ https://leetcode.com/problems/reverse-string/
 https://leetcode.com/problems/reverse-vowels-of-a-string/
 
 Be careful when using hashmap, only when map.get(key) != null means key exists.
+
+#### [LC] 424. Longest Repeating Character Replacement
+https://leetcode.com/problems/longest-repeating-character-replacement/
+
+```
+
+        it equals to: find longest substring that has only k different char
+             e c e b a --> k ==2
+             e         --> 0 <= 2, record 1, expand
+             e c       --> 1 <= 2, record 2, expand
+             e c e     --> 1 <= 2, record 3, expand
+             e c e b   --> 2 <= 2, record 4, expand
+             e c e b a --> 3 > 2, shrink
+               c e b a --> 4 > 2, shrink
+                 e b a --> 3 > 2, shrink
+                   b a --> 2 <= 2 record 2, cannot expand, end
+
+```
+NOTE:
+- no need to update `mostCountSoFar` when decrementing, the reason is that `mostCountSoFar` recrods the most char count in the history, unless we find a bigger window in the future and increase the `mostCountSoFar`, we cannot do better that current max result which is based on `mostCountSoFar`
+- for two pointers template, remember to check right boundary after `right++`, and then increment countMap; but do the decrement before `left--`  
+
 
 #### [LC] 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
@@ -151,8 +173,22 @@ https://leetcode.com/problems/symmetric-tree/
 What makes two tree symmetric? root1 and root2 are the same, root1.left equals to root2.right.
 Can create a helper function using two of the same root at beginning.
 
+#### [LC] 102. Binary Tree Level Order Traversal
+https://leetcode.com/problems/binary-tree-level-order-traversal/
+
+Standard BFS template.
+
 #### [LC] 104. Maximum Depth of Binary Tree
 https://leetcode.com/problems/maximum-depth-of-binary-tree/
+
+Using recursion or BFS template.
+
+Recursin
+```
+        int leftDepth = maxDepth(root.left);
+        int rightDepth = maxDepth(root.right);
+        return Math.max(leftDepth, rightDepth) + 1;
+```
 
 #### [LC] 110. Balanced Binary Tree
 https://leetcode.com/problems/balanced-binary-tree/
@@ -167,11 +203,16 @@ When using iterative, prepare another stack to remember the current sum.
 #### [LC] 144. Binary Tree Preorder Traversal
 https://leetcode.com/problems/binary-tree-preorder-traversal/
 
+#### [LC] 199. Binary Tree Right Side View
+https://leetcode.com/problems/binary-tree-right-side-view/
+
+BFS, then output the rightmost node at each layer.
+
 #### [LC] 226. Invert Binary Tree
 https://leetcode.com/problems/invert-binary-tree/
 
 
-#### 236. Lowest Common Ancestor of a Binary Tree
+#### [LC] 236. Lowest Common Ancestor of a Binary Tree
 https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
 
 The trick is: if root is p or q, return root; if left or right is p or q, return left or right. The idea is that left or right can represent the top node of a subtree that contains p or q.
@@ -186,6 +227,17 @@ If left or right exists, return left or right;
 ```
 
 NOTE: the time complexity is O(n) since it traverse all nodes, but its space complexity is also O(n), since even though there is no heap space, the stack space would be O(n) if it is a skewed tree (like the height of the tree equals to number of nodes).
+
+#### [LC] 314. Binary Tree Vertical Order Traversal
+https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+
+NOTE: the left subtree could grow into right-hand-side
+
+Define a new TreeNode to record coordinate x and y, then using TreeMap to sort the x coordinate:
+
+```
+TreeMap<Integer, List<Integer>> orderedMap = new TreeMap<>((a,b) -> {return a-b;});
+```
 
 #### [LC] 515. Find Largest Value in Each Tree Row
 https://leetcode.com/problems/find-largest-value-in-each-tree-row/
@@ -207,6 +259,11 @@ NOTE:
  - space complexity: for stack space, average is O(logn), worst case is O(n) for skewed list
 2. Maybe no need to use a custom class as Result in `findMaxNum`, the `maxPos` could reflect `maxValue`
 
+#### [LC] 987. Vertical Order Traversal of a Binary Tree
+https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+
+Sort the node by `x coordinate, y coordinate, val` using BFS + TreeMap + Collections.sort().
+
 ## Recursion
 ### Default
 https://www.jianshu.com/p/1395fae8a1ae
@@ -219,8 +276,7 @@ e.g.
 
 2) Find return value  
 e.g.  
-- for LC 24 "
-Swap Nodes in Pairs", the return value is a linked list that is already swapped.
+- for LC 24 `Swap Nodes in Pairs`, the return value is a linked list that is already swapped.
 - for LC 110 "Balanced Binary Tree", the return value needs to be both a boolean value isBalanced and an int value about the height, so that we can build a new class to handle it
 
 3) What to do at current recursion level  
@@ -374,6 +430,15 @@ Be careful that string is immutable, using StringBuilder to make it mutable.
 
 When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `row--,col++`, `row++,col--`.
 
+#### 399. Evaluate Division
+https://leetcode.com/problems/evaluate-division/
+
+Convert it to be a problem like this:  
+- given two nodes, we are asked to check if there exists a path between them. If so, we should return the cumulative products along the path as the result
+
+NOTE:
+- we can use nested map to represent the graph, intead of insisting using 2-directional array
+
 ## DFS and BFS
 ### Default
 
@@ -393,41 +458,60 @@ Depth-First-Search (DFS) is a specific form of backtracking (backtracking is lik
     - e.g. N-Queens problem can be resolved by DP, though it has optimial sub-structure, but it has no `overlapping subproblem`, so with DP memory we cannot optimze anything. It's better to just use backtracking.
 
 NOTE:
-- in graph, DFS and BFS are bit different, since graph could have circles, so need to maintain a visited array/map
-- 
+- graph could have circles, we need to maintain a `visited` array/set when using BFS/DFS, but for tree, we can skip `visited`
+- if the `node` is not an integer, we cannot build an `adajacency matrix` to access it by index, instead we can build an `adajacency map` by hashmap and `visited` variable by hashset
+- `entryPoints` is important
+  - no matter DFS or BFS, need to start with all `entrypoints` and then call dfs or bfs
+- BFS
+  - is good to look for shortest path (e.g. `1129. Shortest Path with Alternating Colors`), no matter it's directed or not, and there is no weight on edges
+  - a graph could have multiple entryPoints, we need to enqueue all of them at beginning, e.g. `542. 01 Matrix`
+  - a graph could have mutltiple entryPoints when looking at neighbors, need to enqueue all of them, e.g.  for `1129. Shortest Path with Alternating Colors`, a node itself could have self-circle, a visited node could have another color edege, we need to enqueue both of them when looking at neighbors
+  - sometimes we need to define custome queue object to record more information, e.g. for `1129. Shortest Path with Alternating Colors`, we need to record color of the entryPoints in the queue.
+  - for tree, no need to define `visited`, since there is no cycle
+- DFS 
+  - is good to look for a valid path and output the path (using "path" param)
+  - we need to do DFS for all `entryPoints`, e.g. for `200. Number of Islands`, we start with all "1" in matrix and do dfs.
 
-BFS template
+BFS template (T(N) where N is the # of nodes, S(D) while D is the tree diameter)
 ```
     public voic BFS(Node node) {
         if (node == null) {
             return node;
         }
 
-        // Put the first node in the queue
+        // Put all the entryPoints to the queue!!
         Deque<Node> queue = new LinkedList<Node> ();
-        queue.offer(node);
+        queue.offer(node); // a graph could have multiple entryPoints
 
         // visit the node
         Set<Node> visited = new HashSet<>();
         visited.add(node); // initial visited node, record it!!!
 
         // Start BFS traversal
+        int levelCount = 1;
         while (!queue.isEmpty()) {
-            Node n = queue.poll();
-            // do the processing here!!!!!
-            for (Node neighbor: n.neighbors) {
-                if (!visited.contains(neighbor)) {
-                    queue.offer(neighbor);
-                    visited.add(neighbor); // already pushed to queue, record visited!!!
+            int totalInCurrentLevel = queue.size();
+            for (int i = 0; i < totalInCurrentLevel; i++) { // only visite one level
+                Node n = queue.poll();
+                // do the processing here!!!!!
+                // if found the node, we can break now, the node is found by levelCount steps
+                for (Node neighbor: n.neighbors) { // all possible neighbors need to enqueue
+                    if (!visited.contains(neighbor) && isValid(neighbor)) {
+                        queue.offer(neighbor);
+                        visited.add(neighbor); // already pushed to queue, record visited!!!
+                    }
                 }
             }
+            levelCount++; // increment the level count
         }
     }
 ```
 
-DFS template
+DFS can have 3 types of templates:
+1. dfs with `visited` -- when it's explicit tree/graph style, no need to `backtrack` (e.g. `133. clone graph`)
 ```
     private Set<Node> visited = new HashSet<>();
+    // for all entryPoints, do DFS
     public void DFS(Node node) {
         if (visited.contains(node)) {
             return;
@@ -441,6 +525,47 @@ DFS template
         }
     }
 ```
+2. dfs with `globalSolution` + `path` -- when it's implicit tree/graph style, need to `backtrack`, aka reset current step effect. e.g. `17. Letter Combinations of a Phone Number` or `51. N-Queens`
+```
+    private globalSolution;
+    public vod backtrack(path, status, searchingSpace) {
+        if (path meets terminationCondition) {
+            globalSolution.add(path);
+            return;
+        }
+        for (option : searchingSpace) {
+            // process current option
+            path = process(option); // update current solution
+            status = update(status); // move to next spot
+            searchingSpace = update(searchingSpace); // update searching conditions
+            // backtrack
+            backtrack(path, status, searchingSpace);
+            // revoke when trying next option
+            path = revoke(path);
+            status = revoke(status);
+            searchingSpace =revoke(searchingSpace);
+        }
+    }
+    return globalSolution;
+```
+3. dfs with `return value` + `visited` -- it is used when matrix represents node itself (e.g. `200. Number of Islands`)
+4. dfs with `visited` + `path` (very similar like #1) -- it is used when matrix represents the relationship of nodes instead of nodes themselves (e.g. `547. Number of Provinces`)
+
+
+Another way to think about DFS:
+1. Bottom-up
+  1. Ask answer from subproblem, e.g. `104. Maximum Depth of Binary Tree`, `64. Minimum Path Sum`, we can throw the question to subtree
+2. Top down
+  1. use answer passed from parent node to make decision, e.g. `129. Sum Root to Leaf Numbers`
+
+
+#### [LC] 79. Word Search
+https://leetcode.com/problems/word-search/
+
+- option1: DFS with a new visited array passed to DFS function every time
+- option2: backtracking, similar like DFS, but using only one visited array and reset the `visited[i][j]` if not found for a character
+- option3: trie
+
 #### [LC] 133. Clone Graph
 https://leetcode.com/problems/clone-graph/
 
@@ -458,10 +583,34 @@ Traverse all grids, if found 1, trigger dfs to find all 1s -- could return sum o
 Time complexity : O(M * N) where M is the number of rows and N is the number of columns.
 Space complexity : worst case  O(M * N) in case that the grid map is filled with lands where DFS goes by M * N deep.
 
+
+#### [LC] 542. 01 Matrix
+https://leetcode.com/problems/01-matrix/
+
+```
+// option1: treat 1 as entryPoint, using bfs/dfs to find all nearby 0, time complexity is O(MN * MN) since it could be full of 1 in matrix, and for each 1 we need to traverse whole matrix
+// option2: treat 0 as entryPoint, using bfs to find all nearby 1, traverse once for whole matrix and record minimum distance for that "1"-cell. It is O(MN)
+```
+
+#### [LC] 547. Number of Provinces
+https://leetcode.com/problems/number-of-provinces/
+
+For each node (0 ~ n-1), traverse from itself to all neighbor nodes, if found 1 then call dfs with the found node, maintain a hashset as path and passed to dfs function.
+
 #### [LC] 695. Max Area of Island
 https://leetcode.com/problems/max-area-of-island/
 
 Same solutin as LC 200.
+
+#### [LC] 1129. Shortest Path with Alternating Colors
+https://leetcode.com/problems/shortest-path-with-alternating-colors/
+
+- using BFS, one round `O(M*N)`
+- prepare redEdges matrix and blueEdge matrix at beginning
+- define a new class for queue node to record both node itself and current color
+- be careful node 0 is special, whose current color can be both "R" and "B"
+- when checking neighbors, need to enqueue all possible neigbors, including node itself (self-cycle) and visited node (the node could have edge for another color)
+
 
 ## DP
 ### Default
@@ -553,6 +702,9 @@ For similar question like [39. Combination Sum](https://leetcode.com/problems/co
 (candidates=1234, sum=5) = 1 * (candiates=1234, sum=4) + (candidates=234, sum=5)
 ```
 
+#### [LC] 96. Unique Binary Search Trees
+https://leetcode.com/problems/unique-binary-search-trees/
+
 #### [LC] 121. Best Time to Buy and Sell Stock
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
@@ -597,6 +749,35 @@ NOTE:
 ## Sort
 ### Default
 
+#### [LC] 34. Find First and Last Position of Element in Sorted Array
+https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+find leftmost matched
+```
+        while(left < right) {
+            int mid = (left + right)/2; // try find mid close to left
+            if (nums[mid] >= target) {
+                right = mid; // find the leftMost
+            } else {
+                left = mid + 1;
+            }
+        }
+```
+find rightmost matched
+
+```
+        while(left < right) {
+            int mid = (left + right + 1)/2; // try find mid close to right
+            if (nums[mid] <= target) {
+                left = mid; // find the rightmost
+            } else {
+                right = mid - 1;
+            }
+        }
+```
+
+
+
 #### [LC] 56. Merge Intervals
 https://leetcode.com/problems/merge-intervals/
 
@@ -613,6 +794,20 @@ Collections.sort(posList, (a, b) -> {
   return a.index - b.index; // return positive means b->a, negateive means a->b
 });
 ```
+
+#### [LC] 252. Meeting Rooms
+https://leetcode.com/problems/meeting-rooms/
+
+Simple solution with Array.sort
+```
+        Arrays.sort(intervals, (a, b)->{
+            if (a[0] != b[0]) {
+                return a[0] - b[0];
+            } else {
+                return a[1] - b[1];
+            }
+        });
+``` 
 
 #### [LintCode] 850. Employee Free Time
 
@@ -736,8 +931,290 @@ Way to compare object:
 
 https://leetcode.com/problems/valid-parentheses/
 
+## Heap
+### Default
+#### [LC] 253. Meeting Rooms II
+https://leetcode.com/problems/meeting-rooms-ii/
+
+Using `Arrays.sort()` to sort by start time, then use PriorityQueue to maintain earliest ending interval at top of heap, the final result is the intervals in the heap.
+
+NOTE:
+- `int[]` is also an generic type that can be used in PriorityQueue
+
+```
+PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{
+    return a[1]-b[1]; // ascending order
+});
+```
+
+#### [LC] 767. Reorganize String
+https://leetcode.com/problems/reorganize-string/
+
+```
+        // aaaccc --> acacac
+        // aaacccc --> cacacac
+        // aaaccccc --> ""
+        // find most common letter, then split it by rest of the letters
+        // if difference >= 2, not possible
+        
+        // option1: count all unique letters (O(N)), sort them (O(MlogM) if M is the # of unique letters) , then asembling string, total time complexity is O(N + MlogM)
+        // option2: count and sort all unique letters by TreeMap (O(NlogM)), then asembling string
+        // option3: count all unique letters (O(N)), building max-heap to maintain the max at heap top (O(MlogM)); when asembling string, we will do N times pulling from heap, and each pulling takes O(logM) for the heap to reorganize, so the asembling time is O(NlogM).
+        // option4: bucket sort, maintain a 500 list of characters
+        // since we would have most have 26 characters, so the M could be fixed and at most 26, which makes all the options close to O(N)
+```
+
+NOTE:  
+PriorityQueue can support `Map.Entry` like:
+```
+        PriorityQueue<Map.Entry<Character,Integer>> pq = new PriorityQueue<>((a,b) -> {
+            return b.getValue() - a.getValue(); // descending
+        });
+```
+
+Then traverse map like:
+```
+for (Map.Entry<Character, Integer> entry : map.entrySet()) {}
+```
+
 ## Array
 ### Default
 #### [LC] 41. First Missing Positive
 
-The trick is: the max possible "min positve num" is `nums.length + 1`.
+- The trick is: the max possible "min positve num" is `nums.length + 1`.
+- To achieve constant space, we can reuse existing array to change value in place
+
+NOTE: be careful on the algorithm to swap nums in place, need to break when there are duplicate numbers
+
+```
+        //     i     0 1  2 3
+        // expected  1 2  3 4
+        // actual    3 4 -1 1
+        for (int i = 0; i < nums.length; i++) {
+            while (nums[i] > 0) {
+                if (nums[i] - i == 1) { // already matched
+                    break;
+                } else { // swap
+                    int tmp = nums[nums[i] - 1];
+                    if (tmp == nums[i]) {
+                        break; // same number, skip here in case infinite loop
+                    }
+                    nums[nums[i] - 1] = nums[i];
+                    nums[i] = tmp;
+                }
+            }
+        }
+```
+
+## Design
+### Default
+https://stackoverflow.com/questions/43145395/time-complexity-while-deleting-last-element-from-arraylist-and-linkedlist
+
+| Operation                   | LinkedList  | AraryList  | 
+| --------------------------- |:-----------:| ----------:|
+| add(Integer obj)            | *O(1)*      | *O(1)*     | 
+| add(int index, Integer obj) | O(N)        | O(N)       |
+| contains(Integer obj)       | O(N)        | O(N)       |
+| get(int index)              | O(N)        | *O(1)*     |
+| set(int index, Integer obj) | O(N)        | *O(1)*     |
+| remove(int index) -- last   | *O(1)*      | *O(1)*     |
+| remove(int index) -- any    | O(N)        | O(N)       |
+| remove(Integer obj)         | O(N)        | O(N)       |
+
+
+#### [LC] 146. LRU Cache
+https://leetcode.com/problems/lru-cache/
+
+- option1: linkedhashmap 
+- option2: custome class to define double-linked-list and hashmap
+
+#### [LC] 380. Insert Delete GetRandom O(1)
+https://leetcode.com/problems/insert-delete-getrandom-o1/
+
+NOTE:
+- to achieve random index to val mapping in `O(1)`, we need ArrayList
+- to achieve checking val existence in `O(1)`, we need HashMap
+- to achieve delete arbitrary index from ArrayList, we need to swap val with last element in list, and then remove last element from list
+- always update map when doing list operation (add/delete/set)
+
+#### [LC] 528. Random Pick with Weight
+https://leetcode.com/problems/random-pick-with-weight/
+
+prefixSum + search (better to use binary search to improve searching complexity to logN)
+
+```
+    //        w =    1    2      3       4 
+    //prefiSum  = 0  1    3      6       10
+    //percentage= 0% 10%  30%    60%     100%
+    // 100% --> random <= 10  --> 6 < random <= 10 --> 40% chance --> 4
+    // 60%  --> random <= 6   --> 3 < random <= 6  --> 30% chance --> 3
+    // 30%  --> random <= 3   --> 1 < random <= 3  --> 20% chance --> 2
+    // 10%  --> random <= 1   --> 0 < random <= 1  --> 10% chance --> 1
+```
+
+NOTE:  
+When using random function, need to have brackets for both `(int)` and `(Math.random() * (max - min + 1))`
+```
+    // both end inclusive
+    protected int getRandom(int min, int max) {
+        return min + (int) (Math.random() * (max - min + 1));
+    }
+```
+
+## Math
+### Default
+
+#### [LC] 172. Factorial Trailing Zeroes
+https://leetcode.com/problems/factorial-trailing-zeroes/
+
+```
+    // option1: using BigInteger
+    // option2: count factors of 5 and 2, then use min(# of 5, # of 2)
+    // option3: only count 5, since 2 is always more than 5
+    // option4: only count 5, and not traverse 1 to n, traverse at 5 interval
+    // option5: count how many "n /= 5" exists, result in O(logn)
+```
+
+#### [LC] 311. Sparse Matrix Multiplication
+https://leetcode.com/problems/sparse-matrix-multiplication/
+
+Generally time complexity is `O(m*n*k)`, but the followup is to handle super large matrix.
+- one improvement is to record all-0 rows and all-0 col so that we can skip them
+- another way is to use Strassen algorithm, to use some "plus" to replace "multiple", since multiple is more expensive 
+  - https://sites.google.com/a/chaoskey.com/algorithm/02/03
+
+
+## Trie/Prefix Tree/Digital Tree
+
+Trie is used in following scenarios:
+1. Autocomplete
+2. Spell checker
+3. IP routing
+4. T9 keyboard predictive text
+5. Sovling word games (like `212. word search II`)
+
+The time complexity is `O(m)`, in which `m` means the length of the word.
+
+Comparison with HashTable
+- HashTable is not ideal when all searching keys have common prefix
+- HashTable may have confliction, which also result in O(n)
+
+### Default
+https://en.wikipedia.org/wiki/Trie
+
+[LC] 208. Implement Trie
+[LC] 211. Design Add and Search Words Data Structure
+[LC] 212. Word Search II
+[LC] 425. Word Square
+[LC] 642. Design Search Autocomplete System
+[LC] 676. Implement Magic Dictionary
+[LC] 745. Prefix and Suffix Search
+[LC] 1032. Stream of Characters
+[LC] 1233. Remove Sub-Folders from the Filesystem
+[LC] 421. Maximum XOR of Two Numbers in an Array
+[LC] 1707. Maximum XOR With an Element From Array
+
+```
+// each TrieNode would have 26 child nodes, TrieNode itself is empty, it only makes sense when being used to check child links (check if links array has the index)
+class TrieNode {
+
+    // R links to node children
+    private TrieNode[] links;
+
+    private final int R = 26;
+
+    private boolean isEnd;
+
+    public TrieNode() {
+        links = new TrieNode[R];
+    }
+
+    public boolean containsKey(char ch) {
+        return links[ch -'a'] != null;
+    }
+    public TrieNode get(char ch) {
+        return links[ch -'a'];
+    }
+    public void put(char ch, TrieNode node) {
+        links[ch -'a'] = node;
+    }
+    public void setEnd() {
+        isEnd = true;
+    }
+    public boolean isEnd() {
+        return isEnd;
+    }
+}
+```
+
+```
+class Trie {
+    private TrieNode root;
+
+    public Trie() {
+        root = new TrieNode();
+    }
+
+    // Inserts a word into the trie.
+    public void insert(String word) {
+        TrieNode node = root;
+        for (int i = 0; i < word.length(); i++) {
+            char currentChar = word.charAt(i);
+            if (!node.containsKey(currentChar)) {
+                node.put(currentChar, new TrieNode());
+            }
+            node = node.get(currentChar);
+        }
+        node.setEnd();
+    }
+
+    // search a prefix or whole key in trie and
+    // returns the node where search ends
+    private TrieNode searchPrefix(String word) {
+        TrieNode node = root;
+        for (int i = 0; i < word.length(); i++) {
+           char curLetter = word.charAt(i);
+           if (node.containsKey(curLetter)) {
+               node = node.get(curLetter);
+           } else {
+               return null;
+           }
+        }
+        return node;
+    }
+
+    // Returns if the word is in the trie.
+    public boolean search(String word) {
+       TrieNode node = searchPrefix(word);
+       return node != null && node.isEnd();
+    }
+
+    // Returns if there is any word in the trie
+    // that starts with the given prefix.
+    public boolean startsWith(String prefix) {
+        TrieNode node = searchPrefix(prefix);
+        return node != null;
+    }
+}
+```
+
+#### [LC] 212. Word Search II
+https://leetcode.com/problems/word-search-ii/
+
+NOTE:
+1. Using hashmap to simplify the trie build
+2. when building trie
+  - don't forget to move node to its child for next letter in word
+  - don't forget to set the word in `TrieNode` when find complete word
+3. stll using the backtracking template: start with all entry points, using visited array to record visited node, remember to reset the visited array, remember to try all 4 directions
+4. using hashset to maintain global solution, since there could be duplicate words
+5. in backtracking method, do not return immediately after finding the word, since we could search further sometimes, e.g. `dict = {oa, oaa} `
+
+```
+    private static class Trie{
+        public HashMap<Character,Trie> children = new HashMap<>();
+        public String word = null;
+        public Trie() {}
+    }
+```
+
