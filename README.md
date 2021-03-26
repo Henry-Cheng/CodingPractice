@@ -13,6 +13,8 @@ https://leetcode.com/problems/container-with-most-water/
 #### [LC] 15. 3Sum
 https://leetcode.com/problems/3sum/
 
+sort first, then have O(N^2)
+
 #### [LC] 16. 3Sum Closest
 https://leetcode.com/problems/3sum-closest/  
 
@@ -65,6 +67,15 @@ All nums are positive.
         //           3 --> < target, at the end
 ```
 
+
+#### [LC] 238. Product of Array Except Self    
+https://leetcode.com/problems/product-of-array-except-self/solution/
+
+- generate product from left to right left[i] is the product from 0 to left-1 (exlclude i), note that left[0] is 1
+- generate product from right to left right[i] is the product from n-1 to i+1 (exlclude i), note that right[n-1] is 1
+- now the result for i is `left[i]*right[i]`
+
+
 #### [LC] 340. Longest Substring with At Most K Distinct Characters
 https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
 
@@ -113,6 +124,11 @@ NOTE:
 - no need to update `mostCountSoFar` when decrementing, the reason is that `mostCountSoFar` recrods the most char count in the history, unless we find a bigger window in the future and increase the `mostCountSoFar`, we cannot do better that current max result which is based on `mostCountSoFar`
 - for two pointers template, remember to check right boundary after `right++`, and then increment countMap; but do the decrement before `left--`  
 
+#### [LC] 438 Find All Anagrams in a String 
+https://leetcode.com/problems/find-all-anagrams-in-a-string/solution/
+
+- option1: hashmap + sliding window, put dict word into hashmap1, then move left and right pointers to find next dict.legnth substring, and increment/decrement count in hashmap2, compare hashmap1 and hashmap2
+- option2: array + sliding window, since it only has lower case letter, hash map can be replaced by 26-length array
 
 #### [LC] 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
@@ -122,6 +138,25 @@ Be careful
 - initially map needs to map.put(k, 1) for preSum[0]
 - if multiple occurence of num + k, count all of them
 - check if preSum exists in map before adding `preSum[i] + k` to map!!
+
+
+#### [LC] 581 Shortest Unsorted Continuous Subarray   
+- option1 sort: sort in another array, then compare different num 
+- option2 sliding window [LC solution](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/zui-duan-wu-xu-lian-xu-zi-shu-zu-by-leetcode/): if we found such a subarray (i,j), then the correct position of the smallest num is i, the correct position of the largest num in array is j.
+  - 因此，首先我们需要找到原数组在哪个位置开始不是升序的。我们从头开始遍历数组，一旦遇到降序的元素，我们记录最小元素为 min 。
+  - 类似的，我们逆序扫描数组 nums，当数组出现升序的时候，我们记录最大元素为 max。
+  - 然后，我们再次遍历 nums 数组并通过与其他元素进行比较，来找到 min 和 max 在原数组中的正确位置。
+    - 我们只需要从头开始找到第一个大于 min 的元素，从尾开始找到第一个小于 max 的元素，它们之间就是最短无序子数组。
+
+```
+         1 3 7 6 5 10 2 9 7 8 
+         
+         left min --> start from 7 --> 2
+         right max --> start from 9 --> 10
+         left correct pos --> 3 > 6 --> 3
+         right correct pos --> 8 < 10 --> 8
+         need to replace from 3 to 8
+```
 
 #### [LC] 680. Valid Palindrome II
 https://leetcode.com/problems/valid-palindrome-ii/
@@ -430,6 +465,11 @@ Be careful that string is immutable, using StringBuilder to make it mutable.
 
 When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `row--,col++`, `row++,col--`.
 
+#### [LC] 282. Expression Add Operators
+https://leetcode.com/problems/expression-add-operators/
+
+backtracking for all possibilities.
+
 #### 399. Evaluate Division
 https://leetcode.com/problems/evaluate-division/
 
@@ -736,6 +776,59 @@ Using the same recursion way as 139, but add a beautiful step to append current 
 NOTE:
 -  using hashmap computeIfAbsent: `allWordPos.computeIfAbsent(i, words-> new ArrayList<String>());`, if key `i` does not exist, put i and new object there
 
+#### [LC] 174. Dungeon Game
+
+https://leetcode.com/problems/dungeon-game/
+
+The followings are copied from https://yutianx.info/2015/04/10/2015-04-10-leetcode-Dungeon-Game/
+
+- dp[i][j]，那么它是从dp[i+1][j]或者dp[i][j+1]走过来的
+- 需要将[i+1][j],[i][j+1]中选一个需要血量少的，减去dungeon[i][j]，再和1比较大小
+- 我们需要从下标由大到小遍历数组
+
+```
+dp[i][j] = max(
+  1, 
+  min(dp[i+1][j], dp[i][j+1]) - dungeon[i][j]
+  )
+)
+```
+
+#### [LC] 300. Longest Increasing Subsequence
+https://leetcode.com/problems/longest-increasing-subsequence/
+
+The followings are copied from https://soulmachine.gitbooks.io/algorithm-essentials/content/java/dp/longest-increasing-subsequence.html
+
+我们来尝试用DP来解决这题。最重要的是要定义出状态。首先从状态扩展这方面看，对于数组中的一个元素，它往后走，凡是比它大的元素，都可以作为下一步，因此这里找不到突破口。
+
+我们换一个角度，从结果来入手，我们要求的最长递增子序列，一个递增子序列，肯定是有首尾两个端点的，假设我们定义 f[i] 为以第i个元素为起点的最长递增子序列，那么 f[i]和f[j]之间没有必然联系，这个状态不好用。
+
+定义f[i]为以第i个元素为终点的最长递增子序列，那么如果`i<j`且`nums[i]<nums[j]`，则f[i]一定是f[j]的前缀。这个状态能表示子问题之间的关系，可以接着深入下去。
+
+现在正式开始定义，我们定义状态f[i]为第i个元素为终点的最长递增子序列的长度，那么状态转移方程是
+
+`f[j] = max{f[i], 0 <= i < j && f[i] < f[j]} + 1`
+
+时间复杂度O(n^2)，空间复杂度O(n)
+
+NOTE: initialize all dp to be 1!!!!
+
+```
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1); // this is important!!!
+        int result = 1;
+        for (int j = 1; j < nums.length; j++) {
+            for (int i = 0; i < j; i++) {
+                if (nums[i] < nums[j]) {
+                    dp[j] = Math.max(dp[j], dp[i] + 1);
+                }
+            }
+            result = Math.max(result, dp[j]);
+        }
+        return result;
+```
+
+
 #### [LC] 403. Frog Jump
 https://leetcode.com/problems/frog-jump/
 
@@ -748,6 +841,11 @@ NOTE:
 
 ## Sort
 ### Default
+
+#### [LC] 33. Search in Rotated Sorted Array
+https://leetcode.com/problems/search-in-rotated-sorted-array/
+
+recover the array to be ascending.
 
 #### [LC] 34. Find First and Last Position of Element in Sorted Array
 https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
@@ -776,7 +874,10 @@ find rightmost matched
         }
 ```
 
+#### [LC] 49. Group Anagrams
+https://leetcode.com/problems/group-anagrams/
 
+bucket sort to find all anagrams
 
 #### [LC] 56. Merge Intervals
 https://leetcode.com/problems/merge-intervals/
@@ -815,12 +916,31 @@ https://www.lintcode.com/problem/850/
 
 Use custom comapritor, and be careful when union two intervals, set the end of the new interval to be the max one of original two intervals.
 
+#### [LC] 973. K Closest Points to Origin
+https://leetcode.com/problems/k-closest-points-to-origin/
+
+sort or heap
 
 ## HashMap
 ### Default
 #### [LC] 1. Two Sum
 Why "two sum" is not a two-pointers problem? To use two-pointers, we need to know when should we move the pointer, and for problem like "two sum", we cannot know it without sorting the array. But sorting would result in at least O(nlgn) time complexity. Considering by using hashmap we can already achieve O(n) time complexity, there is no need to use two-pointer here.
 
+#### [LC] 128. Longest Consecutive Sequence
+https://leetcode.com/problems/longest-consecutive-sequence/
+
+HashSet.
+
+#### [LC] 387 First Unique Character in a String 
+https://leetcode.com/problems/first-unique-character-in-a-string/
+
+Easy question, 1st round to go through all characters and count each of them, 2nd round to find the 1st one with count 1;
+
+#### [LC] 1606. Find Servers That Handled Most Number of Requests
+
+https://leetcode.com/problems/find-servers-that-handled-most-number-of-requests/
+
+per https://leetcode.com/problems/find-servers-that-handled-most-number-of-requests/discuss/1054308/Java-Easy-to-understand-solution-with-explanation, we can use `TreeSet` and `TreeMap`
 
 ## LinkedList
 ### Default
@@ -931,8 +1051,29 @@ Way to compare object:
 
 https://leetcode.com/problems/valid-parentheses/
 
+#### [LC] 224. Basic Calculator
+
+https://leetcode.com/problems/basic-calculator/
+
+Similar to `227 Basic Calculator II`, but this time we have parentheses, be careful about `3-(7+1)`, there is `-` before `(7+1)`, and we cannot simply push `-7` to stack.
+
+#### [LC] 227 Basic Calculator II  
+https://leetcode.com/problems/basic-calculator-ii/
+
+- traverse string from left to right, if number, add to currentNumber variable, if next is “+” or “-“, push to stack.
+- , find next number, push to stack (if it is “-“ before it, push -1*num to stack).
+- continue, find “*” or “/“, pop the previous number, calculate it, and push the calculated result into stack.
+- finally clean up the stack by adding up all the rest number there
+
 ## Heap
 ### Default
+
+
+#### [LC] 23. Merge k Sorted Lists
+https://leetcode.com/problems/merge-k-sorted-lists/
+
+heap
+
 #### [LC] 253. Meeting Rooms II
 https://leetcode.com/problems/meeting-rooms-ii/
 
@@ -1028,14 +1169,71 @@ https://leetcode.com/problems/lru-cache/
 - option1: linkedhashmap 
 - option2: custome class to define double-linked-list and hashmap
 
+
+#### [LC] 295. Find Median from Data Stream
+https://leetcode.com/problems/find-median-from-data-stream/
+
+the followings come from: https://www.sohu.com/a/363477662_355142
+
+让用堆替换朴素方法中的列表：
+
+最小堆保存较大的一半元素，最小值位于根元素
+最大堆保存较小的一半元素，最大值位于根元素
+现在，可以把传入的整数与最小堆根元素进行比较，并加到对应的一半数列中。接下来，如果插入后两个堆大小差距大于1，可以为堆进行重新平衡，让差距最大等于1：
+
+ifsize(minHeap)> size(maxHeap)+ 1:
+
+移除minHeap根元素,插入maxHeap
+
+ifsize(maxHeap)> size(minHeap)+ 1:
+
+移除maxHeap根元素,插入minHeap
+
+通过这种方法，如果得到的两个堆大小相等，可以中位数等于两个堆的根元素平均值。否则，元素多的那个堆，其根元素就是中位数。
+
+#### [LC] 341. Flatten Nested List Iterator
+https://leetcode.com/problems/flatten-nested-list-iterator/
+
+- option1: using recursion
+  - Constructor: O(N + L)
+  - next(): O(1)
+  - hasNext(): O(1)
+  - Space complexity : O(N + D) where D is the nesting depth
+```
+    private void flattern(List<NestedInteger> nestedList) {
+        if (nestedList == null) {
+            return;
+        }
+        for (NestedInteger ni : nestedList) {
+            if (ni.isInteger()) {
+                nums.add(ni.getInteger());
+            } else {
+                flattern(ni.getList());
+            }
+        }
+    }
+```
+
+- option2: using 2 stack
+
 #### [LC] 380. Insert Delete GetRandom O(1)
 https://leetcode.com/problems/insert-delete-getrandom-o1/
 
 NOTE:
-- to achieve random index to val mapping in `O(1)`, we need ArrayList
-- to achieve checking val existence in `O(1)`, we need HashMap
+- to achieve random index to val mapping in `O(1)`, we need `ArrayList`
+- to achieve checking val existence in `O(1)`, we need `HashMap`
 - to achieve delete arbitrary index from ArrayList, we need to swap val with last element in list, and then remove last element from list
 - always update map when doing list operation (add/delete/set)
+
+#### [LC] 381. Insert Delete GetRandom O(1) - Duplicates allowed
+https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/
+
+Similar like `380. Insert Delete GetRandom O(1)`, when deleting element, swap with end element to achieve `O(1)`
+
+```
+ArrayList<Integer> lst;
+    HashMap<Integer, Set<Integer>> idx;
+```
 
 #### [LC] 528. Random Pick with Weight
 https://leetcode.com/problems/random-pick-with-weight/
@@ -1061,6 +1259,26 @@ When using random function, need to have brackets for both `(int)` and `(Math.ra
     }
 ```
 
+#### [LC] 588. Design In-Memory File System
+https://leetcode.com/problems/design-in-memory-file-system/
+
+- using TreeMap since the question wants to return file/directories in lexicographic order.
+- be careful when using `s.slpit("/")`, the first element in the array would be empty string `""`, need to skip this one
+
+#### [LC] 729 My Calendar I
+https://leetcode.com/problems/my-calendar-i/
+
+- Using TreeMap
+  - key is start of interval, value is the end of interval
+  - then check the ordered previous and next interval of the pending interval by `ceilingKey(K key)` and `floorKey(K key)`
+- Time Complexity: O(NlogN),where N is the number of events booked. For each new event, we search that the event is legal in O(logN) time, then insert it in O(1) time.
+- Space Complexity: O(N), the size of the data structures used.
+
+#### [LC] 731. My Calendar II
+https://leetcode.com/problems/my-calendar-ii/
+
+- Using two treemap here, one to store general meetings, another one to store overalapped areas as new intervals
+ 
 ## Math
 ### Default
 
@@ -1083,6 +1301,11 @@ Generally time complexity is `O(m*n*k)`, but the followup is to handle super lar
 - another way is to use Strassen algorithm, to use some "plus" to replace "multiple", since multiple is more expensive 
   - https://sites.google.com/a/chaoskey.com/algorithm/02/03
 
+#### [LC] 537. Complex Number Multiplication
+https://leetcode.com/problems/complex-number-multiplication/
+
+- split by "+" or "i" using `String[] x = a.split("\\+|i");`
+- split by space using `String[] x = a.split("\\s+");`
 
 ## Trie/Prefix Tree/Digital Tree
 
@@ -1098,6 +1321,11 @@ The time complexity is `O(m)`, in which `m` means the length of the word.
 Comparison with HashTable
 - HashTable is not ideal when all searching keys have common prefix
 - HashTable may have confliction, which also result in O(n)
+
+#### [LC] 781. Rabbits in Forest
+https://leetcode.com/problems/rabbits-in-forest/
+
+pending baby
 
 ### Default
 https://en.wikipedia.org/wiki/Trie
@@ -1218,3 +1446,77 @@ NOTE:
     }
 ```
 
+#### [LC] 648. Replace Words
+https://leetcode.com/problems/replace-words/
+
+- use trie
+- Time Complexity: O(N) where N is the length of the sentence. Every query of a word is in linear time.
+- Space Complexity: O(N), the size of our trie.
+
+## MiniMax
+### Default
+
+So far 5 questions on LC:
+
+https://blog.csdn.net/weixin_30755709/article/details/98892479
+
+https://www.liuin.cn/2018/06/30/LeetCode%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94Minimax%E7%AE%97%E6%B3%95/
+
+#### [LC] 486 Predict the Winner  
+https://leetcode.com/problems/predict-the-winner/
+
+If the current turn belongs to, say Player 1, we pick up an element, say xx, from either end, and give the turn to Player 2. Thus, if we obtain the score for the remaining elements(leaving xx), this score, now belongs to Player 2. Thus, since Player 2 is competing against Player 1, this score should be subtracted from Player 1's current(local) score(xx) to obtain the effective score of Player 1 at the current instant.
+
+Similar argument holds true for Player 2's turn as well i.e. we can subtract Player 1's score for the remaining subarray from Player 2's current score to obtain its effective score. By making use of this observation, we can omit the use of turnturn from winner to find the required result by making the slight change discussed above in the winner's implementation.
+
+While returning the result from winner for the current function call, we return the larger of the effective scores possible by choosing either the first or the last element from the currently available subarray. Rest of the process remains the same as the last approach.
+
+Now, in order to remove the duplicate function calls, we can make use of a 2-D memoization array, memomemo, such that we can store the result obtained for the function call winner for a subarray with starting and ending indices being ss and ee ] at memo[s][e]memo[s][e]. This helps to prune the search space to a great extent.
+
+
+```
+    public boolean PredictTheWinner(int[] nums) {
+        Integer[][] memory = new Integer[nums.length][nums.length];
+        return getMaxScoreDiff(nums, 0, nums.length - 1, memory) >= 0;
+    }
+    
+    // find max diff for (player1_score - player2_score)
+    public int getMaxScoreDiff(int[] nums, int i, int j, Integer[][] memory) {
+        if (memory[i][j] != null) {
+            return memory[i][j];
+        }
+        if (i == j) {
+            memory[i][j] = nums[i];
+            return nums[i];
+        }
+
+        int maxScoreDiff = Math.max(
+            nums[i] - getMaxScoreDiff(nums, i + 1, j, memory), 
+            nums[j] - getMaxScoreDiff(nums, i, j - 1, memory)
+        );
+        memory[i][j] = maxScoreDiff;
+        return maxScoreDiff;
+    }
+```
+
+
+## BitWise
+### Default
+#### 201. Bitwise AND of Numbers Range
+https://leetcode.com/problems/bitwise-and-of-numbers-range/
+
+- option1: stupid way: `Integer.toBinaryString(int i)`
+- option2:
+
+```
+  public int rangeBitwiseAnd(int m, int n) {
+    int shift = 0;
+    // find the common 1-bits
+    while (m != n) { // remove all different bits in m and n, until they are the same (so that 1 & 1 or  0 & 0 would have no change)
+      m = m >>1; 
+      n = n >>1;
+      ++shift;
+    }
+    return m << shift; // now shift back
+  }
+```
