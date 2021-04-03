@@ -130,15 +130,6 @@ https://leetcode.com/problems/find-all-anagrams-in-a-string/solution/
 - option1: hashmap + sliding window, put dict word into hashmap1, then move left and right pointers to find next dict.legnth substring, and increment/decrement count in hashmap2, compare hashmap1 and hashmap2
 - option2: array + sliding window, since it only has lower case letter, hash map can be replaced by 26-length array
 
-#### [LC] 560. Subarray Sum Equals K
-https://leetcode.com/problems/subarray-sum-equals-k/
-
-Be careful
-- preSum length is nums length + 1
-- initially map needs to map.put(k, 1) for preSum[0]
-- if multiple occurence of num + k, count all of them
-- check if preSum exists in map before adding `preSum[i] + k` to map!!
-
 
 #### [LC] 581 Shortest Unsorted Continuous Subarray   
 - option1 sort: sort in another array, then compare different num 
@@ -235,6 +226,21 @@ When using recusion, be careful to check both `root == null` and `root.left == n
 
 When using iterative, prepare another stack to remember the current sum.
 
+#### [LC] 113. Path Sum II
+https://leetcode.com/problems/path-sum-ii/
+
+when using backtrack, remember to remove last element in path when return to previous stack.
+
+#### [LC] 124. Binary Tree Maximum Path Sum
+https://leetcode.com/problems/binary-tree-maximum-path-sum/
+
+- using the same idea like kadane's algorithm
+  - maintain a currentMaxSum, and then compare with current node, we can choose to only use current node (by throwing away currentMaxSum), or addup current node
+- but this question is a bit different, not like kadane's algorithm which has only one direction, here we have two directions
+- `currentMaxSum = max(root, root+left, root+right)` -- we can return it to parent stack in dfs 
+- `totalMaxSum = max(totalMaxSum, currentMaxSum, root+left+right)` -- we need to check whether we can directly use `root+left+right`
+
+
 #### [LC] 144. Binary Tree Preorder Traversal
 https://leetcode.com/problems/binary-tree-preorder-traversal/
 
@@ -263,6 +269,11 @@ If left or right exists, return left or right;
 
 NOTE: the time complexity is O(n) since it traverse all nodes, but its space complexity is also O(n), since even though there is no heap space, the stack space would be O(n) if it is a skewed tree (like the height of the tree equals to number of nodes).
 
+
+#### [LC] 270. Closest Binary Search Tree Value
+https://leetcode.com/problems/closest-binary-search-tree-value/
+
+
 #### [LC] 314. Binary Tree Vertical Order Traversal
 https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 
@@ -273,6 +284,13 @@ Define a new TreeNode to record coordinate x and y, then using TreeMap to sort t
 ```
 TreeMap<Integer, List<Integer>> orderedMap = new TreeMap<>((a,b) -> {return a-b;});
 ```
+
+#### [LC] 426. Convert Binary Search Tree to Sorted Doubly Linked List
+https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+
+- set a dummyHead node first, then use a global variabl `prev` to build the double connection with inOrder node
+- be careful when we only have one node in the tree, the one node needs to have circle left/right to itself
+
 
 #### [LC] 515. Find Largest Value in Each Tree Row
 https://leetcode.com/problems/find-largest-value-in-each-tree-row/
@@ -293,6 +311,9 @@ NOTE:
   - if we count the operation of `comparison`, it would still be O(n^2), since we do the `findMaxNum` n(n+1)/2 = n^2 times
  - space complexity: for stack space, average is O(logn), worst case is O(n) for skewed list
 2. Maybe no need to use a custom class as Result in `findMaxNum`, the `maxPos` could reflect `maxValue`
+
+#### [LC] 938. Range Sum of BST
+https://leetcode.com/problems/range-sum-of-bst/
 
 #### [LC] 987. Vertical Order Traversal of a Binary Tree
 https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
@@ -469,6 +490,15 @@ When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `r
 https://leetcode.com/problems/expression-add-operators/
 
 backtracking for all possibilities.
+
+#### [LC] 301. Remove Invalid Parentheses
+https://leetcode.com/problems/remove-invalid-parentheses/
+
+1. find num of invalid left and right parenthesis
+2. do backtrack for all char in string, try to remove "(" when left>0 (or remove ")" when right>0)
+3. inside backtrack method, if `left==0 && right==0 && isValid(s)`, add the string to result set
+  - be careful the result could be duplicated, so we can use HashSet to dedup (an improvement here is to try only removing the last bracket once for consecutive ones)
+  - to remove a char in string, use `s.substring(0,i) + s.substring(i+1, s.length())`
 
 #### 399. Evaluate Division
 https://leetcode.com/problems/evaluate-division/
@@ -704,6 +734,16 @@ https://leetcode.com/problems/maximum-subarray/
 
 [Kadane's algorithm](https://leetcode.com/problems/maximum-subarray/discuss/369797/kadanes-algorithm-with-detailed-explanation-and-example-python)
 
+```
+int currentMax = nums[0]
+for (int i = 1; i < nums.length; i++) { // NOTE: start from 2nd element
+    // if we have to use nums[i], do we include previous accumulated result or just throw them away?
+    currentMax = Math.max(currentMax + nums[i], nums[i]);
+    // maxInTotal only records the max profit we have so far
+    maxInTotal = Math.max(maxIfWeUseThisElement, maxInTotal);
+}
+```
+
 #### [LC] 62. Unique Paths
 https://leetcode.com/problems/unique-paths/
 
@@ -776,6 +816,20 @@ Using the same recursion way as 139, but add a beautiful step to append current 
 NOTE:
 -  using hashmap computeIfAbsent: `allWordPos.computeIfAbsent(i, words-> new ArrayList<String>());`, if key `i` does not exist, put i and new object there
 
+#### [LC] 152. Maximum Product Subarray
+https://leetcode.com/problems/maximum-product-subarray/
+
+Similar like `53. Maximum Subarray`, but we cannot use Kadane's algorithm directly, since the product could have positive and negative
+- we can extend Kadane's algorithm, using `int[][] dp = new int[nums.length][2]` to record both max (positive) and min (negative) value, and the state trainsition function could be:
+
+```
+        // dp[i][0] = max (dp[i-1][0] * nums[i], dp[i-1][1]*nums[i], nums[i])
+        // dp[i][1] = min (dp[i-1][0] * nums[i], dp[i-1][1]*nums[i], nums[i])
+``` 
+
+An improvement to reduce space complexity:
+- we don't need to using array to record all `dp[i][0]` and `dp[i][1]`, considering the dp[i] is only related with dp[i-1], we can using two int numbers to represent current max and min value, which makes the time complexity drops to O(1)
+
 #### [LC] 174. Dungeon Game
 
 https://leetcode.com/problems/dungeon-game/
@@ -847,33 +901,6 @@ https://leetcode.com/problems/search-in-rotated-sorted-array/
 
 recover the array to be ascending.
 
-#### [LC] 34. Find First and Last Position of Element in Sorted Array
-https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
-
-find leftmost matched
-```
-        while(left < right) {
-            int mid = (left + right)/2; // try find mid close to left
-            if (nums[mid] >= target) {
-                right = mid; // find the leftMost
-            } else {
-                left = mid + 1;
-            }
-        }
-```
-find rightmost matched
-
-```
-        while(left < right) {
-            int mid = (left + right + 1)/2; // try find mid close to right
-            if (nums[mid] <= target) {
-                left = mid; // find the rightmost
-            } else {
-                right = mid - 1;
-            }
-        }
-```
-
 #### [LC] 49. Group Anagrams
 https://leetcode.com/problems/group-anagrams/
 
@@ -936,6 +963,11 @@ https://leetcode.com/problems/first-unique-character-in-a-string/
 
 Easy question, 1st round to go through all characters and count each of them, 2nd round to find the 1st one with count 1;
 
+#### [LC] 953. Verifying an Alien Dictionary
+https://leetcode.com/problems/verifying-an-alien-dictionary/
+
+Using hashmap to store the dictionary.
+
 #### [LC] 1606. Find Servers That Handled Most Number of Requests
 
 https://leetcode.com/problems/find-servers-that-handled-most-number-of-requests/
@@ -995,14 +1027,37 @@ https://leetcode.com/problems/course-schedule/
 #### [LC] 210. Course Schedule II
 https://leetcode.com/problems/course-schedule-ii/
 
+#### [LC] 445. Add Two Numbers II
+https://leetcode.com/problems/add-two-numbers-ii/
+
+Use stack to reverse list and finally reverse it back.
+
 ## String
 ### Default
+
+#### [LC] 43. Multiply Strings
+https://leetcode.com/problems/multiply-strings/
+
+- use `stringBuilder.insert(index, char)` to append character to the front
+- be careful when encounterting 0, we can use shortcut
+
+#### [LC] 67. Add Binary
+https://leetcode.com/problems/add-binary/
+
+- For String, StringBuffer, and StringBuilder, charAt() is a constant-time operation O(1).
+- For StringBuffer and StringBuilder, deleteCharAt(), insert(index,char) and reverse() are linear-time operation O(n).
+
+#### [LC] 415. Add Strings
+https://leetcode.com/problems/add-strings/
+
+- Return the result by `stringBuilder.reverse().toString()`
 
 #### [LC] 616. Add Bold Tag in String
 https://leetcode.com/problems/add-bold-tag-in-string/
 
-It is the same as   
-[LC] 758. Bold Words in String  
+It is the same as `758. Bold Words in String `
+
+#### [LC] 758. Bold Words in String  
 https://leetcode.com/problems/bold-words-in-string/
 
 
@@ -1065,6 +1120,11 @@ https://leetcode.com/problems/basic-calculator-ii/
 - continue, find “*” or “/“, pop the previous number, calculate it, and push the calculated result into stack.
 - finally clean up the stack by adding up all the rest number there
 
+#### [LC] 1249. Minimum Remove to Make Valid Parentheses
+https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+
+Using stack to check valid parenthese pairs, and using a hashset to record valid parentheses index, then use another for loop and StringBuilder to build the new string.
+
 ## Heap
 ### Default
 
@@ -1117,6 +1177,11 @@ Then traverse map like:
 ```
 for (Map.Entry<Character, Integer> entry : map.entrySet()) {}
 ```
+
+#### [LC] 973. K Closest Points to Origin
+https://leetcode.com/problems/k-closest-points-to-origin/
+
+Be careful when traverse heap, do not use `for (int i=0; i<heap.size();i++)`, since after you do `heap.poll()` the `heap.size()` would change -- set the heap size before the for loop!!!
 
 ## Array
 ### Default
@@ -1279,6 +1344,13 @@ https://leetcode.com/problems/my-calendar-ii/
 
 - Using two treemap here, one to store general meetings, another one to store overalapped areas as new intervals
  
+
+#### [LC] 1570. Dot Product of Two Sparse Vectors
+https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
+
+- option1: define a class to store num-index pairs for non-0 nums in LinkedList 
+- option2: using HashMap to store index-num pairs for non-0 nums
+
 ## Math
 ### Default
 
@@ -1292,6 +1364,11 @@ https://leetcode.com/problems/factorial-trailing-zeroes/
     // option4: only count 5, and not traverse 1 to n, traverse at 5 interval
     // option5: count how many "n /= 5" exists, result in O(logn)
 ```
+
+#### [LC] 273. Integer to English Words
+https://leetcode.com/problems/integer-to-english-words/
+
+Not very hard, just divide by billion/million/thousand, and then process less than 1000 situation.
 
 #### [LC] 311. Sparse Matrix Multiplication
 https://leetcode.com/problems/sparse-matrix-multiplication/
@@ -1307,6 +1384,11 @@ https://leetcode.com/problems/complex-number-multiplication/
 - split by "+" or "i" using `String[] x = a.split("\\+|i");`
 - split by space using `String[] x = a.split("\\s+");`
 
+#### [LC] 781. Rabbits in Forest
+https://leetcode.com/problems/rabbits-in-forest/
+
+Brain teasers.
+
 ## Trie/Prefix Tree/Digital Tree
 
 Trie is used in following scenarios:
@@ -1321,11 +1403,6 @@ The time complexity is `O(m)`, in which `m` means the length of the word.
 Comparison with HashTable
 - HashTable is not ideal when all searching keys have common prefix
 - HashTable may have confliction, which also result in O(n)
-
-#### [LC] 781. Rabbits in Forest
-https://leetcode.com/problems/rabbits-in-forest/
-
-pending baby
 
 ### Default
 https://en.wikipedia.org/wiki/Trie
@@ -1426,6 +1503,14 @@ class Trie {
 }
 ```
 
+#### [LC] 211. Design Add and Search Words Data Structure
+https://leetcode.com/problems/design-add-and-search-words-data-structure/
+
+Since it supports "." to match any character, we can make search() a recursive function to try every trie.children when seeing "."
+
+- Time complexity: `O(M)` for the "well-defined" words without dots, where M is the key length, and N is a number of keys, and `O(N*26 ^ M)` for the "undefined" words. 
+- Space complexity: `O(1)` for the search of "well-defined" words without dots, and up to `O(M)` for the "undefined" words, to keep the recursion stack.
+
 #### [LC] 212. Word Search II
 https://leetcode.com/problems/word-search-ii/
 
@@ -1520,3 +1605,306 @@ https://leetcode.com/problems/bitwise-and-of-numbers-range/
     return m << shift; // now shift back
   }
 ```
+
+## BinarySearch
+### Default
+
+#### [LC] 4. Median of Two Sorted Arrays
+https://leetcode.com/problems/median-of-two-sorted-arrays/
+
+Try to find the partition in two arrays, that makes nums in left section (both a and b) equals to nums in right section (both a and b).  
+NOTE: the partition could be in different position in a or b, but the total num must be the same.  
+e.g.  
+When total number is odd
+- a has 5 nums, b has 8 nums, total is 13 nums 
+  - --> expected median is 13/2=6th num 
+    - --> the left-hand side should have 6 + 1 = 7 nums, and right-hand side should have 6
+- if we put partition in a by 5/2 = 2 (in front of a2), then we have 2 nums in left-hand side
+- then the partiion in b must be 7 - 2 = 5 (in front of b5) 
+
+```
+(7 nums)         (6 nums)   
+a0 a1          | a2 a3 a4   
+b0 b1 b2 b3 b4 | b5 b6 b7   
+
+now check if a1<=b5 && b4<=a2, if yes, then we found the median by max(a1,b4)  
+if not, then check if we need to move partition in a to left or right, and change b correspondingly
+```
+
+When total number is even
+- a has 6 nums, b has 8 nums, total is 14 nums
+  - --> expected median is average of 14/2 = 7th and 7+1=8th nums
+    - --> the left-hand side should have 7 nums, and right-hand side should also have 7
+- if we put partion in a by 6/3=3, then we have 3 in left-hand side
+- then the partition in b must be 7 - 3 = 4 (in front of b4) 
+
+```
+(7 nums)      (7 nums)    
+a0 a1 a2    | a3 a4 a5  
+b0 b1 b2 b3 | b4 b5 b6 b7   
+
+now check if a2<=b4 && b3<=a3, if yes, then we found the median by avg (max(a2,b3), min(a3,b4))
+```
+
+For a corner case that we moved partition in a to the end of array  
+
+```
+If total number is even:
+
+(7 nums)            (7 nums)   
+a0 a1 a2 a3 a4 a5 | MAX_VALUE  
+b0                | b1 b2 b3 b4 b5 b6 b7  
+
+median = avg(max(a5, b0), min(MAX_VALUE, b1))
+
+we set the empty right-hand set of a as MAX_VALUE, and vice versa for empty left-hand-side emtpy set which should be MIN_VALUE
+
+(7 nums)               (7 nums)  
+MIN_VALUE            | a0 a1 a2 a3 a4 a5  
+b0 b1 b2 b3 b4 b5 b6 | b7  
+
+median = avg(max(MIN_VALUE, b0), min(a0, b7))
+
+If total number is odd:
+
+(7 nums)         (6 nums)  
+a0 a1 a2 a3 a4 | MAX_VALUE  
+b0 b1          | b2 b3 b4 b5 b6 b7   
+
+median = max(a4, b1)
+
+(7 nums)                (6 nums)  
+MIN_VALUE             | a0 a1 a2 a3 a4   
+b0 b1 b2 b3 b4 b5 b6  | b7  
+
+median = max(MIN_VALUE, b6)
+```
+
+#### [LC] 34. Find First and Last Position of Element in Sorted Array
+https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+find leftmost matched
+```
+        while(left < right) {
+            int mid = (left + right)/2; // try find mid close to left
+            if (nums[mid] >= target) {
+                right = mid; // find the leftMost
+            } else {
+                left = mid + 1;
+            }
+        }
+```
+find rightmost matched
+
+```
+        while(left < right) {
+            int mid = (left + right + 1)/2; // try find mid close to right
+            if (nums[mid] <= target) {
+                left = mid; // find the rightmost
+            } else {
+                right = mid - 1;
+            }
+        }
+```
+
+#### [LC] 270. Closest Binary Search Tree Value
+https://leetcode.com/problems/closest-binary-search-tree-value/
+
+Binary search in a BST is very easy:
+
+```
+        while(root != null) {
+            if (root.val <= target) {
+                // do something
+                root = root.right;
+            } else {
+                // do something
+                root = root.left;
+            }
+        }
+```
+
+#### [LC] 278. First Bad Version
+https://leetcode.com/problems/first-bad-version/
+
+NOTE!!!
+- use `mid = left + (right - left) / 2` instead of `mid = (left + right) / 2`, since when it's over Integer.MAX_VALUE, mid becomes negative due to overflow, that will result in calling the API a lot of times without getting the actual result
+
+#### [LC] 1428. Leftmost Column with at Least a One
+https://leetcode.com/problems/leftmost-column-with-at-least-a-one/
+
+An improvement on the binary searching function: if at row i we found leftmost 1 at j, then we can check `(i+1,j)` directly 
+- if `(i+1,j)` is 0, then we can skip this row and move to `i+2`
+- if `(i+1,j)` is 1, then do binary search at row `i+1` from 0 to j
+
+
+#### [LC] 1539. Kth Missing Positive Number
+https://leetcode.com/problems/kth-missing-positive-number/
+
+Find left-most by binary search. 
+
+## PrefixSum-Product
+### Default
+
+#### [LC] 238. Product of Array Except Self
+https://leetcode.com/problems/product-of-array-except-self/
+
+Using array get prefix-product left to right, then using another array from right to left, the `result[i] = leftToRight[i] * rightToLeft[i+1]`.
+- an improvement here is to not use array for rightToLeft, we can calculate it on the fly when traversing from right to left (after we store leftToRight array in result array).
+
+#### [LC] 560. Subarray Sum Equals K
+https://leetcode.com/problems/subarray-sum-equals-k/
+
+Since the number in array could be negative or repeated:  
+
+- using prefixSum
+- using hashmap to store prefixSum and its count
+- check in hashmap if `prefixSum-K` exists
+
+## Greedy
+### Default
+#### [LC] 621. Task Scheduler
+https://leetcode.com/problems/task-scheduler/
+
+```
+if we only consider the char with max frequence:
+A4 B4 C3 D3 E2
+n=3
+A _ _ _ A _ _ _ A _ _ _ A 
+potentially we have max (4 - 1) * 3 = 9 idle slots, we need to fill the slots by other char
+
+check B: B can contribute 3 to fill slots (B has one more left, but that can be executed after last A, so no worry)
+check C: C can contribute 3
+check D: D can contribute 3
+check E: E can contirbute 2
+
+so in total we have 9 - 3 - 3 - 3 - 2 = -2 idel slots left, it means we can fill all idle, and the rest chars can be executed after last A by one permutation
+
+the total unit of time we need would be max(0, -2) + tasks.length = 16
+```
+
+
+## Union-Find / Disjoint-Set
+https://segmentfault.com/a/1190000022952886
+
+### Default
+Though most of UnionFind problem can be resolved by DFS, it is still good to remember this data structure, so that you don't need to convert each question into a graph problem.
+
+NOTE:
+- After all `union()` are called, we still need to call `find()` to traverse the DJS, since at the moment all `union()` are called, not every direct parent is the final parent.
+- UnionFind would not maintain the same graph structure, it only maintains parent-to-child structure
+
+
+Why not update rank when doing compression?
+- rank is not the height of the tree, it's more like an upper bound (can be proved by `inverse Ackermann function`); the rank is allowed to get out of sync with the depth.
+- https://stackoverflow.com/questions/25317156/why-path-compression-doesnt-change-rank-in-unionfind
+
+What are the time complexity?
+- after "path compression" and "merge by rank", disjoint-set can achieve `O(log* n)`
+  - `log* n` is called [Iterated logarithm](https://en.wikipedia.org/wiki/Iterated_logarithm) which is much faster than general `O(logn)` and a bit slower than `O(1)`, usually we treat it as `amortized O(1)`
+- another way to describe the time complexity is to call it `O(α(n))` where `α` points to [`inverse Ackermann function`](https://en.wikipedia.org/wiki/Disjoint-set_data_structure)
+  - in this universe, `α(n) < 5 `, that is why `O(α(n))` almost equal to `O(1)`
+
+Template:  
+```
+class DJS { // disjoint-set
+  int[] parent;
+  int[] rank; // relative height of the parent node
+  public int disjointCount = 0;
+  public DJS(int size) {
+      parent = new int[size];
+      for (int i = 0; i < size; i++) {
+          parent[i] = i; // initialize parent of each node to be itself
+      }
+      rank = new int[size]; // initialize rank array
+      disjointCount = size; // initialize disjointCount to be size
+  }
+
+  public int find(int x) {
+      if (x != parent[x]) {
+          parent[x] = find(parent[x]); // path compression 
+      }
+      return parent[x];
+  }
+  
+  public boolean union(int x, int y) { // NOTE: everything is done at parentX/parentY level
+      int parentX = find(x);
+      int parentY = find(y);
+      if (parentX == parentY) { 
+          return true; // already unioned
+      } else {
+          if (rank[parentX] < rank[parentY]) { // union x to y
+              parent[parentX] = parentY;
+          } else if (rank[parentX] > rank[parentY]) { // union y to x
+              parent[parentY] = parentX;
+          } else {
+              parent[parentY] = parentX; // can choose either x or y here
+              rank[parentX]++; // since we choose x as parent, increment x
+          }
+          disjointCount--;
+          return false; // new union is built
+      }
+  }
+```
+
+Actually the template can also be implemented by HashMap like 
+- `HashMap<String, String> parent`
+- `HashMap<String, Integer> rank` 
+
+As long as the key and value of `parent` is the same, we can even define a custom class `Node` to make it  
+- `HashMap<Node, Node> parent`
+- `HashMap<Node, Integer> rank`
+
+```
+class DJS {
+    public HashMap<String, String> parent = new HashMap<>();
+    public HashMap<String, Integer> rank = new HashMap<>();
+    public int disjointSize = 0;
+    public DJS(List<List<String>> accounts) {
+        for (List<String> account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                String email = account.get(i);
+                parent.put(email, email); // initialize parent
+                rank.put(email, 0); // initialize rank
+            }
+        }
+        disjointSize = parent.size(); // initialize disjointSize
+    }
+    public String find(String x) {
+        if (parent.get(x).equals(x)) {
+            return x; // find parent email
+        } else {
+            parent.put(x, find(parent.get(x))); // compression
+            return parent.get(x);
+        }
+    }
+    public boolean union(String x, String y) {
+        String parentX = find(x);
+        String parentY = find(y);
+        if (parentX.equals(parentY)) {
+            return true; // already unioned
+        } else {
+            if (rank.get(parentX) < rank.get(parentY)) {
+                parent.put(parentX, parentY);
+            } else if (rank.get(parentX) > rank.get(parentY)) {
+                parent.put(parentY, parentX);
+            } else {
+                parent.put(parentY, parentX);
+                rank.put(parentX, rank.get(parentX) + 1);
+            }
+            return false;
+        }
+    }
+}
+```
+
+#### [LC] 684. Redundant Connection
+https://leetcode.com/problems/redundant-connection/
+
+Be careful that in `union()` method, everythign is done at parentX/parentY level.
+
+#### [LC] 721. Accounts Merge
+https://leetcode.com/problems/accounts-merge/
+
+Be careful that after all `union()` are called, we cannot directly use `parent[x]` since the parent may not be the finaly parent, we need to use `find(x)` to get parent when traversing.
+

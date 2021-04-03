@@ -14,6 +14,48 @@ import java.util.LinkedList;
  */
 class Solution {
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummyHead = new ListNode(0);
+        ListNode pointer = dummyHead;
+        int carryOver = 0;
+        while(l1 != null || l2 != null) {
+            if (l1 == null) {
+                while(l2 != null) {
+                    int num = l2.val + carryOver;
+                    l2.val = num % 10;
+                    carryOver = num / 10;
+                    pointer.next = l2;
+                    l2 = l2.next;
+                    pointer = pointer.next;
+                    pointer.next = null;
+                }
+            } else if (l2 == null) {
+                while(l1 != null) {
+                    int num = l1.val + carryOver;
+                    l1.val = num % 10;
+                    carryOver = num / 10;
+                    pointer.next = l1;
+                    l1 = l1.next;
+                    pointer = pointer.next;
+                    pointer.next = null;
+                } 
+            } else {
+                int num = l1.val + l2.val + carryOver;
+                l1.val = num % 10;
+                carryOver = num / 10;
+                pointer.next = l1;
+                l1 = l1.next;
+                l2 = l2.next;
+                pointer = pointer.next;
+                pointer.next = null;
+            }
+        }
+        if (carryOver > 0) {
+            pointer.next = new ListNode(carryOver);
+        }
+        return dummyHead.next;
+    }
+    
+    public ListNode addTwoNumbers_2021_03_30(ListNode l1, ListNode l2) {
         // [2,1,3]
         // [3,2,6]
         //  5 3 9
