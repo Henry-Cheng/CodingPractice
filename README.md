@@ -173,6 +173,10 @@ NOTE:
 - using long here since Integer.MAX_VALUE is 2.1*10^9, but A[i] * A.length < 5*10^9
 - prefixSum[0] = 0; // set it to be 0, which means sum before index 0 is 0
 
+#### [LC] 1004. Max Consecutive Ones III
+https://leetcode.com/problems/max-consecutive-ones-iii/
+
+
 
 ## Tree
 ### Default
@@ -274,6 +278,14 @@ NOTE: the time complexity is O(n) since it traverse all nodes, but its space com
 https://leetcode.com/problems/closest-binary-search-tree-value/
 
 
+#### [LC] 297. Serialize and Deserialize Binary Tree
+https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
+
+- seralize with preOrder
+  - using "," as delimiter and "#" for null node
+- deserialize with queue to store splitted string by ","
+  - be careful if the original root is null, array[0] is ""
+
 #### [LC] 314. Binary Tree Vertical Order Traversal
 https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 
@@ -291,12 +303,69 @@ https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked
 - set a dummyHead node first, then use a global variabl `prev` to build the double connection with inOrder node
 - be careful when we only have one node in the tree, the one node needs to have circle left/right to itself
 
+#### [LC] 449. Serialize and Deserialize BST
+https://leetcode.com/problems/serialize-and-deserialize-bst/
+
+It can use the same solution as in `297. Serialize and Deserialize Binary Tree`, but it could be further improved to compress by bits
+- considering each char in Java contains 2 bytes (in C a char is 1 byte), so that for a 32-bit integer, we only need 2 char to present it (aka 4 bytes or 32 bits)
+  - if an integer is 1234, to convert into String it would be "1234" which occupies 4 char, but actually 2 char is enough to present them
+- since we used 2 char to present int, theer is no room to tell whether it is null or not, so we need another char here to present whether it is null
+- there is no need to use delimiter either, since for the encoded string, every 3 char would represent a node --> char[0] is top 16 bits, char[1] is bottom 16 bit, char[2] means whether it is null
+- it cannot guarantee the length is smaller, but it saves time to convert integer to string
+
+```
+    private static String intToString(int value) {
+        char[] chars = new char[2];
+        /**
+          * since an integer is 32-bit, we shift right 16 bits, so that the top 16 bits could be placed at the bottom 16 bit
+          * then we store this integer into char, only the bottom 16 bits would be stored in char
+          * 0xffff is 1111...1 (there are 16 1 in total), and `& 0xffff` means convert it into a hex number
+        **/
+        chars[0] = (char) ((value >> 16) & 0xffff);
+        /**
+          * if we directly store integer into char, only the bottom 16 bits would be stored
+        **/ 
+        char[1] = value;
+        return new String(chars); // char[] to String
+    }
+```
+
+```
+    private static int stringToInt(String str) {
+        char[] array = str.toCharArray();
+        char top16Bits = array[0];
+        char bottom16Bits = array[1];
+
+        int result = 0;
+        result = (int) top16Bits; 
+        result = (result << 16) + (int) bottom16Bits;
+
+        return result;
+    }
+```
 
 #### [LC] 515. Find Largest Value in Each Tree Row
 https://leetcode.com/problems/find-largest-value-in-each-tree-row/
 
 Be careful when using ++variable, it would addup the variable itself! It's better to use variable + 1 most of the time;
 
+#### [LC] 543. Diameter of Binary Tree
+https://leetcode.com/problems/diameter-of-binary-tree/
+
+Be careful that the longest path may not pass the root.  
+e.g.
+```
+    longest path may not pass root
+        1
+     2      3
+         4     5
+        6  7  8 9
+      10         11
+
+```
+
+- Using Kadane's idea, maintain a gloable variable maxPath, inside each recursive, check whether we want to use the current root
+- we can record # of nodes in path, but final result needs # of edges, so finally need to minus 1 to get number of edges
 
 #### [LC] 617. Merge Two Binary Trees
 https://leetcode.com/problems/merge-two-binary-trees/
@@ -350,6 +419,52 @@ This can also be a backtracking problem which is faster.
 https://leetcode.com/problems/swap-nodes-in-pairs/
 
 Handle the first 2 nodes, call recursion function on 3rd ndoe, then point 1st node next to recursion result of 3rd node.  
+
+#### [LC] 31. Next Permutation
+https://leetcode.com/problems/next-permutation/
+
+It's not a recursive problem just need to understand what is the next minimum permutation:
+
+```
+        example 1
+                        j-1  j
+               i  i+1     
+            6  2   5  4  3   1
+        --> 6 [3]  5  4 [2]  1
+        --> 6  3  [1  2  4   5]
+        
+        
+        example2
+                  j-1 j
+               i  i+1
+            6  4   5  3 2 1
+        --> 6 [5] [4] 3 2 1
+        --> 6  5  [1  2 3 4]
+```
+
+1. find the last ascending pair, like the `2~5` in example 1 (if we lookup from right to left, then it is the first ascending pair)
+2. starting from `i+1`, find the next minimum num `j-1` that is strictly larger than nums[i], be careful it cannot be `>=`, must be `>` !!
+3. swap `i` and `j-1`
+4. now the `i+1 ~ nums.length-1` is already in descending order, reverse it
+
+```
+//code to swap -- it is not that hard
+private void swap(int[] nums, int a, int b) {
+    int tmp = nums[a];
+    nums[a] = nums[b];
+    nums[b] = tmp;
+}
+```
+
+```
+// code to reverse -- it is not that hard
+private void reverse(int[] nums, int left, int right) {
+    if (left < right) {
+        swap(nums, left, right);
+        reverse(nums, left + 1, right - 1); 
+    }
+}
+```
 
 #### [LC] 46. Permutations
 https://leetcode.com/problems/permutations/
@@ -489,7 +604,17 @@ When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `r
 #### [LC] 282. Expression Add Operators
 https://leetcode.com/problems/expression-add-operators/
 
-backtracking for all possibilities.
+For `123`, try all options for `+`, `-` and `*` like `1+2+3`.  
+- backtracking to try all options
+- the termination condition to put string into global result list is to validate the operation
+  - the validation is the same way like `227 Basic Calculator II `
+    - traverse string from left to right, if number, add to currentNumber variable, if next is “+” or “-“, push to stack.
+    - , find next number, push to stack (if it is “-“ before it, push -1*num to stack).
+    - continue, find “*” or “/“, pop the previous number, calculate it, and push the calculated result into stack.
+    - finally clean up the stack by adding up all the rest number there
+
+NOTE:
+- when validate the operation, we can skip numbers like "05"
 
 #### [LC] 301. Remove Invalid Parentheses
 https://leetcode.com/problems/remove-invalid-parentheses/
@@ -671,6 +796,12 @@ For each node (0 ~ n-1), traverse from itself to all neighbor nodes, if found 1 
 https://leetcode.com/problems/max-area-of-island/
 
 Same solutin as LC 200.
+
+#### [LC] 827. Making A Large Island
+https://leetcode.com/problems/making-a-large-island/
+
+1. for each 1 grid, using dfs to label all 1-grid and record the size in hashmap
+2. for each 0 grid, check its neighbor to see if we can connect labels
 
 #### [LC] 1129. Shortest Path with Alternating Colors
 https://leetcode.com/problems/shortest-path-with-alternating-colors/
@@ -899,12 +1030,22 @@ NOTE:
 #### [LC] 33. Search in Rotated Sorted Array
 https://leetcode.com/problems/search-in-rotated-sorted-array/
 
-recover the array to be ascending.
+1. recover the array to be ascending.
+2. do binary search, and compare `A[mid]` and `A[A.length-1]` to check which half is in order
 
 #### [LC] 49. Group Anagrams
 https://leetcode.com/problems/group-anagrams/
 
 bucket sort to find all anagrams
+
+#### [LC] 973. K Closest Points to Origin
+https://leetcode.com/problems/k-closest-points-to-origin/
+
+sort or heap
+
+
+## Interval
+### Default
 
 #### [LC] 56. Merge Intervals
 https://leetcode.com/problems/merge-intervals/
@@ -943,10 +1084,19 @@ https://www.lintcode.com/problem/850/
 
 Use custom comapritor, and be careful when union two intervals, set the end of the new interval to be the max one of original two intervals.
 
-#### [LC] 973. K Closest Points to Origin
-https://leetcode.com/problems/k-closest-points-to-origin/
 
-sort or heap
+#### [LC] 986. Interval List Intersections
+https://leetcode.com/problems/interval-list-intersections/
+
+NOTE: 
+- only need to compare p1 and p2, no need to compare with last element in result list --> they would never have overlap since we always move the pointer of smaller interval
+- how to tell if they are intersected?
+  - `int low = Math.max(firstList[p1][0], secondList[p2][0]);`
+  - `int high = Math.min(firstList[p1][1], secondList[p2][1]);`
+  - `if (low <= high) {return true;}`
+- how to move the pointer of the smaller interval?
+  - `if (firstList[p1][1] <= secondList[p2][1]) {p1++;}`
+
 
 ## HashMap
 ### Default
@@ -957,6 +1107,11 @@ Why "two sum" is not a two-pointers problem? To use two-pointers, we need to kno
 https://leetcode.com/problems/longest-consecutive-sequence/
 
 HashSet.
+
+#### [LC] 138. Copy List with Random Pointer
+https://leetcode.com/problems/copy-list-with-random-pointer/
+
+HashMap to store original node to new node mapping.
 
 #### [LC] 387 First Unique Character in a String 
 https://leetcode.com/problems/first-unique-character-in-a-string/
@@ -997,6 +1152,10 @@ Just find the head node first, then add node in l1 or l2 sequencially (compare t
 #### [LC] 109. Convert Sorted List to Binary Search Tree
 https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
 
+#### [LC] 203. Remove Linked List Elements
+https://leetcode.com/problems/remove-linked-list-elements/
+
+
 ## Topological Sort
 ### Default
 Psudocode:
@@ -1007,15 +1166,33 @@ Psudocode:
 ```
 
 NOTE:
-- Remember to use hashmap.getOrDefault() to cover possible not existing value in the map, e.g.
+- Remember to use hashmap.getOrDefault() to cover possible not existing value in the map
+- prepare egressMap from `from-node` to `list of to-node`
+- preapare ingressMap from `node` to `ingress-count`
+- maintain a queue to store all `0-ingress node` 
+- maintain a result list to store final result in order
 
 ```
+
 // put ingressMap
 Integer count = ingressMap.getOrDefault(to, 0);
 ingressMap.put(to, count + 1);//0->1//1->0
 // put egressMap
 List<Integer> egressArcs = egressMap.getOrDefault(from, new LinkedList<>());
 egressArcs.add(to);
+egressMap.put(from, egressArcs);
+
+
+while (!queue.isEmpty()) {
+    Character c = queue.poll();
+    result.add(c);
+    for (Character to : egressArcs.get(c)) {
+        ingressMap.put(to, ingressMap.get(next) - 1);
+        if (ingressMap.get(to).equals(0)) {
+            queue.add(to);
+        }
+    }
+}
 ```
 
 - the question does not require to return a "patial path", so either return full path or empty (if there is cycle inside)
@@ -1027,6 +1204,11 @@ https://leetcode.com/problems/course-schedule/
 #### [LC] 210. Course Schedule II
 https://leetcode.com/problems/course-schedule-ii/
 
+#### [LC] 269. Alien Dictionary
+https://leetcode.com/problems/alien-dictionary/
+
+Convert the order between words into adjacencyList or egressMap.
+
 #### [LC] 445. Add Two Numbers II
 https://leetcode.com/problems/add-two-numbers-ii/
 
@@ -1034,6 +1216,27 @@ Use stack to reverse list and finally reverse it back.
 
 ## String
 ### Default
+
+#### [LC] 65. Valid Number
+https://leetcode.com/problems/valid-number/
+
+NOTE for `string.split()`
+- when spliting special characters like `.`, need to escape it like `string.split(\\.)`
+- when only right-hand side has characters, result array is of size 2
+  - `String s = ".1"; String[] arr = s.split("\\.");`
+  - `arr` length is 2
+  - `arr[0] == ""; arr[1] == "1"`
+- when only left-hand side has characters, result array is of size 1
+  - `String s = "1."; String[] arr = s.split("\\.");`
+  - `arr` length is 1
+  - `arr[0] == "1";`
+- when nothing at left-hand side and right-hand side, result array is of size 0
+  - `String s = "."; String[] arr = s.split("\\.");`
+  - `arr` length is 0
+- we can also force `split()` to return 2-element array by `string.split(delimiter, limit)`
+  - `String s = "."; String[] arr = s.split("\\.", 2);`
+  - `arr` length is 2 and both elements are empty
+  - `arr[0] == ""; arr[1] == ""`
 
 #### [LC] 43. Multiply Strings
 https://leetcode.com/problems/multiply-strings/
@@ -1120,6 +1323,47 @@ https://leetcode.com/problems/basic-calculator-ii/
 - continue, find “*” or “/“, pop the previous number, calculate it, and push the calculated result into stack.
 - finally clean up the stack by adding up all the rest number there
 
+
+NOTE1: to clear StringBuilder, use `sb.setLength(0)`
+
+
+NOTE2: be careful the space like "  30 + 2 / 1 ", we can remove the space at beginning, or skip space when collecting num:
+
+```
+    private int collectNum(String s, int pos, StringBuilder sb) {
+        while (pos < s.length() && s.charAt(pos) == ' ') {
+            pos++;
+        }
+        while(pos < s.length() && Character.isDigit(s.charAt(pos))) {
+            sb.append(s.charAt(pos));
+            pos++;
+        }
+        while (pos < s.length() && s.charAt(pos) == ' ') {
+            pos++;
+        }
+        return pos;
+    }
+```
+
+#### [LC] 636. Exclusive Time of Functions
+https://leetcode.com/problems/exclusive-time-of-functions/
+
+Treat the problem like `224. Basic Calculator`, and build the stack element by `List<Integer>` like this:  
+
+- list.get(0) --> process id --> actually it's not required, since process ends and pop() must be a pair
+- list.get(1) --> start timestamp
+- list.get(2) --> durationPendingRemove --> whenever an element being pop(), need to increment the `duratiothe nPendingRemove` of next top element in stack
+
+```
+        /** 
+             ________________
+            |   ___________  |
+            |  |   _    _  | |
+            |  |  | |  | | | |
+            0  1  3 4  5 6 7 8
+        **/
+```
+
 #### [LC] 1249. Minimum Remove to Make Valid Parentheses
 https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
 
@@ -1133,6 +1377,11 @@ Using stack to check valid parenthese pairs, and using a hashset to record valid
 https://leetcode.com/problems/merge-k-sorted-lists/
 
 heap
+
+#### [LC] 215. Kth Largest Element in an Array
+https://leetcode.com/problems/kth-largest-element-in-an-array/
+
+min heap --> top/first is the minimum --> so ascending in list
 
 #### [LC] 253. Meeting Rooms II
 https://leetcode.com/problems/meeting-rooms-ii/
@@ -1212,6 +1461,12 @@ NOTE: be careful on the algorithm to swap nums in place, need to break when ther
         }
 ```
 
+#### [LC] 88. Merge Sorted Array
+https://leetcode.com/problems/merge-sorted-array/
+
+- option1: merge two array then `Arrays.sort()`
+- option2: copy one of the array into `nums1Copy`, then use 3 pointers to move into final array one by one
+
 ## Design
 ### Default
 https://stackoverflow.com/questions/43145395/time-complexity-while-deleting-last-element-from-arraylist-and-linkedlist
@@ -1234,25 +1489,40 @@ https://leetcode.com/problems/lru-cache/
 - option1: linkedhashmap 
 - option2: custome class to define double-linked-list and hashmap
 
+#### [LC] 157. Read N Characters Given Read4
+https://leetcode.com/problems/read-n-characters-given-read4/
+
+#### [LC] 158. Read N Characters Given Read4 II - Call multiple times
+https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
+
+- define 3 global variables `carryOverOrBuf4`, `carryOverValidSize` and `carryOverValidIndex`
+- then copy the character from `carryOverOrBuf4` array to result buf array, until the processed number reaches n
+
+```
+char[] carryOverOrBuf4 = new char[4]; // we can only carryOver 3 char at most, but we set the space to be 4 to reuse it for read4
+int carryOverValidSize = 0; // valid carryOver char in carryOverOrBuf4 array
+int carryOverValidIndex = 0; // last time we stop here in carryOverOrBuf4 array
+```
+
 
 #### [LC] 295. Find Median from Data Stream
 https://leetcode.com/problems/find-median-from-data-stream/
 
 the followings come from: https://www.sohu.com/a/363477662_355142
 
-让用堆替换朴素方法中的列表：
+Two heap:
 
 最小堆保存较大的一半元素，最小值位于根元素
 最大堆保存较小的一半元素，最大值位于根元素
 现在，可以把传入的整数与最小堆根元素进行比较，并加到对应的一半数列中。接下来，如果插入后两个堆大小差距大于1，可以为堆进行重新平衡，让差距最大等于1：
 
-ifsize(minHeap)> size(maxHeap)+ 1:
+if (size(minHeap)> size(maxHeap)+ 1) {
+  // 移除minHeap根元素,插入maxHeap
+}
 
-移除minHeap根元素,插入maxHeap
-
-ifsize(maxHeap)> size(minHeap)+ 1:
-
-移除maxHeap根元素,插入minHeap
+if (size(maxHeap)> size(minHeap)+ 1) {
+  // 移除maxHeap根元素,插入minHeap
+}
 
 通过这种方法，如果得到的两个堆大小相等，可以中位数等于两个堆的根元素平均值。否则，元素多的那个堆，其根元素就是中位数。
 
@@ -1299,6 +1569,12 @@ Similar like `380. Insert Delete GetRandom O(1)`, when deleting element, swap wi
 ArrayList<Integer> lst;
     HashMap<Integer, Set<Integer>> idx;
 ```
+
+#### [LC] 398. Random Pick Index
+https://leetcode.com/problems/random-pick-index/
+
+hashmap to store num[i] to list of index, then random pick an index in list by target.
+
 
 #### [LC] 528. Random Pick with Weight
 https://leetcode.com/problems/random-pick-with-weight/
@@ -1707,6 +1983,16 @@ find rightmost matched
         }
 ```
 
+#### [LC] 50. Pow(x, n)
+https://leetcode.com/problems/powx-n/
+
+- for `i = n ~ 1`
+  - if `i % 2 == 0`, the can reuse recursive result of `i/2`, 
+  - if `i % 2 != 0`, then multiple x once and then leverage binary search
+- be careful to set n to be `long`!!!
+  - since n could be Integer.MIN_VALUE, when we remove the symbol to make `Math.abs(n)`, it would be over Integer.MAX_VALUE
+
+
 #### [LC] 270. Closest Binary Search Tree Value
 https://leetcode.com/problems/closest-binary-search-tree-value/
 
@@ -1751,6 +2037,13 @@ https://leetcode.com/problems/product-of-array-except-self/
 
 Using array get prefix-product left to right, then using another array from right to left, the `result[i] = leftToRight[i] * rightToLeft[i+1]`.
 - an improvement here is to not use array for rightToLeft, we can calculate it on the fly when traversing from right to left (after we store leftToRight array in result array).
+
+#### [LC] 523. Continuous Subarray Sum
+https://leetcode.com/problems/continuous-subarray-sum/
+
+Using prefixSum and HashMap to store the mapping from `prefixSum % k` to `index`.  
+- we must use hashmap instead of hashset!!! since we need to know if the index distance is >= 2
+- there is a special case that prefixSum itself can mod k to get 0, it is also a true case
 
 #### [LC] 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
