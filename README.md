@@ -158,8 +158,23 @@ https://leetcode.com/problems/valid-palindrome-ii/
 return validPalindrome(s, left + 1, right) || validPalindrome(s, left, right-1);  
 ``` 
 
+#### [LC] 708. Insert into a Sorted Circular Linked List
+https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
+
+This is not a standard two-pointer problem, in this question we only need pointer as flag to mark some place for us:
+
+1. pointer to mark the original head, it is used to decide whether we have goes around 1 time
+2. pointer to mark the `lastMaxNode` in the circle, that can help us insert the value which is either max of min of all existing values
+3. a boolean flag to check if we have inserted the node already
+3. the logic is to traverse the circular list until we reaches a circle
+  - we will always maintain the `lastMaxNode` in the while loop
+  - if we found a place inside the circle that the insertValue is larger than previous one and lower than next one, we can insert it, set the boolean flag to be true, and then break;
+  - after we break or finishes a circle, check boolean flag
+    - if already inserted, return original head
+    - if not inserted yet, the insertValue must of either max of min of all nodes, we can just insert it after `lastMaxNode` (since the next node of `lastMaxNode` is the `firstMinNode`)
+
 #### [LC] 862. Shortest Subarray with Sum at Least K
-[https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)
+https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/
 
 Nums could be positive or negative.
 
@@ -286,6 +301,28 @@ https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
 - deserialize with queue to store splitted string by ","
   - be careful if the original root is null, array[0] is ""
 
+```
+    public TreeNode deserialize(String data) {
+        String[] array = data.split(",");
+        Deque<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < array.length; i++) {
+            queue.offer((array[i].equals("#") || array[i].equals("")) ? null : Integer.valueOf(array[i])); // "" means the root is null
+        }
+        return preOrderDeserialize(queue);
+    }
+    
+    private TreeNode preOrderDeserialize(Deque<Integer> queue) {
+        Integer val = queue.poll();
+        if (val == null) {
+            return null;
+        }
+        TreeNode root = new TreeNode(val);
+        root.left = preOrderDeserialize(queue);
+        root.right = preOrderDeserialize(queue);
+        return root;
+    }
+```
+
 #### [LC] 314. Binary Tree Vertical Order Traversal
 https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 
@@ -352,6 +389,9 @@ Be careful when using ++variable, it would addup the variable itself! It's bette
 #### [LC] 543. Diameter of Binary Tree
 https://leetcode.com/problems/diameter-of-binary-tree/
 
+It is similar like "124. Binary Tree Maximum Path Sum".
+
+
 Be careful that the longest path may not pass the root.  
 e.g.
 ```
@@ -388,6 +428,14 @@ https://leetcode.com/problems/range-sum-of-bst/
 https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
 
 Sort the node by `x coordinate, y coordinate, val` using BFS + TreeMap + Collections.sort().
+
+#### [LC] 1650. Lowest Common Ancestor of a Binary Tree III
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
+
+1. find the height of p and q
+2. if p's height is lower, move p up to the same level as q, otherwise move q up to the same level
+3. now p and q are at same height, if `p==q` then return p or q, otherwise move p and q up until `p.parent == q.parent` then return `p.parent`
+
 
 ## Recursion
 ### Default
@@ -501,53 +549,98 @@ https://leetcode.com/problems/n-th-tribonacci-number/
 Be careful to store result that has already been calculated to save effort on re-calculation.
 
 ## Backtracking
+
+https://www.jianshu.com/p/3ef0e4e1114d
+
+https://zhuanlan.zhihu.com/p/112926891
+
+
+NOTE:
+The `state/spot` concept of the following questions could also be used into DP idea, something like like `dp[stateI] = dp[stateI-1] + nums[i]`
+
+backtrack + DFS:
+
+- 39. Combination Sum 
+- 40. Combination Sum II 
+- 46. Permutations
+- 47. Permutations II 
+- 78. Subsets
+- 90. Subsets II 
+- 131. Palindrome Partitioning
+- 132. Palindrome Partitioning II 
+- 254. Factor Combinations
+- 93. Restore IP Addresses  
+- 320. Generalized Abbreviation
+- 784. Letter Case Permutation
+
+backtrack + BFS:
+
+- 127. Word Ladder --> since String is final, no need to reset here, it's more like a pure BFS solution
+
+
 ### Default
 
 Difference between Recursion and Backtracking:
 - In recursion, the function calls itself, until it reaches a `base case`. 
 - In backtracking, we use recursion to explore all the possibilities, until we get the best result for the problem
-  - usually used for bi-directional-array-like problem:
-    - the final solution consists of multiple `spots`
-      - for each spot, there would be multiple `options` in searching space
+  - usually used for 2D-array-like problem:
+    - the final solution consists of multiple `spots/levels/state` (you can think about `spot` as the current value we can append to `path`)
+      - e.g. 78. Subsets
+        - `spot/level` is the # of values in each set
+      - e.g. 46. Permutations
+        - `level` points to a unique `path.toString()`
+      - for each `spot/level/state`, there would be multiple `options` in searching space
       - each `option` can be selected when it meets `searching conditions`
         - e.g. left parentheses is less than total available parentheses
         - e.g. the option is not visited before
-    - after one `option` is executed, call recusive function (with void return type, and updated `search conditions`) to move to next `spot`
-      - it is not required, but try pruning it first, maybe no need recusive move to next `spot`
-    - need to remove the effect of current `option` in `currentSolution` and `searching conditions` before moving to next `option`
-    - there is a termination condition when a solution meet target
+    - after one `option` is executed, call recusive function (with void return type, and updated `search conditions`) to move to next `spot/level/state`
+      - do pruning if possible before moving to next `spot/level/state`
+    - need to remove the effect of current `option` in `path` and `searching conditions` before moving to next `option`
+    - there is a `terminationCondition` when a solution meet target
       - e.g. path length equals to expected string length
 
-Algorithm Pseudocode (all the keywords below are important when thinking about algorihtm): 
-- maintain a recursive function with void return type
-  - recursive function has at least has 3 params to help us move to next `spot`
-  - `currentSolution` that stores current latest solution
-    - `currentSolution` is mutable, since we need to prune dead or redundant branches or current `option` in search space 
-  - `status` that tells where we are now (this can be combined with `currentSolution`, like to use length of `currentSolution` to tell whiech `spot` we are working on)
+Algorithm Pseudocode: 
+
+```java
+List<List> result; // global variable
+void backtrack(int[] nums, int stateIndex, List<Integer> path, boolean[] visited) {
+  if (path meets terminationCondition) {
+    result.add(new LinkedList<>(path)); // deep copy!!!
+  }
+  // try all options in current level
+  for (int i = stateIndex; i < nums.length; i++) {
+    // try if meets searchingCondition
+    if (!visited[i]) {
+      // 1. try nums[i]
+      path.add(nums[i]);
+      visited[i] = true; 
+      // 2. TODO prune if possible
+      // 3. move to next level, updaet levelIndex
+      backtrack(nums, stateIndex + 1, path);
+      // 4. reset the effect of current option, then try other options
+      path.remove(path.size() - 1);
+      visited[i] = false;
+    }
+  }
+}
+```
+NOTE1:
+
+- `stateIndex` tells where we are now
+  - this can be combined with `path`, like to use length of `path` to tell which `spot/state` we are working on
     - e.g. it could be the index in a map-like search space
-  - `search conditions` that tells the available and valid `options` for this `spot`
-    - e.g. it could be a visited array
-    - e.g. it could be the number of left parantheses in current status 
-  - inside recursive funtion
-    - 1. check if `currentSolution` meet target
-      - the termination conditions are somthing like "path lenght meet target length", "found exit of maze", etc.
-      - if meet, do 2 things:
-        - 1) add `currentSolution` to global `globalSolution` 
-          - there will be a global variable `globalSolution` to record all possible solutions 
-        - 2) return
-      - if not meet, do nothing, let it go to next line of code
-    - 2. for each `spot`, there should be multiple `options`
-   	  - for each `option` (could be a iterative for loop)
-   	    - process the option by mutating `currentSolution`
-   	    - then call recusive function to move to `next spot` with
-          - updated `status` (or tell what new `spot` we will move to by length of  `currentSolution`)
-          - update `searching condition`
-          - prune it if possible
-            - e.g. if the sum of subarray is already larger than target, no need to do this recursion again
-   	    - before trying another `option`, do 
-          - update the `currentSolution` to remove effect of current `option`
-          - update the `search condition` to remove effect of current `option`
-        - try next option
+- `for (int i = stateIndex; i < nums.length; i++)` is to try all options at `stateIndex`, it may not be a for loop sometimes
+- `visited/searchingCondition` tells available and valid `options` for this `state/spot`
+  - e.g. it could be a visited array
+  - e.g. it could be the number of left parantheses in current status 
+- `terminationCondition` tells when can we add path to final result list
+  - deep copy of `path` could be required in questions like "78. Subsets"
+    - e.g. path lenght meet target length
+    - e.g. found exit of maze
+- `prune` can speed up the searching
+  - e.g. if the sum of subarray is already larger than target, no need to do this 
+- `reset` would back out the effect of current `option` in `path`, sometimes we also need to back out the `status` or `searching conditions`
+
 
 Example:
 1. options
@@ -563,6 +656,9 @@ https://leetcode.com/problems/letter-combinations-of-a-phone-number/
 It can also be done by recursion + hashmap. But backtracking is faster than pure recursion.
 Remember to use `StringBuilder` to remove character by `currentSolution.deleteCharAt(currentSolution.length() - 1);`.
 
+#### [LC] 22. Generate Parentheses
+https://leetcode.com/problems/generate-parentheses/submissions/
+
 #### [LC] 37. Sudoku Solver
 https://leetcode.com/problems/sudoku-solver/
 
@@ -573,7 +669,7 @@ For the output board (which is also input), we cannot reassign board, but can on
 Convert int to char `char c = (char) (i + 48);`
 
 To split num by digits
-```
+```java
     public int getRow(int spot) {
         return (int)(spot / 10) - 1;
     }
@@ -587,19 +683,51 @@ To split num by digits
 https://leetcode.com/problems/permutations/
 
 - think about the problem in this way:
-- there are n spots for the final result:
-  - e.g. n == 3, spots are: [] [] []
-- for each spot, there could be options 1, 2, 3
-- after we fix one option in one spot, we move to next spot
-- and next spot would have a new "search conditions" that the previously visited option cannot be reused
-- after all "avaialble and valid options" are exausted, remove current option and reset "search conditions" 
+- there are different `state` for the `path` (eahc `state` points to a "path.toString()")
+  - e.g. the followings are all different states
+    - [1]
+    - [2]
+    - [3]
+    - [1, 2]
+    - [1,3]
+    - ...
+- here we use `boolean[] visited` to replace `stateIndex`
+- for each state, there are be options 1, 2, 3
+  - the option is eligible if `visited` is false
+- when resetting, we reset the `path` and `visited`
 
+#### [LC] 47. Permutations II
+https://leetcode.com/problems/permutations-ii/
+
+Similiar like `46. Permutations`, but we need extra 2 steps here:  
+1. sort the array first, which is to help put duplicate num together
+2. not only checking `visited`, we need to check if `nums[i] == prev` at this `state`, if yes the skip this `nums[i]`
+  - we need to make sure at each `state` points to a unique `path.toString()`, the same `nums[i]` is only used once
+ 
 #### [LC] 51. N-Queens
 https://leetcode.com/problems/n-queens/
 
 Be careful that string is immutable, using StringBuilder to make it mutable.
 
 When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `row--,col++`, `row++,col--`.
+
+#### [LC] 78. Subsets
+https://leetcode.com/problems/subsets/
+
+This is a special/variant backtrack problem. 
+
+- `spot/state` here is the current value we can append to `path`
+  - e.g. if `path` is `[1]`, then the next spot is to append 2 or 3 to the path 
+  - `spot/state` is the # of values in each set
+- the initial `spot/state` is an empty set with no num at all 
+
+#### [LC] 90. Subsets II
+https://leetcode.com/problems/subsets-ii/
+
+This is a followup of "78. Subsets", since it could have duplicate now, we need to do 2 more things than "78. Subsets"
+
+1. put duplicate nums together -- we can sort the array to arrange duplicate nums together
+2. skip the backtrack function call with the same `startIndex` and the same `path`
 
 #### [LC] 282. Expression Add Operators
 https://leetcode.com/problems/expression-add-operators/
@@ -625,16 +753,30 @@ https://leetcode.com/problems/remove-invalid-parentheses/
   - be careful the result could be duplicated, so we can use HashSet to dedup (an improvement here is to try only removing the last bracket once for consecutive ones)
   - to remove a char in string, use `s.substring(0,i) + s.substring(i+1, s.length())`
 
-#### 399. Evaluate Division
+#### [LC] 399. Evaluate Division
 https://leetcode.com/problems/evaluate-division/
 
 Convert it to be a problem like this:  
 - given two nodes, we are asked to check if there exists a path between them. If so, we should return the cumulative products along the path as the result
 
 NOTE:
-- we can use nested map to represent the graph, intead of insisting using 2-directional array
+- we can use nested map to represent the graph, intead of insisting using 2D array
+
+#### [LC] 784. Letter Case Permutation
+https://leetcode.com/problems/letter-case-permutation/
+
+Similar like "78. Subsets", but be careful this time to move state, it is not `state+1` in backtrack function but the `i+1` since `i` is the current letter position.
+
+Be familiar with java `Character` funtions like
+- isUpperCase()
+- isLowerCase()
+- toUpperCase()
+- toLowerCase()
+- isLetter()
+- isDigit()
 
 ## DFS and BFS
+
 ### Default
 
 Depth-First-Search (DFS) is a specific form of backtracking (backtracking is like a brute-force solution):
@@ -668,7 +810,8 @@ NOTE:
   - we need to do DFS for all `entryPoints`, e.g. for `200. Number of Islands`, we start with all "1" in matrix and do dfs.
 
 BFS template (T(N) where N is the # of nodes, S(D) while D is the tree diameter)
-```
+
+```java
     public voic BFS(Node node) {
         if (node == null) {
             return node;
@@ -703,8 +846,11 @@ BFS template (T(N) where N is the # of nodes, S(D) while D is the tree diameter)
 ```
 
 DFS can have 3 types of templates:
-1. dfs with `visited` -- when it's explicit tree/graph style, no need to `backtrack` (e.g. `133. clone graph`)
-```
+1. dfs with `visited`
+  - e.g. `133. clone graph`
+    - when it's explicit tree/graph style, no need to `backtrack`
+
+```java
     private Set<Node> visited = new HashSet<>();
     // for all entryPoints, do DFS
     public void DFS(Node node) {
@@ -720,31 +866,87 @@ DFS can have 3 types of templates:
         }
     }
 ```
-2. dfs with `globalSolution` + `path` -- when it's implicit tree/graph style, need to `backtrack`, aka reset current step effect. e.g. `17. Letter Combinations of a Phone Number` or `51. N-Queens`
-```
+2. dfs with `globalSolution` + `path` (optional: + `visited`)
+  - when it's implicit tree/graph style, need to `backtrack`, aka reset current step effect, sometimes 
+  - e.g. `17. Letter Combinations of a Phone Number`
+  - e.g. `51. N-Queens`
+
+```java
     private globalSolution;
+    private Set<Node> visited = new HashSet<>();
     public vod backtrack(path, status, searchingSpace) {
         if (path meets terminationCondition) {
             globalSolution.add(path);
             return;
         }
-        for (option : searchingSpace) {
+        for (option : searchingSpace) { 
+            if (visited(option)) { // skip visited option
+              continue;
+            }
             // process current option
             path = process(option); // update current solution
             status = update(status); // move to next spot
             searchingSpace = update(searchingSpace); // update searching conditions
+            visited.add(option); // reset visited
             // backtrack
             backtrack(path, status, searchingSpace);
             // revoke when trying next option
             path = revoke(path);
             status = revoke(status);
             searchingSpace =revoke(searchingSpace);
+            visited.remove(option); // reset visited
         }
     }
     return globalSolution;
 ```
-3. dfs with `return value` + `visited` -- it is used when matrix represents node itself (e.g. `200. Number of Islands`)
-4. dfs with `visited` + `path` (very similar like #1) -- it is used when matrix represents the relationship of nodes instead of nodes themselves (e.g. `547. Number of Provinces`)
+3. dfs with `return value` + `visited`
+  - e.g. `200. Number of Islands`
+    - it is used when matrix represents node itself
+4. dfs with `visited` + `path` (very similar like #1)
+  - e.g. `547. Number of Provinces`
+    - it is used when matrix represents the relationship of nodes instead of nodes themselves
+5. dfs with `return value` + `memory`
+  - e.g. `126. Word Ladder II`
+
+```java
+    private boolean dfs(minLevel, currentLevel, adjacenceMap, path, visited, memory) {
+        if (path.size() == minLevel) { // termination condition
+            if (beginWord.equals(endWord)) {
+                result.add(new LinkedList<>(path));
+                return true;
+            }
+            return false;
+        }
+        
+        boolean foundByBeginWord = false;
+        // try all options
+        if (adjacenceMap.containsKey(beginWord)) {
+            for (String nextWord : adjacenceMap.get(beginWord)) {
+                
+                if (!visited.contains(nextWord) && memory.getOrDefault(nextWord, true)) {
+                    
+                    // try nextWord
+                    path.add(nextWord);
+                    visited.add(nextWord);
+                    
+                    boolean foundPath = dfs(nextWord, endWord, minLevel, currentLevel+1, adjacenceMap, path, visited, memory);
+                    
+                    // put into memory
+                    memory.put(nextWord, foundPath);
+                    foundByBeginWord = foundByBeginWord | foundPath;
+                    
+                    // reset nextWord
+                    path.remove(path.size() - 1);
+                    visited.remove(nextWord);
+                }
+            }
+        } 
+
+        // put into memory
+        memory.put(beginWord, foundByBeginWord);
+        return foundByBeginWord;
+    }
+```
 
 
 Another way to think about DFS:
@@ -760,6 +962,57 @@ https://leetcode.com/problems/word-search/
 - option1: DFS with a new visited array passed to DFS function every time
 - option2: backtracking, similar like DFS, but using only one visited array and reset the `visited[i][j]` if not found for a character
 - option3: trie
+
+#### [LC] 126. Word Ladder II
+https://leetcode.com/problems/word-ladder-ii/
+
+This problem would easity got "Time Limit Exceeded", so simply using BFS to maintain shortest path is not doable, we need to do the following improvement:
+
+1. using BFS to find relationship of each word to its next avaliable word list (`hashmap(string, list)`)
+  - inside BFS, instead of using "*" pattern like "79. Word Search", we need to traverse all 26 letters for each char in a word, since that is faster when we have lots of words in dictionary
+  - inside BFS, instead of using `hashset visited`, we need to use `HashMap<String, Integer> levelRecorder` to record the shortest level to reach a word
+  - the output of BFS would be 2 things:  
+    - `hashmap(string, list)` that maintains `word` to its next available words mapping
+    - `minLevel` that tells the min length of the valid path
+2. using DFS to print all path by the 2 output of BFS
+  - but simply using DFS would fail the time limitation, we need to add memory into DFS to record whether the current word can reach target end word
+
+
+BFS trick part to use `levelRecorder`:  
+
+```java
+ if (dict.contains(option)) {
+        // record the shortest level
+        Integer optionLevel = levelRecorder.get(option);
+        if (optionLevel == null) { //1st time see the option, enqueue, add to levelRecorder
+            queue.offer(option); // enque
+            
+            nextAvailable.add(option);
+            levelRecorder.put(option, level + 1);
+        } else { // seen option before, no need to enqueue
+            if (optionLevel > level) { // find a shorter path to reach "option"
+                nextAvailable.add(option);
+                levelRecorder.put(option, level + 1);
+            }
+        }
+  }
+```
+#### [LC] 127. Word Ladder
+https://leetcode.com/problems/word-ladder/
+
+Treat the wordList as a graph by converting it into a hashmap: `pattern (a*z) --> words (abz, acz, adz, ...)`. When selecting options, we can use the pattern to find limited number of options, then with BFS and visited hashset we can easily get the final `level` when reaching `endWord`.
+
+The way to generate pattern is like this:  
+```
+String newWord = word.substring(0, i) + '*' + word.substring(i + 1, word.length());
+
+```
+
+NOTE:  
+1. we don't need to check `if (i > 0)` when using `substring(0,i)`, the function has already make it edge-case-safe for us
+2. an improved version of this question is bi-directional-BFS, starting from 2 directions at the same time 
+3. Time Complexity: `O(M^2*N)`, where MM is the length of each word and NN is the total number of words in the input word list.
+4. Space Complexity: `O(M^2*N)`
 
 #### [LC] 133. Clone Graph
 https://leetcode.com/problems/clone-graph/
@@ -778,6 +1031,18 @@ Traverse all grids, if found 1, trigger dfs to find all 1s -- could return sum o
 Time complexity : O(M * N) where M is the number of rows and N is the number of columns.
 Space complexity : worst case  O(M * N) in case that the grid map is filled with lands where DFS goes by M * N deep.
 
+#### [LC] 339. Nested List Weight Sum
+https://leetcode.com/problems/nested-list-weight-sum/
+
+This is a good question that shows a special use case of BFS!!!  
+Since we use `int size = queue.size()` and `for (int i = 0; i < size; i++)` to traverse at each level, the `size` helps us to only access the node at this level, which means we can continue adding nodes to queue in the loop!!
+
+The trick here is that
+- at beginning we enqueue *all nodes* (not just the integer nodes!!!)
+- then we use the `size` to control the "# of nodes at each level"
+  - the "nodes at each level" are the nodes with `node.isInteger() == true`
+  - if it is a list, we enqueue all elements in the list to the queue
+    - it would not impact counting at each level!!!
 
 #### [LC] 542. 01 Matrix
 https://leetcode.com/problems/01-matrix/
@@ -796,6 +1061,17 @@ For each node (0 ~ n-1), traverse from itself to all neighbor nodes, if found 1 
 https://leetcode.com/problems/max-area-of-island/
 
 Same solutin as LC 200.
+
+#### [LC] 752. Open the Lock
+https://leetcode.com/problems/open-the-lock/
+
+This is a question to find shortest path, which is perfect for BFS:
+- we can think that each node would have 8 positions to move to (each slot we can move `+1` or `-1`)
+  - be careful to check boundary case that `-1` should be `9`, while `10` should be `1`
+- all the deadends are like obstacles in graph 
+  - be careful that the initial node `0000` would also be in deadends
+
+NOTE: StringBuilder could append integer!!!
 
 #### [LC] 827. Making A Large Island
 https://leetcode.com/problems/making-a-large-island/
@@ -1012,7 +1288,6 @@ NOTE: initialize all dp to be 1!!!!
         }
         return result;
 ```
-
 
 #### [LC] 403. Frog Jump
 https://leetcode.com/problems/frog-jump/
@@ -1250,6 +1525,16 @@ https://leetcode.com/problems/add-binary/
 - For String, StringBuffer, and StringBuilder, charAt() is a constant-time operation O(1).
 - For StringBuffer and StringBuilder, deleteCharAt(), insert(index,char) and reverse() are linear-time operation O(n).
 
+#### [LC] 408. Valid Word Abbreviation
+https://leetcode.com/problems/valid-word-abbreviation/
+
+Using two pointers to point to original word and abbr, then move both pointers in different scenarios: isLetter() or isDigit(). Finally if the two pointers are not at the bottom of corresponding string, it's invalid so that we return false;
+
+Be careful:
+- the abbr could have multi-digit count, e.g. `a12b` means there are 12 characters after `a`
+- there is a special case that the abbr may have adjacent digit or invalid digits like `a01b` where `01` is invalid.
+
+
 #### [LC] 415. Add Strings
 https://leetcode.com/problems/add-strings/
 
@@ -1284,7 +1569,7 @@ NOTE:
 
 
 Way to compare object:
-```
+```java
         Collections.sort(positions, new Comparator<Pos>() {
             @Override
             public int compare(Pos p1, Pos p2) {
@@ -1329,7 +1614,7 @@ NOTE1: to clear StringBuilder, use `sb.setLength(0)`
 
 NOTE2: be careful the space like "  30 + 2 / 1 ", we can remove the space at beginning, or skip space when collecting num:
 
-```
+```java
     private int collectNum(String s, int pos, StringBuilder sb) {
         while (pos < s.length() && s.charAt(pos) == ' ') {
             pos++;
@@ -1441,7 +1726,7 @@ Be careful when traverse heap, do not use `for (int i=0; i<heap.size();i++)`, si
 
 NOTE: be careful on the algorithm to swap nums in place, need to break when there are duplicate numbers
 
-```
+```java
         //     i     0 1  2 3
         // expected  1 2  3 4
         // actual    3 4 -1 1
@@ -1526,6 +1811,15 @@ if (size(maxHeap)> size(minHeap)+ 1) {
 
 通过这种方法，如果得到的两个堆大小相等，可以中位数等于两个堆的根元素平均值。否则，元素多的那个堆，其根元素就是中位数。
 
+#### [LC] 304. Range Sum Query 2D - Immutable
+https://leetcode.com/problems/range-sum-query-2d-immutable/
+
+This is not a real DP question actually, it is only that `sumRegion()` would be called multiple times, so that we don't need to recalcualte overlap regions.
+
+The idea is to maintain a `dp[][]` arrar which stores sum from `0,0` to all `i,j`, then the region sum could be calculated in this way:
+
+`Sum(ABCD)=Sum(0D)−Sum(0B)−Sum(OC)+Sum(0A)`
+
 #### [LC] 341. Flatten Nested List Iterator
 https://leetcode.com/problems/flatten-nested-list-iterator/
 
@@ -1534,7 +1828,7 @@ https://leetcode.com/problems/flatten-nested-list-iterator/
   - next(): O(1)
   - hasNext(): O(1)
   - Space complexity : O(N + D) where D is the nesting depth
-```
+```java
     private void flattern(List<NestedInteger> nestedList) {
         if (nestedList == null) {
             return;
@@ -1581,7 +1875,7 @@ https://leetcode.com/problems/random-pick-with-weight/
 
 prefixSum + search (better to use binary search to improve searching complexity to logN)
 
-```
+```java
     //        w =    1    2      3       4 
     //prefiSum  = 0  1    3      6       10
     //percentage= 0% 10%  30%    60%     100%
@@ -1593,7 +1887,7 @@ prefixSum + search (better to use binary search to improve searching complexity 
 
 NOTE:  
 When using random function, need to have brackets for both `(int)` and `(Math.random() * (max - min + 1))`
-```
+```java
     // both end inclusive
     protected int getRandom(int min, int max) {
         return min + (int) (Math.random() * (max - min + 1));
@@ -1633,7 +1927,7 @@ https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
 #### [LC] 172. Factorial Trailing Zeroes
 https://leetcode.com/problems/factorial-trailing-zeroes/
 
-```
+```java
     // option1: using BigInteger
     // option2: count factors of 5 and 2, then use min(# of 5, # of 2)
     // option3: only count 5, since 2 is always more than 5
@@ -1956,6 +2250,52 @@ b0 b1 b2 b3 b4 b5 b6  | b7
 median = max(MIN_VALUE, b6)
 ```
 
+#### [LC] 29. Divide Two Integers
+https://leetcode.com/problems/divide-two-integers/
+
+NOTE: 
+
+- convert all int to long first, since `MIN_VALUE * -1` would be overflow
+- do not use `Math.abs()`, since `Math.abs()` only works for int, using naive solution to convert long value to be absolute long value
+- using "binary search" idea to addup `divisorAbs` over and over itself, until it reaches the "max fit" or `dividendAbs`
+  - e.g. `dividendAbs = 25` and `divisorAbs = 4`
+    - 1st round, the max fit is `(4 + 4) + (4 + 4) = 16`, quotient would `+=4`, and the reminder is `25-16=9`
+    - 2nd round, the max fit is `(4 + 4) = 8`, quotient would `+=2`, and the reminder is `9-8=1`
+    - since `1 < 4`, we reach the end, the final quotient is `4 + 2 = 6`
+- there is an improvement here, by using a list to store all multiplies of `divisorAbs`, since the max fit to the reminder must be the previous multiple in the list!!!!
+  - we can prove it in math
+    - 25 --> max fit is 16, and reminder is 9
+    - 9 --> max fit is 8, which is the previous multiple of 4 (4 --> 8 --> 16)
+
+```
+// NOTE: must convert to long first!!! otherwise MIN_VALUE * -1 would be overflow
+long dividendCopy = dividend;
+long divisorCopy = divisor;
+
+long quotient = 0;
+// NOTE: Math.abs() would not work since it only works for int
+long dividendAbs = dividendCopy > 0 ? dividendCopy : (dividendCopy * -1);
+long divisorAbs = divisorCopy > 0 ? divisorCopy : (divisorCopy * -1);
+```
+
+```
+long quotient = 0;
+while (dividendAbs >= divisorAbs) {
+    long divisorAbsMultiple = divisorAbs;
+    long multiple = 1;
+    while (dividendAbs >=  divisorAbsMultiple) {
+        if (dividendAbs < divisorAbsMultiple + divisorAbsMultiple) {
+            break;
+        } else {
+            divisorAbsMultiple += divisorAbsMultiple;
+            multiple += multiple;
+        }
+    }
+    dividendAbs -= divisorAbsMultiple;
+    quotient+=multiple;
+}
+```
+
 #### [LC] 34. Find First and Last Position of Element in Sorted Array
 https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 
@@ -2045,14 +2385,23 @@ Using prefixSum and HashMap to store the mapping from `prefixSum % k` to `index`
 - we must use hashmap instead of hashset!!! since we need to know if the index distance is >= 2
 - there is a special case that prefixSum itself can mod k to get 0, it is also a true case
 
+#### [LC] 325. Maximum Size Subarray Sum Equals k
+https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
+
+1. It is similar like "560. Subarray Sum Equals K", but is harder since there could be duplicate records in prefixSum, we need to only keep the earliest index in hashmap for the same prefixSum.
+2. Not only consider the "prefixSum[i] - k" situation, we can also consider "prefixSum[i] == k" situation, it means the prefixSum itself is the longest distance so fra
+3. Also, we don't need to maintain prefixSum array, we can calcualte the cumulative sum in the same for loop as calculating "prefixSum[i] - k"
+
 #### [LC] 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
 
-Since the number in array could be negative or repeated:  
+1. It is similar like "325. Maximum Size Subarray Sum Equals k"
+2. using hashmap to maintain "prefixSum[i] to its occurence" mapping
+3. using a global variable to maintain prefixSum (no need to maintain a prefixSum array)
+4. if `prefixSum==k`, count++
+5. if `prefixSum-k` exists, count+=(occurence of prefixSum-k)
+6. if `prefixSum` already in hashmap, increment the occurence in hashmap
 
-- using prefixSum
-- using hashmap to store prefixSum and its count
-- check in hashmap if `prefixSum-K` exists
 
 ## Greedy
 ### Default
@@ -2200,4 +2549,43 @@ Be careful that in `union()` method, everythign is done at parentX/parentY level
 https://leetcode.com/problems/accounts-merge/
 
 Be careful that after all `union()` are called, we cannot directly use `parent[x]` since the parent may not be the finaly parent, we need to use `find(x)` to get parent when traversing.
+
+
+## Shifted String & Anagrams
+### Default
+For this type of problem, we usually use hashmap to group string, and use an `encoding` function to identify `similar` strings.
+
+#### [LC] 49. Group Anagrams
+https://leetcode.com/problems/group-anagrams/
+
+The encoding function is "char-count#".
+
+#### [LC] 249. Group Shifted Strings
+https://leetcode.com/problems/group-shifted-strings/
+
+The idea is to use HashMap key to maintain distance of characters in a string. But the tricky part is the the string could be rotated. So we need to `+ 26` is the next char is smaller than previous char:  
+
+```
+    private int getDistance(char c1, char c2) {
+        int num1 = c1 - 'a';
+        int num2 = c2 - 'a';
+        //  w    y    a   --> x    z    b
+        // 23   25    1       24   26   2
+        //    2    2             2    2
+        if (num2 < num1) {
+            return num2 - num1 + 26;
+        } else {
+            return num2 - num1;
+        }
+    }
+```
+
+#### [LC] 438. Find All Anagrams in a String
+https://leetcode.com/problems/find-all-anagrams-in-a-string/
+
+We can use the same "encoding funtion" idea to check if they are anagrams, and while moving from left to right, we can using "sliding window" so that we don't need to recalculate every char, then we can use this magic array equals function!!!!
+
+```
+Arrays.equals(pCount, sCount); // time complexity is O(n), when n is 26, it's O(26)=O(1)
+```  
 
