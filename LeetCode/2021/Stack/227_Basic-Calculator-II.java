@@ -1,6 +1,53 @@
 // https://leetcode.com/problems/basic-calculator-ii/submissions/
 class Solution {
     public int calculate(String s) {
+        Deque<Integer> stack = new LinkedList<>();
+        char[] arr = s.toCharArray();
+        int currentNum = 0;
+        int sign = 1; // 1 is +, -1 is -
+        char ops = '+'; // null is +
+        for (int i = 0; i < arr.length; i++) {
+            char c = arr[i];
+            if (Character.isDigit(c)) { 
+                currentNum = 10 * currentNum + c - '0';
+            } 
+            // using this if to totally ignore space
+            if (i == (arr.length - 1) || c == '+' || c == '-' || c == '*' || c =='/') {
+                
+                // check which ops
+                if (ops == '*') {
+                    stack.push(stack.pop()*currentNum);
+                } else if (ops == '/') {
+                    stack.push((int)(stack.pop() / currentNum));
+                } else if (ops == '+') {
+                    stack.push(currentNum * sign);
+                }
+
+                // reset everything
+                ops = '+'; // reset ops
+                currentNum = 0; // reset currentNum
+                sign = 1; // reset sign
+                
+                // check current symbol
+                if (c == '+') {
+                    sign = 1;
+                } else if (c == '-') {
+                    sign = -1;
+                } else if (c == '*' || c == '/') {
+                    ops = c;
+                }
+            }
+        }
+
+        
+        int result = 0;
+        while (!stack.isEmpty()) {
+            result += stack.pop();
+        }
+        return result;         
+    } 
+    
+    public int calculate_old(String s) {
         Deque<Long> stack = new LinkedList<>();
         
         StringBuilder sb = new StringBuilder();

@@ -7,6 +7,12 @@ https://medium.com/outco/how-to-solve-sliding-window-problems-28d67601a66
 
 ### Fron/End Pointers
 
+#### [LC] 3. Longest Substring Without Repeating Characters
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+We can use HashMap to store char to index mapping, whenever seeing char exists in map, we jump left pointer to the char's position+1, and there is no need to clean up the hashmap from left pointer to position+1, since next time we see existing char, the position is either before the current left pointer, or we continue jumping.
+ 
+
 #### [LC] 11. Container With Most Water
 https://leetcode.com/problems/container-with-most-water/
 
@@ -1289,6 +1295,16 @@ NOTE: initialize all dp to be 1!!!!
         return result;
 ```
 
+#### [LC] 377. Combination Sum IV
+https://leetcode.com/problems/combination-sum-iv/
+
+top-down idea: recusion + memory
+
+- whenever we choose one element from array, we can minus the element from target, then recusive call the function.
+- when `nums[i] == target`, we reach the end, do `count++`
+- using memory to speed up the recursion
+
+
 #### [LC] 403. Frog Jump
 https://leetcode.com/problems/frog-jump/
 
@@ -1325,7 +1341,7 @@ sort or heap
 #### [LC] 56. Merge Intervals
 https://leetcode.com/problems/merge-intervals/
 
-Sort arrays or bi-directional array:
+Sort 2d array or array of object:
 ```
 Arrays.sort(arrays, (a, b) -> {
   return a[0] - b[0]; // ascending -- positive means b->a, negative means a->b
@@ -1393,10 +1409,32 @@ https://leetcode.com/problems/first-unique-character-in-a-string/
 
 Easy question, 1st round to go through all characters and count each of them, 2nd round to find the 1st one with count 1;
 
+#### [LC] 788. Rotated Digits
+https://leetcode.com/problems/rotated-digits/
+
+- option1: brute force to calculate each digit to check if it is `2/5/6/9` or `0/1/8`， the time complexity is `O(nlogn)` since we traverse n numbers and for each num we do `logN` times of checking on each digit.  
+The code to check each digit:
+
+```java
+for (int j = 0; j < 5; j++) {
+    int digit = i % 10;
+    i = i / 10;
+}
+```
+
+- option2: DP
+
+
 #### [LC] 953. Verifying an Alien Dictionary
 https://leetcode.com/problems/verifying-an-alien-dictionary/
 
 Using hashmap to store the dictionary.
+
+#### [LC] 1152. Analyze User Website Visit Pattern
+https://leetcode.com/problems/analyze-user-website-visit-pattern/
+
+For each user, brute force find all 3-sequence and using hashmap to record it, the time compleity is `O(N^3)` since we do `CN3 = n * (n-1) * (n-2)`.
+
 
 #### [LC] 1606. Find Servers That Handled Most Number of Requests
 
@@ -1595,39 +1633,109 @@ Way to compare object:
 https://leetcode.com/problems/valid-parentheses/
 
 #### [LC] 224. Basic Calculator
-
 https://leetcode.com/problems/basic-calculator/
 
-Similar to `227 Basic Calculator II`, but this time we have parentheses, be careful about `3-(7+1)`, there is `-` before `(7+1)`, and we cannot simply push `-7` to stack.
+A good blog about it: http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html
+
+1st, how to to collect continuous digits in one run?
+
+```java
+// e.g. 125
+while(Character.isDigit(c)) {
+  currentNum = currentNum * 10 + c - '0';
+}
+```
+
+2nd, how to track the sign? Sign would be `1` by default, and would change to be `-1` when seeing `-`
+
+```java
+sign = (ch == '-') ? -1 : 1; // set sign 
+```
+
+3rd, if without parenthesis, how can we calculate it? -- when it's digits, collect them as num, while it's not digits, add up the num to result with sign
+
+```java
+// e.g. 1 + 2 - 3
+int currentResult = 0;
+int currentNum = 0;
+int currentSign = 1; // by default is positive
+for (char c : s.toCharArray()) {
+    if (Character.isDigit(c)) { // always start with digits!!!
+        currentNum = currentNum*10 + c - '0'; 
+    } else { // if not digits, then we can addup currentResult
+        currentResult = currentResult + currentNum * currentSign;
+        currentNum = 0; // reset currentNum!!!
+        if (c == '+' || c == '-') {
+          currentSign = (c == '+' ? 1 : -1);
+        }
+    }
+}
+
+```
+
+4th, how to handle parenthesis? -- we only push/pop when seeing parenthses 
+  - when seeing `(`, we push the currentResult and sign (the sign for next parenthesis) to stack, and reset currentResult and sign 
+  - when seeing `)`, we pop the previous sign and previous num
+
+
 
 #### [LC] 227 Basic Calculator II  
 https://leetcode.com/problems/basic-calculator-ii/
 
-- traverse string from left to right, if number, add to currentNumber variable, if next is “+” or “-“, push to stack.
-- , find next number, push to stack (if it is “-“ before it, push -1*num to stack).
-- continue, find “*” or “/“, pop the previous number, calculate it, and push the calculated result into stack.
-- finally clean up the stack by adding up all the rest number there
 
+Similar like `224. Basic Calculator`, we need to recrod `sign` and `currentNum`.  
+The difference is that, instead of pushing numbers when seeing left bracket, we need to push stack when seeing `*` or `/`, and record the current operation as `*` or `/`, then next time we collect enough `currentNum`, we can check the operation to decide what to do
+- if operation is `+`, simply push the `currentNum` to stack
+- if operation is `*`, pop the stack and times with `currentNum`, then push the result to stack
+- if operation is `/`, pop the stack and dividended by the `currentNum`, then push result to stack
+- finally we add up every num in stack
 
-NOTE1: to clear StringBuilder, use `sb.setLength(0)`
-
-
-NOTE2: be careful the space like "  30 + 2 / 1 ", we can remove the space at beginning, or skip space when collecting num:
+Some trick we can play:   
+1. how to ignore space? --> do not include space in the if conditions at all  
 
 ```java
-    private int collectNum(String s, int pos, StringBuilder sb) {
-        while (pos < s.length() && s.charAt(pos) == ' ') {
-            pos++;
-        }
-        while(pos < s.length() && Character.isDigit(s.charAt(pos))) {
-            sb.append(s.charAt(pos));
-            pos++;
-        }
-        while (pos < s.length() && s.charAt(pos) == ' ') {
-            pos++;
-        }
-        return pos;
-    }
+if (Character.isDigit(c)) { 
+    currentNum = 10 * currentNum + c - '0';
+} 
+if (i == arr.length - 1 || c == '+' || c == '-' || c == '*' || c =='/') {
+   // do something
+}
+```
+
+2. how to cover the final `currentNum` when reaching end of the sting?
+See the above code snippet, we include the `i == arr.length - 1` as condition together with other symbols, it helps to handle the last `currentNum`
+
+3. how to save space complexity?  
+Actaully we don't need a stack, we just need a `prevNum` variable to record previous number for `*` and `+`, and another variable `result` to add up all `+` and `+`, then finally return `result` 
+
+#### [LC] 772. Basic Calculator III
+https://leetcode.com/problems/basic-calculator-iii/
+
+This is a mix of `224. Basic Calculator` and `227 Basic Calculator II`, since we have both `*` `/` and `(``)`, we cannot use a simple one round to solve it since brackets and `*/` have the same priority.
+
+One idea is that, if not considering brackets, we can use the method in `227 Basic Calculator II`, and whenever seeing bracket, we put whole brackets into recursive function and treat the result at `currentNum`.
+
+Be careful to find the bracketed substring, since it may have two scenatios like `1+(2+(3+4))` or `(1+2)+(3+4)`.  
+
+Here is the code with `O(n^2)` since we need to search for `)` for every `(` with at most `n-1` steps, so `n-1 + n-2 + n-3 + ... is n^2` 
+
+```java
+  if (c == '(') {
+      int j = i + 1;
+      int leftCount = 1; // count "("
+      int rightCount = 0; // count ")"
+      while(rightCount != leftCount) {
+          if (s.charAt(j) == '(') {
+              leftCount++;
+          } else if (s.charAt(j) == ')') {
+              rightCount++;
+          }
+          j++;
+      }
+      // j-1 is the ")"
+      currentNum = calculate(s.substring(i+1,j-1));
+      i = j-1; // move i to ")"
+  }
 ```
 
 #### [LC] 636. Exclusive Time of Functions
@@ -1668,24 +1776,11 @@ https://leetcode.com/problems/kth-largest-element-in-an-array/
 
 min heap --> top/first is the minimum --> so ascending in list
 
-#### [LC] 253. Meeting Rooms II
-https://leetcode.com/problems/meeting-rooms-ii/
-
-Using `Arrays.sort()` to sort by start time, then use PriorityQueue to maintain earliest ending interval at top of heap, the final result is the intervals in the heap.
-
-NOTE:
-- `int[]` is also an generic type that can be used in PriorityQueue
-
-```
-PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{
-    return a[1]-b[1]; // ascending order
-});
-```
 
 #### [LC] 767. Reorganize String
 https://leetcode.com/problems/reorganize-string/
 
-```
+```python
         // aaaccc --> acacac
         // aaacccc --> cacacac
         // aaaccccc --> ""
@@ -1768,11 +1863,25 @@ https://stackoverflow.com/questions/43145395/time-complexity-while-deleting-last
 | remove(Integer obj)         | O(N)        | O(N)       |
 
 
+Some tricks when using Collections:
+1. remove range of list by `O(N)`
+```java
+arayList.subList(inclusiveIndex, exclusiveIndex).clear();
+```
+
+2. get max key of TreeMap --> by default TreeMap is asceding, so last is the max and first is min:  
+```java
+treeMap.getLastKey();
+```
+
+
 #### [LC] 146. LRU Cache
 https://leetcode.com/problems/lru-cache/
 
 - option1: linkedhashmap 
 - option2: custome class to define double-linked-list and hashmap
+
+
 
 #### [LC] 157. Read N Characters Given Read4
 https://leetcode.com/problems/read-n-characters-given-read4/
@@ -1859,10 +1968,25 @@ https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/
 
 Similar like `380. Insert Delete GetRandom O(1)`, when deleting element, swap with end element to achieve `O(1)`
 
+```java
+ArrayList<Integer> list;
+HashMap<Integer, Set<Integer>> valToPosSetMap;
 ```
-ArrayList<Integer> lst;
-    HashMap<Integer, Set<Integer>> idx;
+
+Be careful  
+1. hashset cannot remove by index, has to use iterator like this `int val = hashset.iterator().next()`
+2. be careful to not use `list.size() - 1` at multiple places, especially when we need to delete it from both list and hashset, since the list size would have already changed when it's removed once.
+
+e.g.
+
+```java
+int pos = posList.iterator().next();
+int end = list.size() - 1;
+swap(pos, end, list, map);
+list.remove(end); 
+posList.remove(end); // we cannot use "list.size() - 1", since list size has changed!!!
 ```
+
 
 #### [LC] 398. Random Pick Index
 https://leetcode.com/problems/random-pick-index/
@@ -1900,6 +2024,28 @@ https://leetcode.com/problems/design-in-memory-file-system/
 - using TreeMap since the question wants to return file/directories in lexicographic order.
 - be careful when using `s.slpit("/")`, the first element in the array would be empty string `""`, need to skip this one
 
+#### [LC] 716. Max Stack
+https://leetcode.com/problems/max-stack/
+
+- option1: using two stacks, one to store the original nums, and one to store max num at current level
+  - when push(), push the `Math.max(maxStack.peek(), num)` to maxStack
+  - when popMax(), using a tmpStck to store original nums, then pop both original stack and maxStack until `numStack.peek().equals(maxStack.peek())` which means we find the top most max value
+    - it is `O(N)`
+    - NOTE: Integer cannot use `==`, using `equals()` instead!!!
+- option2: using cusomized class doubleLinkedList and TreeMap,
+  - TreeMap keeps the num sorted in keySet, and the values are list of `DoubleLinkedNode`
+  - the trick is that, when we do `popMax()`, treeMap can return a list of `DoubleLinkedNode`, and the node can find it self in the doubleLinkedList by `O(1)`, and then remove itself in the doubleLinkedList
+    - it makes pop(), push(), popMax() are all `O(logN)` since TreeMap needs to sort, while peek() and peekMax() are `O(1)`
+
+#### [LC] 155. Min Stack
+https://leetcode.com/problems/min-stack/
+
+Similar like `716. Max Stack`, but we can play a trick here, since we don't need to maintain 2 stack, but using one stack to store `int[]` like this to store both original num and min num so far.
+
+```java
+Deque<int[]> stack = new LinkedList<>(); 
+```
+
 #### [LC] 729 My Calendar I
 https://leetcode.com/problems/my-calendar-i/
 
@@ -1914,6 +2060,15 @@ https://leetcode.com/problems/my-calendar-ii/
 
 - Using two treemap here, one to store general meetings, another one to store overalapped areas as new intervals
  
+
+#### [LC] 1472. Design Browser History
+https://leetcode.com/problems/design-browser-history/
+
+Just using an ArrayList to store history and pointer for current position. Whenver visit() is called, we remove everything from `current+1` to end of the history, and then append the visited url.
+
+```java
+history.subList(current+1, history.size()).clear();
+```
 
 #### [LC] 1570. Dot Product of Two Sparse Vectors
 https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
@@ -1989,7 +2144,7 @@ https://en.wikipedia.org/wiki/Trie
 [LC] 421. Maximum XOR of Two Numbers in an Array
 [LC] 1707. Maximum XOR With an Element From Array
 
-```
+```java
 // each TrieNode would have 26 child nodes, TrieNode itself is empty, it only makes sense when being used to check child links (check if links array has the index)
 class TrieNode {
 
@@ -2022,7 +2177,7 @@ class TrieNode {
 }
 ```
 
-```
+```java
 class Trie {
     private TrieNode root;
 
@@ -2163,7 +2318,7 @@ https://leetcode.com/problems/bitwise-and-of-numbers-range/
 - option1: stupid way: `Integer.toBinaryString(int i)`
 - option2:
 
-```
+```java
   public int rangeBitwiseAnd(int m, int n) {
     int shift = 0;
     // find the common 1-bits
@@ -2178,6 +2333,166 @@ https://leetcode.com/problems/bitwise-and-of-numbers-range/
 
 ## BinarySearch
 ### Default
+
+https://zhuanlan.zhihu.com/p/79553968
+
+https://blog.csdn.net/Bean771606540/article/details/107533165
+
+NOTE: need to understand `searching space` for binary searching problem, since we cannot use the template blindly, somtimes the searching space requries us to set `right = mid`  instead of `right = mid-1` since the `mid` could also be the final result
+  - e.g. `153. Find Minimum in Rotated Sorted Array`
+
+Binary Search looks easy, but it could be very hard in details, since most ppl don't know  
+- initially, whether to use `right = nums.length` or `right = nums.length - 1`
+- in while method, whether to use `left < right` or `left <= right` 
+- when move left and right pointer, whether to do `left = mid` or `left = mid + 1`
+- after while loop is done, can I use `left` or `right` directly?
+
+Explaination:  
+- what does `right = nums.length` or `right = nums.length - 1` mean?
+  - when `right = nums.length`
+    - it means our searching space is `[left,right)` 
+    - we have to use `while(left < right)` 
+      - it means the ending condition is when `left == right`
+  - when `right = nums.length - 1`
+    - it means our searching space is `[left, right]`
+    - we have to use `while(left <= right)`
+      - it means the ending condition is when `left == right + 1`
+
+Consider it in this way (using right inclusive algorithm):  
+```
+Finally we have searching space [right+1, right], so the "middle" of left and right must be the boundary:
+
+if target exists (target==5), we find left most boundary (left points to target):
+
+[1,    3,       |        5,     5,    7,    9]
+     right  (boundary)  left
+
+
+if taget exists (taget==5), we find right most boundary (right points to target):
+
+[1,    3,      5,     5,       |        7,    9]
+                    right  (boundary)  left
+
+
+if key not exists (key==4), we can also find the boundary (left or right at two sides of target):
+[1,    3,       |        5,     5,      7,    9]
+     right  (boundary)  left
+
+
+if key out of boundary (key==10)
+
+[1,    3,     5,     5,      7,    9]      |
+                                right  (boundary)  left
+
+if key out of boundary (key==0)
+           |        [1,    3,     5,     5,      7,    9]
+right  (boundary)  left
+
+```
+ 
+
+If we use all-inclusive searching space, here are the code:
+```java
+int left_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1; // right inclusive
+    while (left <= right) { // searching space is [left,right]
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            right = mid - 1; // move left
+        }
+    }
+    /**
+      * now searching space is [right+1, right], nothing is searchable, so we end.
+      * if target exists, nums[left] should equal to the target
+      * if not, check overflow situation
+      * 1. when target is larger than any num, then left is at length --> [length, length-1]
+      * 2. when target is less than any num, then right is at -1 --> [-1, 0]
+      *
+      * NOTE: can also return right finally, then we need to check if right < 0
+    **/
+    if (left >= nums.length || nums[left] != target)
+        return -1;
+    return left;
+}
+```
+
+```java
+int right_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1; // right inclusive
+    while (left <= right) { // searching space is [left,right]
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            left = mid + 1; // move right
+        }
+    }
+    /**
+      * now searching space is [right+1, right], nothing is searchable, so we end.
+      * if target exists, nums[right] should equal to the target
+      * if not, check overflow situation
+      * 1. when target is larger than any num, then left is at length --> [length, length-1]
+      * 2. when target is less than any num, then right is at -1 --> [-1, 0]
+      *
+      * NOTE: can also return left finally, then we need to check if left > length-1
+    **/
+    if (right < 0 || nums[right] != target)
+        return -1;
+    return right;
+}
+```
+
+
+If we use right-exclusive searching space, here are the code:
+
+```java
+int left_bound(int[] nums, int target) {
+    if (nums.length == 0) return -1;
+    int left = 0;
+    int right = nums.length; // right exclusive
+
+    while (left < right) { // // searching space is [left,right)
+        int mid = left + (right - left) / 2; 
+        if (nums[mid] == target) {
+            right = mid; // move left
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid; // NOTE!!!!
+        }
+    }
+  // target is larger than all num
+  if (left == nums.length) return -1;
+  return nums[left] == target ? left : -1;
+}
+```
+
+```java
+int right_bound(int[] nums, int target) {
+    if (nums.length == 0) return -1; 
+    int left = 0, right = nums.length; // right exclusive
+
+    while (left < right) { // searching space is [left,right)
+        int mid = (left + right) / 2;
+        if (nums[mid] == target) {
+            left = mid + 1; // move right
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid;
+        }
+    }
+    // target is less than all num
+    if (left == 0) return -1;
+    return nums[left-1] == target ? (left-1) : -1;
+}
+```
 
 #### [LC] 4. Median of Two Sorted Arrays
 https://leetcode.com/problems/median-of-two-sorted-arrays/
@@ -2218,7 +2533,7 @@ now check if a2<=b4 && b3<=a3, if yes, then we found the median by avg (max(a2,b
 
 For a corner case that we moved partition in a to the end of array  
 
-```
+```python
 If total number is even:
 
 (7 nums)            (7 nums)   
@@ -2267,7 +2582,7 @@ NOTE:
     - 25 --> max fit is 16, and reminder is 9
     - 9 --> max fit is 8, which is the previous multiple of 4 (4 --> 8 --> 16)
 
-```
+```java
 // NOTE: must convert to long first!!! otherwise MIN_VALUE * -1 would be overflow
 long dividendCopy = dividend;
 long divisorCopy = divisor;
@@ -2278,7 +2593,7 @@ long dividendAbs = dividendCopy > 0 ? dividendCopy : (dividendCopy * -1);
 long divisorAbs = divisorCopy > 0 ? divisorCopy : (divisorCopy * -1);
 ```
 
-```
+```java
 long quotient = 0;
 while (dividendAbs >= divisorAbs) {
     long divisorAbsMultiple = divisorAbs;
@@ -2299,29 +2614,6 @@ while (dividendAbs >= divisorAbs) {
 #### [LC] 34. Find First and Last Position of Element in Sorted Array
 https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 
-find leftmost matched
-```
-        while(left < right) {
-            int mid = (left + right)/2; // try find mid close to left
-            if (nums[mid] >= target) {
-                right = mid; // find the leftMost
-            } else {
-                left = mid + 1;
-            }
-        }
-```
-find rightmost matched
-
-```
-        while(left < right) {
-            int mid = (left + right + 1)/2; // try find mid close to right
-            if (nums[mid] <= target) {
-                left = mid; // find the rightmost
-            } else {
-                right = mid - 1;
-            }
-        }
-```
 
 #### [LC] 50. Pow(x, n)
 https://leetcode.com/problems/powx-n/
@@ -2333,12 +2625,21 @@ https://leetcode.com/problems/powx-n/
   - since n could be Integer.MIN_VALUE, when we remove the symbol to make `Math.abs(n)`, it would be over Integer.MAX_VALUE
 
 
+#### [LC] 153. Find Minimum in Rotated Sorted Array
+https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+
+The template need to be adjusted here: 
+
+--> the problem is like: where is the min num? left hand of `mid` or right hand of `mid` or just `mid`?   
+--> then we can set `right = mid` when finding that min could be at left-hand side or mid or the mid itself
+--> finally we can break at `left==right` since that is the min we found.
+
 #### [LC] 270. Closest Binary Search Tree Value
 https://leetcode.com/problems/closest-binary-search-tree-value/
 
 Binary search in a BST is very easy:
 
-```
+```java
         while(root != null) {
             if (root.val <= target) {
                 // do something
@@ -2355,6 +2656,32 @@ https://leetcode.com/problems/first-bad-version/
 
 NOTE!!!
 - use `mid = left + (right - left) / 2` instead of `mid = (left + right) / 2`, since when it's over Integer.MAX_VALUE, mid becomes negative due to overflow, that will result in calling the API a lot of times without getting the actual result
+
+
+#### [LC] 875. Koko Eating Bananas
+https://leetcode.com/problems/koko-eating-bananas/
+
+We use binary search, set `l = 1` and `r = max(nums[i])`, using h as target, and function `getHourByK()` as the nums funtion.
+
+Be careful:
+
+```python
+the final situation is the l = r + 1, but lHour and rHour are reversed, since the larger the k is, the smaller the hour would be, so we should return r finally 
+
+h = 4, 
+        r   <    l
+nums: 1 3   |    5  7 9
+        lH  kH  rH
+
+h = 5
+        r   <    l
+nums: 1 3   |    5  7 9
+        lH  kH   rH
+
+h = 1
+nums:   |    3  5 7 9 11
+     lH kH  rH
+```
 
 #### [LC] 1428. Leftmost Column with at Least a One
 https://leetcode.com/problems/leftmost-column-with-at-least-a-one/
@@ -2405,10 +2732,54 @@ https://leetcode.com/problems/subarray-sum-equals-k/
 
 ## Greedy
 ### Default
+
+#### [LC] 134. Gas Station
+https://leetcode.com/problems/gas-station/
+
+If the starting point exists, it must start from the position where we lose the most of the gas, so that it can start to gain gas first to gather all the gas we need before we start losing.
+
+Take an example like (here the number refers to the value gas[i] - cost[i])
+
+[3,4,-12,4,-5,6]
+
+The minimum tank value will happen at index 4, where the value is -5, because at there our tank is at the minimum value -6, which means if the result exists, it must start to gather gas at index 5 so that we can cover all the gas loss before we reach index 4.
+
+#### [LC] 253. Meeting Rooms II
+https://leetcode.com/problems/meeting-rooms-ii/
+
+Using `Arrays.sort()` to sort by start time, then use PriorityQueue to maintain earliest ending interval at top of heap, then traverse the meetings:
+  - if no overlap, then extend the end time of top meeting in the queue
+  - if found overlap, then enqueue both meetings
+  - the final result is the intervals in the heap.
+
+NOTE:
+- `int[]` is also an generic type that can be used in PriorityQueue
+
+```
+PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{
+    return a[1]-b[1]; // ascending order
+});
+```
+
+#### [LC] 455. Assign Cookies
+https://leetcode.com/problems/assign-cookies/
+
+Sort the two arrays and then using two pointers to move from largest to smallest.
+
+Be careful, for primirity array, that `Arrays.sort()` can only work for ascending order, for descending order we cannot use comparator directly --> we have to convert it into `Integer[]`:
+
+```java
+int[] arr = Arrays.stream(originalArr) // convert to stream
+                  .boxed() // convert to Integer[]
+                  .sort((a,b) -> {b - a;}) // descending
+                  .mapToInt(i -> i) // convert to int[]
+                  .toArray();
+```
+
 #### [LC] 621. Task Scheduler
 https://leetcode.com/problems/task-scheduler/
 
-```
+```python
 if we only consider the char with max frequence:
 A4 B4 C3 D3 E2
 n=3
@@ -2425,6 +2796,14 @@ so in total we have 9 - 3 - 3 - 3 - 2 = -2 idel slots left, it means we can fill
 the total unit of time we need would be max(0, -2) + tasks.length = 16
 ```
 
+#### [LC] 1094. Car Pooling
+https://leetcode.com/problems/car-pooling/
+
+The idea is that: 
+
+- treat each start_location and end_location as index to `++passanger` or `--passanger`
+- then we can use either TreeMap or bucket sort (using `new int[1000]`) to store the total operation at each location --> either add xx passangers or remove yy passangers
+- then we go through the TreeMap or `new int[1000]` to check if the initial capacity is enough
 
 ## Union-Find / Disjoint-Set
 https://segmentfault.com/a/1190000022952886
@@ -2448,7 +2827,7 @@ What are the time complexity?
   - in this universe, `α(n) < 5 `, that is why `O(α(n))` almost equal to `O(1)`
 
 Template:  
-```
+```java
 class DJS { // disjoint-set
   int[] parent;
   int[] rank; // relative height of the parent node
@@ -2497,7 +2876,7 @@ As long as the key and value of `parent` is the same, we can even define a custo
 - `HashMap<Node, Node> parent`
 - `HashMap<Node, Integer> rank`
 
-```
+```java
 class DJS {
     public HashMap<String, String> parent = new HashMap<>();
     public HashMap<String, Integer> rank = new HashMap<>();
@@ -2565,7 +2944,7 @@ https://leetcode.com/problems/group-shifted-strings/
 
 The idea is to use HashMap key to maintain distance of characters in a string. But the tricky part is the the string could be rotated. So we need to `+ 26` is the next char is smaller than previous char:  
 
-```
+```java
     private int getDistance(char c1, char c2) {
         int num1 = c1 - 'a';
         int num2 = c2 - 'a';
