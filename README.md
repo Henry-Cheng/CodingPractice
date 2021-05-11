@@ -1,447 +1,141 @@
 # CodingPractice
 
-Classify Leetcode problems into patterns:
+Be careful on following details:
 
-## Two Pointers
-https://medium.com/outco/how-to-solve-sliding-window-problems-28d67601a66
-
-### Fron/End Pointers
-
-#### [LC] 3. Longest Substring Without Repeating Characters
-https://leetcode.com/problems/longest-substring-without-repeating-characters/
-
-We can use HashMap to store char to index mapping, whenever seeing char exists in map, we jump left pointer to the char's position+1, and there is no need to clean up the hashmap from left pointer to position+1, since next time we see existing char, the position is either before the current left pointer, or we continue jumping.
- 
-
-#### [LC] 11. Container With Most Water
-https://leetcode.com/problems/container-with-most-water/
-
-#### [LC] 15. 3Sum
-https://leetcode.com/problems/3sum/
-
-sort first, then have O(N^2)
-
-#### [LC] 16. 3Sum Closest
-https://leetcode.com/problems/3sum-closest/  
-
-Be careful on the conditions when should we move left pointer and when to move right pointer
-
-#### [LC] 19. Remove Nth Node From End of List
-https://leetcode.com/problems/remove-nth-node-from-end-of-list/
-
-Be careful on corner case, when n equals to size of list, and when n is only 1
-
-#### [LC] 42. Trapping Rain Water
-https://leetcode.com/problems/trapping-rain-water/
-
-Move both front and end pointers when the corresponding wall is lower.
-
-#### [LC] 121. Best Time to Buy and Sell Stock
-https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
-
-```
-origin: 3 2 6 5 0 3
-if we sell at this point, what would be the lowest buy price
-left:   3 2 2 2 0 0
-if we buy at this point, what would be the highest sell price
-right:  6 6 6 5 3 3
-```
-Goes through all the way from left to right to find min price at each day (store in new array), then goes through all the way from right to left to find max price at each day (store in new array), then goes through both new arrays together to get the max gap.
+1. For BFS
+  - remember to add entryPoint nodes to visited before traversing queue
+  - remember to store queue size into int variable, instead of using `queue.size()` directly
+  - remember to add node to visited when traversing the neightbors 
+2. For DFS
+  - remember to try all entryPoints using for loop, and then for each of them run DFS
+  - remember to add all entryPoints to visited at begining
+3. For Tree
+  - remember to check if root.left and root.right is null before call dfs for root.left and root.right
 
 
-#### [LC] 125. Valid Palindrome 
-https://leetcode.com/problems/valid-palindrome/
-
-Be careful that left or right could go beyond the boundary.
-
-#### [LC] 209. Minimum Size Subarray Sum
-https://leetcode.com/problems/minimum-size-subarray-sum/
-All nums are positive.
-
-```
-        // 2,3,1,2,4,3 --> 7
-        // 2 --> < target, move right
-        // 2,3 --> < target, move right
-        // 2,3,1 --> < target, move right
-        // 2,3,1,2 --> record it, >= target, move left
-        //   3,1,2 --> < target, move right
-        //   3,1,2,4 --> record it, >= target, move left
-        //     1,2,4 --> record it, >= target, move left
-        //       2,4 --> < target, move right
-        //       2,4,3 --> record it, >= target, move left
-        //         4,3 --> record it, >= target, move left
-        //           3 --> < target, at the end
-```
+Be careful on Java fundation:
+1. Java uses unicode, in which each character would occupies 2 bytes, no matter it's English char or Chinese char
+  - For some other encoding like GBK, the English char is 1 byte, while Chinese char is 2 bytes
+2. `Arrays.copyOf(arr, arr.length)` is shallow copy!!!
+  - have to copy the element one by one to implement deep copy
 
 
-#### [LC] 238. Product of Array Except Self    
-https://leetcode.com/problems/product-of-array-except-self/solution/
+## Binary Search Tree
 
-- generate product from left to right left[i] is the product from 0 to left-1 (exlclude i), note that left[0] is 1
-- generate product from right to left right[i] is the product from n-1 to i+1 (exlclude i), note that right[n-1] is 1
-- now the result for i is `left[i]*right[i]`
-
-
-#### [LC] 340. Longest Substring with At Most K Distinct Characters
-https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
-
-```
-        // e c e b a --> k ==2
-        // e --> 1 <= 2, record 1, expand
-        // e c --> 2 <= 2, record 2, expand
-        // e c e --> 2 <= 2, record 3, expand
-        // e c e b --> 3 > 2, shrink
-        //   c e b --> 3 > 2, shrink
-        //     e b --> 2 <=2, record 2, expand
-        //     e b a --> 3 >= 2 shrink
-        //       b a --> 2 <= 2, record 2, end
-```
-NOTE:
-- using HashSet instead of HashMap if no need to store values
-- HashSet contains() has O(1) average time complexity, and O(lgn) worst time complexity, since HashSet is backed by HashMap
-- after doing `right++` in while loop, right could be over index, be careful to check the range before using it
-
-#### [LC] 344. Reverse String
-https://leetcode.com/problems/reverse-string/
-
-#### [LC] 345. Reverse Vowels of a String
-https://leetcode.com/problems/reverse-vowels-of-a-string/
-
-Be careful when using hashmap, only when map.get(key) != null means key exists.
-
-#### [LC] 424. Longest Repeating Character Replacement
-https://leetcode.com/problems/longest-repeating-character-replacement/
-
-```
-
-        it equals to: find longest substring that has only k different char
-             e c e b a --> k ==2
-             e         --> 0 <= 2, record 1, expand
-             e c       --> 1 <= 2, record 2, expand
-             e c e     --> 1 <= 2, record 3, expand
-             e c e b   --> 2 <= 2, record 4, expand
-             e c e b a --> 3 > 2, shrink
-               c e b a --> 4 > 2, shrink
-                 e b a --> 3 > 2, shrink
-                   b a --> 2 <= 2 record 2, cannot expand, end
-
-```
-NOTE:
-- no need to update `mostCountSoFar` when decrementing, the reason is that `mostCountSoFar` recrods the most char count in the history, unless we find a bigger window in the future and increase the `mostCountSoFar`, we cannot do better that current max result which is based on `mostCountSoFar`
-- for two pointers template, remember to check right boundary after `right++`, and then increment countMap; but do the decrement before `left--`  
-
-#### [LC] 438 Find All Anagrams in a String 
-https://leetcode.com/problems/find-all-anagrams-in-a-string/solution/
-
-- option1: hashmap + sliding window, put dict word into hashmap1, then move left and right pointers to find next dict.legnth substring, and increment/decrement count in hashmap2, compare hashmap1 and hashmap2
-- option2: array + sliding window, since it only has lower case letter, hash map can be replaced by 26-length array
-
-
-#### [LC] 581 Shortest Unsorted Continuous Subarray   
-- option1 sort: sort in another array, then compare different num 
-- option2 sliding window [LC solution](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/zui-duan-wu-xu-lian-xu-zi-shu-zu-by-leetcode/): if we found such a subarray (i,j), then the correct position of the smallest num is i, the correct position of the largest num in array is j.
-  - 因此，首先我们需要找到原数组在哪个位置开始不是升序的。我们从头开始遍历数组，一旦遇到降序的元素，我们记录最小元素为 min 。
-  - 类似的，我们逆序扫描数组 nums，当数组出现升序的时候，我们记录最大元素为 max。
-  - 然后，我们再次遍历 nums 数组并通过与其他元素进行比较，来找到 min 和 max 在原数组中的正确位置。
-    - 我们只需要从头开始找到第一个大于 min 的元素，从尾开始找到第一个小于 max 的元素，它们之间就是最短无序子数组。
-
-```
-         1 3 7 6 5 10 2 9 7 8 
-         
-         left min --> start from 7 --> 2
-         right max --> start from 9 --> 10
-         left correct pos --> 3 > 6 --> 3
-         right correct pos --> 8 < 10 --> 8
-         need to replace from 3 to 8
-```
-
-#### [LC] 680. Valid Palindrome II
-https://leetcode.com/problems/valid-palindrome-ii/
-
-- use a global boolean variable to check whether the chance to skip has been used
-- use recusion to do something like this when encountering 1st mismatch in two-pointer round.
-```
-return validPalindrome(s, left + 1, right) || validPalindrome(s, left, right-1);  
-``` 
-
-#### [LC] 708. Insert into a Sorted Circular Linked List
-https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
-
-This is not a standard two-pointer problem, in this question we only need pointer as flag to mark some place for us:
-
-1. pointer to mark the original head, it is used to decide whether we have goes around 1 time
-2. pointer to mark the `lastMaxNode` in the circle, that can help us insert the value which is either max of min of all existing values
-3. a boolean flag to check if we have inserted the node already
-3. the logic is to traverse the circular list until we reaches a circle
-  - we will always maintain the `lastMaxNode` in the while loop
-  - if we found a place inside the circle that the insertValue is larger than previous one and lower than next one, we can insert it, set the boolean flag to be true, and then break;
-  - after we break or finishes a circle, check boolean flag
-    - if already inserted, return original head
-    - if not inserted yet, the insertValue must of either max of min of all nodes, we can just insert it after `lastMaxNode` (since the next node of `lastMaxNode` is the `firstMinNode`)
-
-#### [LC] 862. Shortest Subarray with Sum at Least K
-https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/
-
-Nums could be positive or negative.
-
-Solution in Chinese version: [https://github.com/Shellbye/Shellbye.github.io/issues/41](https://github.com/Shellbye/Shellbye.github.io/issues/41)
-
-
-NOTE:
-- cannot directly use two pointers after prefixSum array!!!
-  - the reason is that the prefixSum array is not sorted, so when we reach to index i that is less than index i-1, the left pointer would stuck at index i wihtout moving any more! (see [https://www.taodudu.cc/news/show-2093248.html](https://www.taodudu.cc/news/show-2093248.html))
-  - we have to delete such an element at index i, that is why we use Deque!!
-- using long here since Integer.MAX_VALUE is 2.1*10^9, but A[i] * A.length < 5*10^9
-- prefixSum[0] = 0; // set it to be 0, which means sum before index 0 is 0
-
-#### [LC] 1004. Max Consecutive Ones III
-https://leetcode.com/problems/max-consecutive-ones-iii/
-
-
-
-## Tree
 ### Default
-1. How to traverse tree
-2. How to build tree
-3. How to traverse tree with custom return value
 
-#### 94. Binary Tree Inorder Traversal
-https://leetcode.com/problems/binary-tree-inorder-traversal/
+BST has its special use case, it must satisfy the following 3 conditions:  
 
-Remember:
-Time complexity : O(n)  
-The time complexity is O(n) because the recursive function is   
-T(n) = 2 * T(n/2) + 1
+1. no duplicate num allowed --> left subtree is strictly less then root, so is right subtree
+2. `max value of left subtree` < root < `min value of right subtree`
+3. left subtree is BST, and right subtree is BST
 
-Space complexity : 
-The worst case space required is O(n), and in the average case it's O(logn) where n is number of nodes.
-
-NOTE: can also use stack to do the inOrder traverse
-
-#### [LC] 101. Symmetric Tree
-https://leetcode.com/problems/symmetric-tree/
-
-What makes two tree symmetric? root1 and root2 are the same, root1.left equals to root2.right.
-Can create a helper function using two of the same root at beginning.
-
-#### [LC] 102. Binary Tree Level Order Traversal
-https://leetcode.com/problems/binary-tree-level-order-traversal/
-
-Standard BFS template.
-
-#### [LC] 104. Maximum Depth of Binary Tree
-https://leetcode.com/problems/maximum-depth-of-binary-tree/
-
-Using recursion or BFS template.
-
-Recursin
-```
-        int leftDepth = maxDepth(root.left);
-        int rightDepth = maxDepth(root.right);
-        return Math.max(leftDepth, rightDepth) + 1;
-```
-
-#### [LC] 110. Balanced Binary Tree
-https://leetcode.com/problems/balanced-binary-tree/
-
-#### [LC] 112. Path Sum
-https://leetcode.com/problems/path-sum/
-
-When using recusion, be careful to check both `root == null` and `root.left == null && root.right == null`.
-
-When using iterative, prepare another stack to remember the current sum.
-
-#### [LC] 113. Path Sum II
-https://leetcode.com/problems/path-sum-ii/
-
-when using backtrack, remember to remove last element in path when return to previous stack.
-
-#### [LC] 124. Binary Tree Maximum Path Sum
-https://leetcode.com/problems/binary-tree-maximum-path-sum/
-
-- using the same idea like kadane's algorithm
-  - maintain a currentMaxSum, and then compare with current node, we can choose to only use current node (by throwing away currentMaxSum), or addup current node
-- but this question is a bit different, not like kadane's algorithm which has only one direction, here we have two directions
-- `currentMaxSum = max(root, root+left, root+right)` -- we can return it to parent stack in dfs 
-- `totalMaxSum = max(totalMaxSum, currentMaxSum, root+left+right)` -- we need to check whether we can directly use `root+left+right`
-
-
-#### [LC] 144. Binary Tree Preorder Traversal
-https://leetcode.com/problems/binary-tree-preorder-traversal/
-
-#### [LC] 199. Binary Tree Right Side View
-https://leetcode.com/problems/binary-tree-right-side-view/
-
-BFS, then output the rightmost node at each layer.
-
-#### [LC] 226. Invert Binary Tree
-https://leetcode.com/problems/invert-binary-tree/
-
-
-#### [LC] 236. Lowest Common Ancestor of a Binary Tree
-https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
-
-The trick is: if root is p or q, return root; if left or right is p or q, return left or right. The idea is that left or right can represent the top node of a subtree that contains p or q.
-
-algorithm
-
-```
-if the root is p or q, just return root; 
-If root is not p or q, check if left or right exsits p or q (check if it is null);
-If left and right both exists, then current root is LCA, return current root;
-If left or right exists, return left or right;
-```
-
-NOTE: the time complexity is O(n) since it traverse all nodes, but its space complexity is also O(n), since even though there is no heap space, the stack space would be O(n) if it is a skewed tree (like the height of the tree equals to number of nodes).
-
-
-#### [LC] 270. Closest Binary Search Tree Value
-https://leetcode.com/problems/closest-binary-search-tree-value/
-
-
-#### [LC] 297. Serialize and Deserialize Binary Tree
-https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
-
-- seralize with preOrder
-  - using "," as delimiter and "#" for null node
-- deserialize with queue to store splitted string by ","
-  - be careful if the original root is null, array[0] is ""
-
-```
-    public TreeNode deserialize(String data) {
-        String[] array = data.split(",");
-        Deque<Integer> queue = new LinkedList<>();
-        for (int i = 0; i < array.length; i++) {
-            queue.offer((array[i].equals("#") || array[i].equals("")) ? null : Integer.valueOf(array[i])); // "" means the root is null
+```java
+    private BST isValidBSTHelper(TreeNode root) {
+        if (root.left == null && root.right == null) {
+            return new BST(true, root.val, root.val);
         }
-        return preOrderDeserialize(queue);
-    }
-    
-    private TreeNode preOrderDeserialize(Deque<Integer> queue) {
-        Integer val = queue.poll();
-        if (val == null) {
-            return null;
+        BST left = root.left != null ? isValidBSTHelper(root.left) : null;
+        BST right = root.right != null ? isValidBSTHelper(root.right) : null;
+        if (
+            (left == null || (left.isBST && left.max < root.val)) 
+            && 
+            (right == null || (right.isBST && right.min > root.val))
+           ) { // when left and right are both BST, and left max and right min are around root.val, it is a valid BST
+            int min = left != null ? left.min : root.val;
+            int max = right != null ? right.max : root.val;
+            return new BST(true, min, max);
+        } else {
+            return new BST(false, root.val, root.val);
         }
-        TreeNode root = new TreeNode(val);
-        root.left = preOrderDeserialize(queue);
-        root.right = preOrderDeserialize(queue);
-        return root;
     }
+
+    private static class BST {
+        public boolean isBST;
+        public int min;
+        public int max;
+        public BST(boolean isBST, int min, int max) {
+            this.isBST = isBST;
+            this.min = min;
+            this.max = max;
+        }
+    } 
 ```
 
-#### [LC] 314. Binary Tree Vertical Order Traversal
-https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+#### [LC] 98. Validate Binary Search Tree
+https://leetcode.com/problems/validate-binary-search-tree/
 
-NOTE: the left subtree could grow into right-hand-side
+Using standard template to check.
 
-Define a new TreeNode to record coordinate x and y, then using TreeMap to sort the x coordinate:
+#### [LC] 333. Largest BST Subtree
+https://leetcode.com/problems/largest-bst-subtree/
 
-```
-TreeMap<Integer, List<Integer>> orderedMap = new TreeMap<>((a,b) -> {return a-b;});
-```
+Using standard template, and add one more field in `BST` to record the num of nodes if it is BST.
 
-#### [LC] 426. Convert Binary Search Tree to Sorted Doubly Linked List
-https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+#### [LC] 173. Binary Search Tree Iterator
+https://leetcode.com/problems/binary-search-tree-iterator/
 
-- set a dummyHead node first, then use a global variabl `prev` to build the double connection with inOrder node
-- be careful when we only have one node in the tree, the one node needs to have circle left/right to itself
+Option1 is to flattern the tree into an arrayList, then move pointer to next. It makes constructor to be O(N) and all the others to be O(1).
 
-#### [LC] 449. Serialize and Deserialize BST
-https://leetcode.com/problems/serialize-and-deserialize-bst/
+Option2 is to using a stack to store all the left node to stack, and pop when next() is called.
+This one makes all operations to be O(1) or amortized O(1).
 
-It can use the same solution as in `297. Serialize and Deserialize Binary Tree`, but it could be further improved to compress by bits
-- considering each char in Java contains 2 bytes (in C a char is 1 byte), so that for a 32-bit integer, we only need 2 char to present it (aka 4 bytes or 32 bits)
-  - if an integer is 1234, to convert into String it would be "1234" which occupies 4 char, but actually 2 char is enough to present them
-- since we used 2 char to present int, theer is no room to tell whether it is null or not, so we need another char here to present whether it is null
-- there is no need to use delimiter either, since for the encoded string, every 3 char would represent a node --> char[0] is top 16 bits, char[1] is bottom 16 bit, char[2] means whether it is null
-- it cannot guarantee the length is smaller, but it saves time to convert integer to string
+NOTE: why next() is `amortized O(1)` ? --> next() involves two major operations  
+1. one is where we pop an element from the stack which becomes the next smallest element to return. This is a O(1) operation. 
+2. another one is that when node has right, we need to push all left to stack, this is clearly a linear time operation O(N) in the worst case. 
+  - *However*, the important thing to note here is that we only make such a call for nodes which have a right child. Otherwise, we simply return. 
+  - Also, even if we end up calling the helper function, it won't always process N nodes. They will be much lesser. 
+  - Only if we have a skewed tree would there be N nodes for the root. But that is the only node for which we would call the helper function.
+  - Thus, the amortized (average) time complexity for this function would still be `O(1)` which is what the question asks for. We don't need to have a solution which gives constant time operations for every call. We need that complexity on average and that is what we get.
 
-```
-    private static String intToString(int value) {
-        char[] chars = new char[2];
-        /**
-          * since an integer is 32-bit, we shift right 16 bits, so that the top 16 bits could be placed at the bottom 16 bit
-          * then we store this integer into char, only the bottom 16 bits would be stored in char
-          * 0xffff is 1111...1 (there are 16 1 in total), and `& 0xffff` means convert it into a hex number
-        **/
-        chars[0] = (char) ((value >> 16) & 0xffff);
-        /**
-          * if we directly store integer into char, only the bottom 16 bits would be stored
-        **/ 
-        char[1] = value;
-        return new String(chars); // char[] to String
+```java
+class BSTIterator {
+    Deque<TreeNode> stack = null;
+    public BSTIterator(TreeNode root) {
+        stack = new LinkedList<>();
+        TreeNode node = root; // push all left nodes to stack
+        while(node != null) {
+            stack.push(node);
+            node = node.left;
+        }
+    }   
+    public int next() {
+        TreeNode next = stack.pop();
+        if (next.right != null) { 
+            TreeNode node = next.right; // push all left of next.right to stack
+            while(node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+        }
+        return next.val;
+    } 
+    public boolean hasNext() {
+        return !stack.isEmpty();
     }
+}
 ```
 
-```
-    private static int stringToInt(String str) {
-        char[] array = str.toCharArray();
-        char top16Bits = array[0];
-        char bottom16Bits = array[1];
 
-        int result = 0;
-        result = (int) top16Bits; 
-        result = (result << 16) + (int) bottom16Bits;
+#### [LC] 1586. Binary Search Tree Iterator II
+https://leetcode.com/problems/binary-search-tree-iterator-ii/
 
-        return result;
-    }
-```
+Using the stack idea like `173. Binary Search Tree Iterator`, but also maintain `ArrayList alreadyTraversed` for `prev()`.
 
-#### [LC] 515. Find Largest Value in Each Tree Row
-https://leetcode.com/problems/find-largest-value-in-each-tree-row/
-
-Be careful when using ++variable, it would addup the variable itself! It's better to use variable + 1 most of the time;
-
-#### [LC] 543. Diameter of Binary Tree
-https://leetcode.com/problems/diameter-of-binary-tree/
-
-It is similar like "124. Binary Tree Maximum Path Sum".
+Let's look at the complexities one by one:  
+- O(1) for the constructor()
+- O(1) for hasPrev()
+- O(1) for prev()
+- O(1) for hasNext()
+- Amortized O(1) but worst-case O(N) for next()
+  - in the worst-case of the skewed tree one has to parse the entire tree, all N nodes. 
+  - *However*, we only make such a call when we need to pop() from stack. If the next node is alerady in the arrayList, we can easily get it by array index. So it's amortized O(1)
 
 
-Be careful that the longest path may not pass the root.  
-e.g.
-```
-    longest path may not pass root
-        1
-     2      3
-         4     5
-        6  7  8 9
-      10         11
+#### [LC] 1382. Balance a Binary Search Tree
+https://leetcode.com/problems/balance-a-binary-search-tree/
 
-```
-
-- Using Kadane's idea, maintain a gloable variable maxPath, inside each recursive, check whether we want to use the current root
-- we can record # of nodes in path, but final result needs # of edges, so finally need to minus 1 to get number of edges
-
-#### [LC] 617. Merge Two Binary Trees
-https://leetcode.com/problems/merge-two-binary-trees/
-
-#### [LC] 654. Maximum Binary Tree
-https://leetcode.com/problems/maximum-binary-tree/
-
-NOTE:
-1. Be careful when talking about complexity:
- - time complexity: average is O(nlogn), worst case is O(n^2)
-  - if we count the number of `constructor` called. On average perspective there would be logn levels, but for skewed list it would be n^2
-  - if we count the operation of `comparison`, it would still be O(n^2), since we do the `findMaxNum` n(n+1)/2 = n^2 times
- - space complexity: for stack space, average is O(logn), worst case is O(n) for skewed list
-2. Maybe no need to use a custom class as Result in `findMaxNum`, the `maxPos` could reflect `maxValue`
-
-#### [LC] 938. Range Sum of BST
-https://leetcode.com/problems/range-sum-of-bst/
-
-#### [LC] 987. Vertical Order Traversal of a Binary Tree
-https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
-
-Sort the node by `x coordinate, y coordinate, val` using BFS + TreeMap + Collections.sort().
-
-#### [LC] 1650. Lowest Common Ancestor of a Binary Tree III
-https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
-
-1. find the height of p and q
-2. if p's height is lower, move p up to the same level as q, otherwise move q up to the same level
-3. now p and q are at same height, if `p==q` then return p or q, otherwise move p and q up until `p.parent == q.parent` then return `p.parent`
-
+Convert the original BST into ArrayList by inOrder serialization, then do inOrder to deserialize into a tree.
 
 ## Recursion
 ### Default
@@ -474,51 +168,6 @@ https://leetcode.com/problems/swap-nodes-in-pairs/
 
 Handle the first 2 nodes, call recursion function on 3rd ndoe, then point 1st node next to recursion result of 3rd node.  
 
-#### [LC] 31. Next Permutation
-https://leetcode.com/problems/next-permutation/
-
-It's not a recursive problem just need to understand what is the next minimum permutation:
-
-```
-        example 1
-                        j-1  j
-               i  i+1     
-            6  2   5  4  3   1
-        --> 6 [3]  5  4 [2]  1
-        --> 6  3  [1  2  4   5]
-        
-        
-        example2
-                  j-1 j
-               i  i+1
-            6  4   5  3 2 1
-        --> 6 [5] [4] 3 2 1
-        --> 6  5  [1  2 3 4]
-```
-
-1. find the last ascending pair, like the `2~5` in example 1 (if we lookup from right to left, then it is the first ascending pair)
-2. starting from `i+1`, find the next minimum num `j-1` that is strictly larger than nums[i], be careful it cannot be `>=`, must be `>` !!
-3. swap `i` and `j-1`
-4. now the `i+1 ~ nums.length-1` is already in descending order, reverse it
-
-```
-//code to swap -- it is not that hard
-private void swap(int[] nums, int a, int b) {
-    int tmp = nums[a];
-    nums[a] = nums[b];
-    nums[b] = tmp;
-}
-```
-
-```
-// code to reverse -- it is not that hard
-private void reverse(int[] nums, int left, int right) {
-    if (left < right) {
-        swap(nums, left, right);
-        reverse(nums, left + 1, right - 1); 
-    }
-}
-```
 
 #### [LC] 46. Permutations
 https://leetcode.com/problems/permutations/
@@ -543,933 +192,377 @@ https://leetcode.com/problems/remove-duplicates-from-sorted-list/
 https://leetcode.com/problems/reverse-linked-list/
 
 The magic part is:
-```
+```java
         ListNode node = reverseList(head.next);// now head.next is at the end
         head.next.next = head; // the magic part
         head.next = null;
 ```
+
+#### [LC] 247. Strobogrammatic Number II
+https://leetcode.com/problems/strobogrammatic-number-ii/
+
+This question could also use DP, but DP is not space efficient since we don't need to keep the result from i to n -1.
+
+There are two trick here: 
+1. there are 2 initial states:
+  - n == 0, result = {""}
+  - n == 1, result = {"0", "1", "8"}
+2. if n is even, it starts building from `n==0`, by adding "0"+num+"0", "1"+num+"1", "8"+num+"8", "6"+num+"9", "9"+num+"6"
+3. if n is odd, it starts building from `n==1`
+4. at each recursion, check "should we add 0 around the num"? --> only the top function does not add zero around, all the inner nums would need to add zero around
+
+NOTE1:  
+- `list = Arrays.asList("0", "1", "8")` is allowed
+- `String[] arr = {"0", "1", "8"}; list = Arrays.asList(arr)` is allowed
+- `int[] nums = new int[]{num1, num2}` is allowed
+- `Arrays.asList({"0", "1", "8"})` is NOT allowed!!!!!!!
+
+NOTE2:
+- string plus is good enough!! do not always use stringBuilder
+  - `String s = s1 + s2` would be translated inside JVM to be `String s = (new StringBuffer()).append(s1).append(s2).toString()`
+- https://stackoverflow.com/questions/10078912/best-practices-performance-mixing-stringbuilder-append-with-string-concat
+
 
 #### [LC] 1137. N-th Tribonacci Number
 https://leetcode.com/problems/n-th-tribonacci-number/
 
 Be careful to store result that has already been calculated to save effort on re-calculation.
 
-## Backtracking
 
-https://www.jianshu.com/p/3ef0e4e1114d
+#### [LC] 1849. Splitting a String Into Descending Consecutive Values
+https://leetcode.com/problems/splitting-a-string-into-descending-consecutive-values/
 
-https://zhuanlan.zhihu.com/p/112926891
+This is one the medium question in LeetCode weekly contest 239: https://leetcode.com/discuss/general-discussion/1186784/weekly-contest-239
 
+The idea is simple: for each possible initial num (traversing from left to right), using recusion to check if num-1, num-2, num-3, ... exists in substring.  
 
-NOTE:
-The `state/spot` concept of the following questions could also be used into DP idea, something like like `dp[stateI] = dp[stateI-1] + nums[i]`
+The reason I fail in the contest is that I forgot to set the num to be `long` since it would overflow integer....
 
-backtrack + DFS:
-
-- 39. Combination Sum 
-- 40. Combination Sum II 
-- 46. Permutations
-- 47. Permutations II 
-- 78. Subsets
-- 90. Subsets II 
-- 131. Palindrome Partitioning
-- 132. Palindrome Partitioning II 
-- 254. Factor Combinations
-- 93. Restore IP Addresses  
-- 320. Generalized Abbreviation
-- 784. Letter Case Permutation
-
-backtrack + BFS:
-
-- 127. Word Ladder --> since String is final, no need to reset here, it's more like a pure BFS solution
+It is `O(N^2)`, since we can find up to `n-1` initial num, and for each num with `k` digits we check the next `n-k` num, which result in `(n-1) + (n-2) + (n-3) + ... + 1 = n^2`.
 
 
-### Default
-
-Difference between Recursion and Backtracking:
-- In recursion, the function calls itself, until it reaches a `base case`. 
-- In backtracking, we use recursion to explore all the possibilities, until we get the best result for the problem
-  - usually used for 2D-array-like problem:
-    - the final solution consists of multiple `spots/levels/state` (you can think about `spot` as the current value we can append to `path`)
-      - e.g. 78. Subsets
-        - `spot/level` is the # of values in each set
-      - e.g. 46. Permutations
-        - `level` points to a unique `path.toString()`
-      - for each `spot/level/state`, there would be multiple `options` in searching space
-      - each `option` can be selected when it meets `searching conditions`
-        - e.g. left parentheses is less than total available parentheses
-        - e.g. the option is not visited before
-    - after one `option` is executed, call recusive function (with void return type, and updated `search conditions`) to move to next `spot/level/state`
-      - do pruning if possible before moving to next `spot/level/state`
-    - need to remove the effect of current `option` in `path` and `searching conditions` before moving to next `option`
-    - there is a `terminationCondition` when a solution meet target
-      - e.g. path length equals to expected string length
-
-Algorithm Pseudocode: 
-
-```java
-List<List> result; // global variable
-void backtrack(int[] nums, int stateIndex, List<Integer> path, boolean[] visited) {
-  if (path meets terminationCondition) {
-    result.add(new LinkedList<>(path)); // deep copy!!!
-  }
-  // try all options in current level
-  for (int i = stateIndex; i < nums.length; i++) {
-    // try if meets searchingCondition
-    if (!visited[i]) {
-      // 1. try nums[i]
-      path.add(nums[i]);
-      visited[i] = true; 
-      // 2. TODO prune if possible
-      // 3. move to next level, updaet levelIndex
-      backtrack(nums, stateIndex + 1, path);
-      // 4. reset the effect of current option, then try other options
-      path.remove(path.size() - 1);
-      visited[i] = false;
-    }
-  }
-}
-```
-NOTE1:
-
-- `stateIndex` tells where we are now
-  - this can be combined with `path`, like to use length of `path` to tell which `spot/state` we are working on
-    - e.g. it could be the index in a map-like search space
-- `for (int i = stateIndex; i < nums.length; i++)` is to try all options at `stateIndex`, it may not be a for loop sometimes
-- `visited/searchingCondition` tells available and valid `options` for this `state/spot`
-  - e.g. it could be a visited array
-  - e.g. it could be the number of left parantheses in current status 
-- `terminationCondition` tells when can we add path to final result list
-  - deep copy of `path` could be required in questions like "78. Subsets"
-    - e.g. path lenght meet target length
-    - e.g. found exit of maze
-- `prune` can speed up the searching
-  - e.g. if the sum of subarray is already larger than target, no need to do this 
-- `reset` would back out the effect of current `option` in `path`, sometimes we also need to back out the `status` or `searching conditions`
 
 
-Example:
-1. options
- － for "22. Generate Parentheses", options are "(" or ")"
-2. restraints 
- - for "22. Generate Parentheses", when "(" is less than allowed num, can try "("; when "(" is more than ")", can try ")" 
-3. termination condition
- - for "22. Generate Parentheses", when # of parenthese reaches 2 * n
+## Shortest-path-Dijkstra-Bellman-Ford
 
-#### [LC] 17. Letter Combinations of a Phone Number
-https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+- Topologic sort
+  - 207. Course Schedule
+- Dijkstra Algorithm
+  - 743. Network Delay Time
+  - 787. Cheapest Flights Within K Stops    
+  - 1514. Path with Maximum Probability
+  - 1786. Number of Restricted Paths From First to Last Node
+- Floyd-Warshall Algorithm
+  - 847. Shortest Path Visiting All Nodes
+  - 旅行商问题
+  - 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance
+- Bellman-Ford Algorithm
+  - 787. Cheapest Flights Within K Stops
 
-It can also be done by recursion + hashmap. But backtracking is faster than pure recursion.
-Remember to use `StringBuilder` to remove character by `currentSolution.deleteCharAt(currentSolution.length() - 1);`.
+其中，Floyd 算法是多源最短路径，即求任意点到任意点到最短路径，
+而 Dijkstra 算法和 Bellman-Ford 算法是单源最短路径，即单个点到任意点到最短路径。
+这里因为起点只有一个K，所以使用单源最短路径就行了。
 
-#### [LC] 22. Generate Parentheses
-https://leetcode.com/problems/generate-parentheses/submissions/
+这三种算法还有一点不同，就是 Dijkstra算法处理有向权重图时，权重必须为正，而另外两种可以处理负权重有向图，但是不能出现负环，所谓负环，就是权重均为负的环。
+为啥呢，这里要先引入松弛操作 Relaxtion，这是这三个算法的核心思想，当有对边 (u, v) 是结点u到结点v，如果 `dist(v) > dist(u) + w(u, v)`，那么 dist(v) 就可以被更新，这是所有这些的算法的核心操作。
 
-#### [LC] 37. Sudoku Solver
-https://leetcode.com/problems/sudoku-solver/
+1. Dijkstra算法和Bellman-Ford算法用于解决单源最短路径；
+2. Floyd算法可以解决多源最短路径；
+3. Dijkstra is good for dense graph (adjacency matrix)，因为稠密图问题与顶点关系密切；
+  - Time: `O(V^2)` if using adjacency matrix--> `O(ElogE)` if using Heap/PriorityQueue
+  - Space: `O(V + E)`
+4. Bellman-Ford is good for sparse graph (adjacency table），因为稀疏图问题与边关系密切；
+  - Time: `O(VE)`
+  - Space: `O(V)`
+5. Floyd-Warshall can do in both dense graph (adjacency matrix) and sparse graph (adjacency table) --> 杀鸡用牛刀。。。
+  - Time: `O(V^3)`
+  - Space: `O(V^2)`
 
-Be careful the rowNums, colNums, sectionNums need to be intialized no matter it has filled number or not.
+e.g. `743. Network Delay Time`: https://www.youtube.com/watch?v=vwLYDeghs_c
 
-For the output board (which is also input), we cannot reassign board, but can only replace board element in-place.
 
-Convert int to char `char c = (char) (i + 48);`
 
-To split num by digits
-```java
-    public int getRow(int spot) {
-        return (int)(spot / 10) - 1;
-    }
-            
-    public int getCol(int spot) {
-        return spot % 10 - 1;
-    }
-```
+### Single source shortest path
+https://cloud.tencent.com/developer/article/1467091
 
-#### [LC] 46. Permutations
-https://leetcode.com/problems/permutations/
+- 拓扑排序+松弛（有向,无回路) -- 
+  - `O(E+V)`
+  - https://blog.csdn.net/caipeichao2/article/details/34919775?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control&dist_request_id=1332042.22892.16193253459843403&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control
+- Bellman-Ford(可无向，可回路，可负权，但不能有负权回路)
+  - `O(EV)` 
+- Dijkstra(可无向，可回路， 不能有负权)
+  - if using heap 
+    - for sparse graph, `O(ElogE)`
+    - for dense graph `E=V^2` would lead to `O(ElogV)` 
+  - https://www.youtube.com/watch?v=vwLYDeghs_c
 
-- think about the problem in this way:
-- there are different `state` for the `path` (eahc `state` points to a "path.toString()")
-  - e.g. the followings are all different states
-    - [1]
-    - [2]
-    - [3]
-    - [1, 2]
-    - [1,3]
-    - ...
-- here we use `boolean[] visited` to replace `stateIndex`
-- for each state, there are be options 1, 2, 3
-  - the option is eligible if `visited` is false
-- when resetting, we reset the `path` and `visited`
 
-#### [LC] 47. Permutations II
-https://leetcode.com/problems/permutations-ii/
 
-Similiar like `46. Permutations`, but we need extra 2 steps here:  
-1. sort the array first, which is to help put duplicate num together
-2. not only checking `visited`, we need to check if `nums[i] == prev` at this `state`, if yes the skip this `nums[i]`
-  - we need to make sure at each `state` points to a unique `path.toString()`, the same `nums[i]` is only used once
- 
-#### [LC] 51. N-Queens
-https://leetcode.com/problems/n-queens/
+### Dijkstra and BFS
+https://www.youtube.com/watch?v=9wV1VxlfBlI
 
-Be careful that string is immutable, using StringBuilder to make it mutable.
+Dijkstra and BFS are both for "shortest path problem"
+- 在求无权图的问题中我们常常使用BFS来求其最短路径，而BFS无法解决网（有权图）中的问题，
+- 我们解决网中的最短路径常常使用dijkstra算法来求解。
 
-When checking the diagonal, it has 4 scenarios `row--, col--`, `row++,col++`, `row--,col++`, `row++,col--`.
+*换句话说，对于无权值图，dijkstra方法跟bfs是一致的*
 
-#### [LC] 78. Subsets
-https://leetcode.com/problems/subsets/
+dijkstra算法是一种贪心的思想, 只能求得特定节点到其他所有节点之间的最短路。即单源最短路问题.
 
-This is a special/variant backtrack problem. 
+- support both directed and undirected graph
+- suporrted cycles in graph
+- does not support negateive weight
 
-- `spot/state` here is the current value we can append to `path`
-  - e.g. if `path` is `[1]`, then the next spot is to append 2 or 3 to the path 
-  - `spot/state` is the # of values in each set
-- the initial `spot/state` is an empty set with no num at all 
+Algorithm pseudocode:  
+1. construct graph using hashmap or hashmap
+  - if using hashmap, the space compelxity is `O(V+E)`
+  - if using 2D array, the space compelxity is `O(V^2)` 
+2. define `dist` array/hashmap to store dist from each node to source node
+  - if using 1D array, remember to set the initiali value to be MAX
+3. define `PriorityQueue` to replace genearl queue in BFS algorithm
+  - the `PQ` should store both node info and the weight to reach the node
+  - NOTE: it's the TOTAL weight from source node to this node!
+4. define `visited` array or hashset to record visited nodes
+  - NOTE: it could be avoided by using `dist` to check if it's visited
+5. run BFS algorithm, and no need to keep layer information since PQ would reorder pending nodes, so that the level info is inaccurate
+6. end the algorithm till `PQ` is empty
 
-#### [LC] 90. Subsets II
-https://leetcode.com/problems/subsets-ii/
+[Time complexity](https://leetcode.com/problems/network-delay-time/solution/):
+- Time Complexity: `O(V^2 + E)` where E is the length of edges, `O(ElogE)` in the heap implementation since potentially every edge gets added to the heap.
+  - can also be written as `O(ElogV)` or `O(V^2logV)`, since in worst case `E = V^2`
+- Space Complexity: `O(N + E)`
+  - the size of the graph `O(E)`, plus the size of the other objects used `O(N)`
 
-This is a followup of "78. Subsets", since it could have duplicate now, we need to do 2 more things than "78. Subsets"
-
-1. put duplicate nums together -- we can sort the array to arrange duplicate nums together
-2. skip the backtrack function call with the same `startIndex` and the same `path`
-
-#### [LC] 282. Expression Add Operators
-https://leetcode.com/problems/expression-add-operators/
-
-For `123`, try all options for `+`, `-` and `*` like `1+2+3`.  
-- backtracking to try all options
-- the termination condition to put string into global result list is to validate the operation
-  - the validation is the same way like `227 Basic Calculator II `
-    - traverse string from left to right, if number, add to currentNumber variable, if next is “+” or “-“, push to stack.
-    - , find next number, push to stack (if it is “-“ before it, push -1*num to stack).
-    - continue, find “*” or “/“, pop the previous number, calculate it, and push the calculated result into stack.
-    - finally clean up the stack by adding up all the rest number there
-
-NOTE:
-- when validate the operation, we can skip numbers like "05"
-
-#### [LC] 301. Remove Invalid Parentheses
-https://leetcode.com/problems/remove-invalid-parentheses/
-
-1. find num of invalid left and right parenthesis
-2. do backtrack for all char in string, try to remove "(" when left>0 (or remove ")" when right>0)
-3. inside backtrack method, if `left==0 && right==0 && isValid(s)`, add the string to result set
-  - be careful the result could be duplicated, so we can use HashSet to dedup (an improvement here is to try only removing the last bracket once for consecutive ones)
-  - to remove a char in string, use `s.substring(0,i) + s.substring(i+1, s.length())`
-
-#### [LC] 399. Evaluate Division
-https://leetcode.com/problems/evaluate-division/
-
-Convert it to be a problem like this:  
-- given two nodes, we are asked to check if there exists a path between them. If so, we should return the cumulative products along the path as the result
-
-NOTE:
-- we can use nested map to represent the graph, intead of insisting using 2D array
-
-#### [LC] 784. Letter Case Permutation
-https://leetcode.com/problems/letter-case-permutation/
-
-Similar like "78. Subsets", but be careful this time to move state, it is not `state+1` in backtrack function but the `i+1` since `i` is the current letter position.
-
-Be familiar with java `Character` funtions like
-- isUpperCase()
-- isLowerCase()
-- toUpperCase()
-- toLowerCase()
-- isLetter()
-- isDigit()
-
-## DFS and BFS
-
-### Default
-
-Depth-First-Search (DFS) is a specific form of backtracking (backtracking is like a brute-force solution):
-- when it is bactracking?
-  - implicit tree
-  - need to prune but not have to (e.g. when sun of subarray is larger than target, no need to move forward)
-  - work with global variable
-- when it is DFS?
-  - explicit tree
-  - no need to prune (tree structure already throws/prunes unacceptable cases)
-  - can work with both global variable or local variable
-- when it is Dynamic Programming (DP)?
-  - top-to-bottom DP is like a backtracking/DFS with memory
-  - bottom-to-top DP need to have `optimial substructure` and `overlapping subproblem`
-  - not all problem can be resolved by DP
-    - e.g. N-Queens problem can be resolved by DP, though it has optimial sub-structure, but it has no `overlapping subproblem`, so with DP memory we cannot optimze anything. It's better to just use backtracking.
-
-NOTE:
-- graph could have circles, we need to maintain a `visited` array/set when using BFS/DFS, but for tree, we can skip `visited`
-- if the `node` is not an integer, we cannot build an `adajacency matrix` to access it by index, instead we can build an `adajacency map` by hashmap and `visited` variable by hashset
-- `entryPoints` is important
-  - no matter DFS or BFS, need to start with all `entrypoints` and then call dfs or bfs
-- BFS
-  - is good to look for shortest path (e.g. `1129. Shortest Path with Alternating Colors`), no matter it's directed or not, and there is no weight on edges
-  - a graph could have multiple entryPoints, we need to enqueue all of them at beginning, e.g. `542. 01 Matrix`
-  - a graph could have mutltiple entryPoints when looking at neighbors, need to enqueue all of them, e.g.  for `1129. Shortest Path with Alternating Colors`, a node itself could have self-circle, a visited node could have another color edege, we need to enqueue both of them when looking at neighbors
-  - sometimes we need to define custome queue object to record more information, e.g. for `1129. Shortest Path with Alternating Colors`, we need to record color of the entryPoints in the queue.
-  - for tree, no need to define `visited`, since there is no cycle
-- DFS 
-  - is good to look for a valid path and output the path (using "path" param)
-  - we need to do DFS for all `entryPoints`, e.g. for `200. Number of Islands`, we start with all "1" in matrix and do dfs.
-
-BFS template (T(N) where N is the # of nodes, S(D) while D is the tree diameter)
 
 ```java
-    public voic BFS(Node node) {
-        if (node == null) {
-            return node;
+    public int networkDelayTime(int[][] times, int n, int k) {
+        // 1. construct graph O(E+V)
+        HashMap<Integer, List<int[]>> graph = new HashMap<>();
+        for(int[] time : times) {
+            int from = time[0];
+            int to = time[1];
+            int weight = time[2];
+            List<int[]> neighbors = graph.getOrDefault(from, new LinkedList<>());
+            neighbors.add(new int[]{to, weight});
+            graph.put(from, neighbors);
         }
 
-        // Put all the entryPoints to the queue!!
-        Deque<Node> queue = new LinkedList<Node> ();
-        queue.offer(node); // a graph could have multiple entryPoints
-
-        // visit the node
-        Set<Node> visited = new HashSet<>();
-        visited.add(node); // initial visited node, record it!!!
-
-        // Start BFS traversal
-        int levelCount = 1;
-        while (!queue.isEmpty()) {
-            int totalInCurrentLevel = queue.size();
-            for (int i = 0; i < totalInCurrentLevel; i++) { // only visite one level
-                Node n = queue.poll();
-                // do the processing here!!!!!
-                // if found the node, we can break now, the node is found by levelCount steps
-                for (Node neighbor: n.neighbors) { // all possible neighbors need to enqueue
-                    if (!visited.contains(neighbor) && isValid(neighbor)) {
-                        queue.offer(neighbor);
-                        visited.add(neighbor); // already pushed to queue, record visited!!!
+        // 2. define dist map (also used as visited map)
+        HashMap<Integer, Integer> dist = new HashMap<>();
+        // 3. define min heap since lower the weight higher the priority
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{return a[1]-b[1];});
+        // 4. run BFS
+        // 4.1 initialize pq
+        pq.offer(new int[]{k, 0});
+        
+        while(!pq.isEmpty()) {
+            int[] node = pq.poll();
+            int name = node[0];
+            int weight = node[1];
+            if (!dist.containsKey(name)) { // skip if already visited
+                dist.put(name, weight); 
+            }
+            
+            // traverse all neighbors
+            if (graph.containsKey(name)) {
+                for (int[] neighbor : graph.get(name)) {
+                    int neigName = neighbor[0];
+                    int neiWeight = neighbor[1];
+                    if (!dist.containsKey(neigName)) { // skip if already visited
+                        pq.offer(new int[]{neigName, weight + neiWeight});
                     }
                 }
             }
-            levelCount++; // increment the level count
+
         }
+        // 5. check if all nodes are visited
+        if (dist.size() != n) {
+            return -1;
+        }
+        // 6. return total sum of all shortest path
+        int max = 0;
+        for (int cost : dist.values()) {
+            max = Math.max(max, cost);
+        }
+        return max;
     }
 ```
 
-DFS can have 3 types of templates:
-1. dfs with `visited`
-  - e.g. `133. clone graph`
-    - when it's explicit tree/graph style, no need to `backtrack`
+### Bellman-Ford and DP
+https://www.youtube.com/watch?v=2raV0H9KqY8
+
+If we have E edges, initialliy set dist of each node to source node to be MAX_VALUE.  
+Then for each edge `u->v`, do `relax` for all edges goes to `v` :
+ - `if (dist[v] > dist[u] + weight_of_uv)`
+   - `dist[v] = dist[u] + weight_of_uv`
+ - since we need to do at most "V-1" times --> the time complexity is `O(EV)`
+
+We don't need to build an adjacency matrix. This algorithm simply iterates over the edges of the graph and that information is already available in the input for the program. So we save on space there as opposed to other algorithms which we've seen.
 
 ```java
-    private Set<Node> visited = new HashSet<>();
-    // for all entryPoints, do DFS
-    public void DFS(Node node) {
-        if (visited.contains(node)) {
-            return;
-        }
-        // add visiting logic here!!!
-        // visited node
-        visited.add(node);
-        // traverse all neightbors
-        for (Node neighbor : node.neighbors) {
-            DFS(neighbor);
-        }
-    }
+
+   1
+ a --> b
+2|     ^
+ |     | -6
+ V     |
+ c --> d
+    3
+
+we have 4 edges: (d,b), (c,d), (a,c), (a,b)
+We need to relax all 4 edges V-1=3 times blindly, so the time complexity is O(EV)
+
+if we start from a, then do the following initialization:
+
+now it is:  dist[a] = 0, dist[b] = ∞, dist[c] = ∞, dist[d] = ∞
+
+1st time:
+(d,b) -->   dist[a] = 0, dist[b] = ∞ - 6 = ∞, dist[c] = ∞, dist[d] = ∞
+(c,d) -->   dist[a] = 0, dist[b] = ∞, dist[c] = ∞, dist[d] = ∞ + 3 = ∞
+(a,c) -->   dist[a] = 0, dist[b] = ∞, dist[c] = 0 + 2 = 2, dist[d] = ∞
+(a,b) -->   dist[a] = 0, dist[b] = 0 + 1 = 1, dist[c] = 2, dist[d] = ∞
+
+now it is:  dist[a] = 0, dist[b] = 1, dist[c] = 2, dist[d] = ∞
+
+2nd time:
+(d,b) -->   (dist[d] - 6 = ∞) < (dist[b] = 1) not update b
+(c,d) -->   (dist[c] + 3 = 5) < (dist[d] = ∞) update dist[d] = 5
+(a,c) -->   no update to c
+(a,b) -->   no update to b
+
+now it is:  dist[a] = 0, dist[b] = 1, dist[c] = 2, dist[d] = 5
+
+3rd time:
+(d,b) -->   (dist[d] - 6 = -1) < (dist[b] = 1) not update dist[b] = -1
+(c,d) -->   no update to d
+(a,c) -->   no update to c
+(a,b) -->   no update to b
+
+now it is:  dist[a] = 0, dist[b] = -1, dist[c] = 2, dist[d] = 5
+
+Now we have done V-1=3 relax, we should find the shortest path to each node from a.  
+If we continue doing one more round, and find a shorter weight for a node, then it's negative cycle!!!
+
 ```
-2. dfs with `globalSolution` + `path` (optional: + `visited`)
-  - when it's implicit tree/graph style, need to `backtrack`, aka reset current step effect, sometimes 
-  - e.g. `17. Letter Combinations of a Phone Number`
-  - e.g. `51. N-Queens`
+
 
 ```java
-    private globalSolution;
-    private Set<Node> visited = new HashSet<>();
-    public vod backtrack(path, status, searchingSpace) {
-        if (path meets terminationCondition) {
-            globalSolution.add(path);
-            return;
-        }
-        for (option : searchingSpace) { 
-            if (visited(option)) { // skip visited option
-              continue;
-            }
-            // process current option
-            path = process(option); // update current solution
-            status = update(status); // move to next spot
-            searchingSpace = update(searchingSpace); // update searching conditions
-            visited.add(option); // reset visited
-            // backtrack
-            backtrack(path, status, searchingSpace);
-            // revoke when trying next option
-            path = revoke(path);
-            status = revoke(status);
-            searchingSpace =revoke(searchingSpace);
-            visited.remove(option); // reset visited
-        }
-    }
-    return globalSolution;
-```
-3. dfs with `return value` + `visited`
-  - e.g. `200. Number of Islands`
-    - it is used when matrix represents node itself
-4. dfs with `visited` + `path` (very similar like #1)
-  - e.g. `547. Number of Provinces`
-    - it is used when matrix represents the relationship of nodes instead of nodes themselves
-5. dfs with `return value` + `memory`
-  - e.g. `126. Word Ladder II`
 
-```java
-    private boolean dfs(minLevel, currentLevel, adjacenceMap, path, visited, memory) {
-        if (path.size() == minLevel) { // termination condition
-            if (beginWord.equals(endWord)) {
-                result.add(new LinkedList<>(path));
-                return true;
-            }
-            return false;
-        }
-        
-        boolean foundByBeginWord = false;
-        // try all options
-        if (adjacenceMap.containsKey(beginWord)) {
-            for (String nextWord : adjacenceMap.get(beginWord)) {
-                
-                if (!visited.contains(nextWord) && memory.getOrDefault(nextWord, true)) {
-                    
-                    // try nextWord
-                    path.add(nextWord);
-                    visited.add(nextWord);
-                    
-                    boolean foundPath = dfs(nextWord, endWord, minLevel, currentLevel+1, adjacenceMap, path, visited, memory);
-                    
-                    // put into memory
-                    memory.put(nextWord, foundPath);
-                    foundByBeginWord = foundByBeginWord | foundPath;
-                    
-                    // reset nextWord
-                    path.remove(path.size() - 1);
-                    visited.remove(nextWord);
-                }
-            }
-        } 
-
-        // put into memory
-        memory.put(beginWord, foundByBeginWord);
-        return foundByBeginWord;
-    }
-```
-
-
-Another way to think about DFS:
-1. Bottom-up
-  1. Ask answer from subproblem, e.g. `104. Maximum Depth of Binary Tree`, `64. Minimum Path Sum`, we can throw the question to subtree
-2. Top down
-  1. use answer passed from parent node to make decision, e.g. `129. Sum Root to Leaf Numbers`
-
-
-#### [LC] 79. Word Search
-https://leetcode.com/problems/word-search/
-
-- option1: DFS with a new visited array passed to DFS function every time
-- option2: backtracking, similar like DFS, but using only one visited array and reset the `visited[i][j]` if not found for a character
-- option3: trie
-
-#### [LC] 126. Word Ladder II
-https://leetcode.com/problems/word-ladder-ii/
-
-This problem would easity got "Time Limit Exceeded", so simply using BFS to maintain shortest path is not doable, we need to do the following improvement:
-
-1. using BFS to find relationship of each word to its next avaliable word list (`hashmap(string, list)`)
-  - inside BFS, instead of using "*" pattern like "79. Word Search", we need to traverse all 26 letters for each char in a word, since that is faster when we have lots of words in dictionary
-  - inside BFS, instead of using `hashset visited`, we need to use `HashMap<String, Integer> levelRecorder` to record the shortest level to reach a word
-  - the output of BFS would be 2 things:  
-    - `hashmap(string, list)` that maintains `word` to its next available words mapping
-    - `minLevel` that tells the min length of the valid path
-2. using DFS to print all path by the 2 output of BFS
-  - but simply using DFS would fail the time limitation, we need to add memory into DFS to record whether the current word can reach target end word
-
-
-BFS trick part to use `levelRecorder`:  
-
-```java
- if (dict.contains(option)) {
-        // record the shortest level
-        Integer optionLevel = levelRecorder.get(option);
-        if (optionLevel == null) { //1st time see the option, enqueue, add to levelRecorder
-            queue.offer(option); // enque
-            
-            nextAvailable.add(option);
-            levelRecorder.put(option, level + 1);
-        } else { // seen option before, no need to enqueue
-            if (optionLevel > level) { // find a shorter path to reach "option"
-                nextAvailable.add(option);
-                levelRecorder.put(option, level + 1);
-            }
-        }
-  }
-```
-#### [LC] 127. Word Ladder
-https://leetcode.com/problems/word-ladder/
-
-Treat the wordList as a graph by converting it into a hashmap: `pattern (a*z) --> words (abz, acz, adz, ...)`. When selecting options, we can use the pattern to find limited number of options, then with BFS and visited hashset we can easily get the final `level` when reaching `endWord`.
-
-The way to generate pattern is like this:  
-```
-String newWord = word.substring(0, i) + '*' + word.substring(i + 1, word.length());
-
-```
-
-NOTE:  
-1. we don't need to check `if (i > 0)` when using `substring(0,i)`, the function has already make it edge-case-safe for us
-2. an improved version of this question is bi-directional-BFS, starting from 2 directions at the same time 
-3. Time Complexity: `O(M^2*N)`, where MM is the length of each word and NN is the total number of words in the input word list.
-4. Space Complexity: `O(M^2*N)`
-
-#### [LC] 133. Clone Graph
-https://leetcode.com/problems/clone-graph/
-
-Both DFS and BFS are T(M + N) and S(N), where N is the number of nodes and M is number of edges.
-
-- BFS solution is to convert visited set to be a hashmap that stores original node to clone node mapping
-  - be carefule hashmap uses `containsKey()` while hashset only uses `contains`
-
-
-#### [LC] 200. Number of Islands
-https://leetcode.com/problems/number-of-islands/
-
-Traverse all grids, if found 1, trigger dfs to find all 1s -- could return sum of 1 in dfs.
-
-Time complexity : O(M * N) where M is the number of rows and N is the number of columns.
-Space complexity : worst case  O(M * N) in case that the grid map is filled with lands where DFS goes by M * N deep.
-
-#### [LC] 339. Nested List Weight Sum
-https://leetcode.com/problems/nested-list-weight-sum/
-
-This is a good question that shows a special use case of BFS!!!  
-Since we use `int size = queue.size()` and `for (int i = 0; i < size; i++)` to traverse at each level, the `size` helps us to only access the node at this level, which means we can continue adding nodes to queue in the loop!!
-
-The trick here is that
-- at beginning we enqueue *all nodes* (not just the integer nodes!!!)
-- then we use the `size` to control the "# of nodes at each level"
-  - the "nodes at each level" are the nodes with `node.isInteger() == true`
-  - if it is a list, we enqueue all elements in the list to the queue
-    - it would not impact counting at each level!!!
-
-#### [LC] 542. 01 Matrix
-https://leetcode.com/problems/01-matrix/
-
-```
-// option1: treat 1 as entryPoint, using bfs/dfs to find all nearby 0, time complexity is O(MN * MN) since it could be full of 1 in matrix, and for each 1 we need to traverse whole matrix
-// option2: treat 0 as entryPoint, using bfs to find all nearby 1, traverse once for whole matrix and record minimum distance for that "1"-cell. It is O(MN)
-```
-
-#### [LC] 547. Number of Provinces
-https://leetcode.com/problems/number-of-provinces/
-
-For each node (0 ~ n-1), traverse from itself to all neighbor nodes, if found 1 then call dfs with the found node, maintain a hashset as path and passed to dfs function.
-
-#### [LC] 695. Max Area of Island
-https://leetcode.com/problems/max-area-of-island/
-
-Same solutin as LC 200.
-
-#### [LC] 752. Open the Lock
-https://leetcode.com/problems/open-the-lock/
-
-This is a question to find shortest path, which is perfect for BFS:
-- we can think that each node would have 8 positions to move to (each slot we can move `+1` or `-1`)
-  - be careful to check boundary case that `-1` should be `9`, while `10` should be `1`
-- all the deadends are like obstacles in graph 
-  - be careful that the initial node `0000` would also be in deadends
-
-NOTE: StringBuilder could append integer!!!
-
-#### [LC] 827. Making A Large Island
-https://leetcode.com/problems/making-a-large-island/
-
-1. for each 1 grid, using dfs to label all 1-grid and record the size in hashmap
-2. for each 0 grid, check its neighbor to see if we can connect labels
-
-#### [LC] 1129. Shortest Path with Alternating Colors
-https://leetcode.com/problems/shortest-path-with-alternating-colors/
-
-- using BFS, one round `O(M*N)`
-- prepare redEdges matrix and blueEdge matrix at beginning
-- define a new class for queue node to record both node itself and current color
-- be careful node 0 is special, whose current color can be both "R" and "B"
-- when checking neighbors, need to enqueue all possible neigbors, including node itself (self-cycle) and visited node (the node could have edge for another color)
-
-
-## DP
-### Default
-https://blog.csdn.net/weixin_26723981/article/details/108892305
-
-https://www.jianshu.com/p/4e4ad368ae15
-
-Dynamic Programming (DP) has 2 implementations
-- Top-down
-  - the same as DFS with `memorization`, which relies on revusion
-  - Top-down DP is nothing else than ordinary recursion, enhanced with memorizing the solutions for intermediate sub-problems. When a given sub-problem arises second (third, fourth...) time, it is not solved from scratch, but instead the previously memorized solution is used right away. This technique is known under the name memoization (no 'r' before 'i').
-  - e.g. Fibonacci. 
-    - Just use the recursive formula for Fibonacci sequence, but build the table of fib(i) values along the way, and you get a Top-down DP algorithm for this problem (so that, for example, if you need to calculate fib(5) second time, you get it from the table instead of calculating it again).
-- Bottom-top
-  - it's an improvement on Top-down to avoid stack overflow, which relies on iteration and `tabulation`
-  - Bottom-top DP is also based on storing sub-solutions in memory, but they are solved in a different order (from smaller to bigger), and the resultant general structure of the algorithm is not recursive. 
-  - Bottom-top DP algorithms are usually more efficient, but they are generally harder (**and sometimes impossible**) to build, since it is not always easy to predict which primitive sub-problems you are going to need to solve the whole original problem, and which path you have to take from small sub-problems to get to the final solution in the most efficient way.
-  - e.g. Longest common subsequence (LCS) problem is a classic Bottom-top DP example.
-
-#### [LC] 39. Combination Sum
-https://leetcode.com/problems/combination-sum/
-
-```
-    split target into an array
-    dp[0, 1 , 2, 3, .., target - 1, target]
-    dp[i] points to all the combination whose sum is i
-    e.g.
-    candidates = [2,3,5], target = 8
-    now build dp array from 1 to 8
-        dp[0] = [] // dummy head node
-        dp[1] = [] // no combination
-        dp[2] = [[2]] // (dp[1] + dp[1]), dp[2]
-        dp[3] = [[3]] // (dp[1] + dp[2]), dp[3]
-        dp[4] = [[2,2]] // (dp[1] + dp[3]), (dp[2] + dp[2]), dp[4]
-        dp[5] = [[2,3],[5]] // dp[1] + dp[4], dp[2] + dp[3], dp[5]
-        dp[6] = [[2,2,2],[3,3]] // 
-        dp[7] = [[2,2,3],[2,5]] // dp[2] + dp[5], dp[3]+dp[4], has duplicate for [2,2,3]
-        dp[8] = [[2,2,2,2],[2,3,3],[3,5]] // could have duplicate, dp[3]+dp[5] has duplicate with dp[2] + dp[6] for [2,3,3]
-        for duplicate combination, we can use HashSet<List<Integer>> to cover it
-```
-
-#### [LC] 40. Combination Sum II
-https://leetcode.com/problems/combination-sum-ii/
-
-NOTE:
-- using HashSet to dedupe List<Integer>
-- convert hashset to list by `hashset.stream().collect(Collectors.toList())`
-
-#### [LC] 53. Maximum Subarray
-https://leetcode.com/problems/maximum-subarray/
-
-[Kadane's algorithm](https://leetcode.com/problems/maximum-subarray/discuss/369797/kadanes-algorithm-with-detailed-explanation-and-example-python)
-
-```
-int currentMax = nums[0]
-for (int i = 1; i < nums.length; i++) { // NOTE: start from 2nd element
-    // if we have to use nums[i], do we include previous accumulated result or just throw them away?
-    currentMax = Math.max(currentMax + nums[i], nums[i]);
-    // maxInTotal only records the max profit we have so far
-    maxInTotal = Math.max(maxIfWeUseThisElement, maxInTotal);
-}
-```
-
-#### [LC] 62. Unique Paths
-https://leetcode.com/problems/unique-paths/
-
-- `T(m*n)`
-- `S(m*n)`
-
-#### [LC] 64. Minimum Path Sum
-https://leetcode.com/problems/minimum-path-sum/
-
-- backtracking/brute-force
-  - T(2 ^ (m+n)) since for each move we have at most 2 options
-  - S(m+n) since recusion depth is m + n
-- top-down DP with memorization
-  - T(mn) since each node would have recursive stack push
-  - S(mn) since we use a dp matrix
-- bottom-up DP with in-place matrix update
-  - T(mn) since each node would be processed
-  - S(1) since no extra space
-
-
-Be careful to check boundary scenarios when `i == -1 && j == -1`.
-
-#### [LC] 77. Combinations
-https://leetcode.com/problems/combinations/
-
-Pseudo code:
-```
-combo(candidates=1234, k = 3) = 1 * combo(candidates=234, k = 2) + combo (candidates=234, k = 3);
-```
-- be careful when using memory in recusion!! Need to do deep copy of list!!!
-- you can use memory like this `List<List<Integer>>[][] memory = new LinkedList[n+2][k+2];`
-
-
-For similar question like [39. Combination Sum](https://leetcode.com/problems/combination-sum/), we can have this pseudo code (each num can be reused):
-```
-(candidates=1234, sum=5) = 1 * (candiates=1234, sum=4) + (candidates=234, sum=5)
-```
-
-#### [LC] 96. Unique Binary Search Trees
-https://leetcode.com/problems/unique-binary-search-trees/
-
-#### [LC] 121. Best Time to Buy and Sell Stock
-https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
-
-Also using Kadane's algorithm, by converting the prices array into gap array, and treate it as max subarray problem:
-```
-convert to Kadane's algorithm by calculating the gaps
-prices:  7   1   5   3   6   4
-  gaps:  -6  4   -2  3   -2
-
-meaning: -6: buy at day 0 and sell at day 1
-          4: buy at day 1 and sell at day 2
-     -6 + 4: buy at day 0 and sell at day 2 (buy and sell same day would off-set)   
-convert it to find max sum of subarray
-``` 
-
-#### [LC] 139. Word Break
-https://leetcode.com/problems/word-break/
-
-dp[i] = dp[j] && substring(j,i) in wordDict
-
-- Time complexity : O(n^3). There are two nested loops, and substring computation at each iteration. Overall that results in O(n^3) time complexity.
-- Space complexity : O(n). Length of dp array is n+1
-
-#### [LC] 140. Word Break II
-https://leetcode.com/problems/word-break-ii/
-
-Using the same recursion way as 139, but add a beautiful step to append current found word to all of the previous found word list.
-
-NOTE:
--  using hashmap computeIfAbsent: `allWordPos.computeIfAbsent(i, words-> new ArrayList<String>());`, if key `i` does not exist, put i and new object there
-
-#### [LC] 152. Maximum Product Subarray
-https://leetcode.com/problems/maximum-product-subarray/
-
-Similar like `53. Maximum Subarray`, but we cannot use Kadane's algorithm directly, since the product could have positive and negative
-- we can extend Kadane's algorithm, using `int[][] dp = new int[nums.length][2]` to record both max (positive) and min (negative) value, and the state trainsition function could be:
-
-```
-        // dp[i][0] = max (dp[i-1][0] * nums[i], dp[i-1][1]*nums[i], nums[i])
-        // dp[i][1] = min (dp[i-1][0] * nums[i], dp[i-1][1]*nums[i], nums[i])
-``` 
-
-An improvement to reduce space complexity:
-- we don't need to using array to record all `dp[i][0]` and `dp[i][1]`, considering the dp[i] is only related with dp[i-1], we can using two int numbers to represent current max and min value, which makes the time complexity drops to O(1)
-
-#### [LC] 174. Dungeon Game
-
-https://leetcode.com/problems/dungeon-game/
-
-The followings are copied from https://yutianx.info/2015/04/10/2015-04-10-leetcode-Dungeon-Game/
-
-- dp[i][j]，那么它是从dp[i+1][j]或者dp[i][j+1]走过来的
-- 需要将[i+1][j],[i][j+1]中选一个需要血量少的，减去dungeon[i][j]，再和1比较大小
-- 我们需要从下标由大到小遍历数组
-
-```
-dp[i][j] = max(
-  1, 
-  min(dp[i+1][j], dp[i][j+1]) - dungeon[i][j]
-  )
-)
-```
-
-#### [LC] 300. Longest Increasing Subsequence
-https://leetcode.com/problems/longest-increasing-subsequence/
-
-The followings are copied from https://soulmachine.gitbooks.io/algorithm-essentials/content/java/dp/longest-increasing-subsequence.html
-
-我们来尝试用DP来解决这题。最重要的是要定义出状态。首先从状态扩展这方面看，对于数组中的一个元素，它往后走，凡是比它大的元素，都可以作为下一步，因此这里找不到突破口。
-
-我们换一个角度，从结果来入手，我们要求的最长递增子序列，一个递增子序列，肯定是有首尾两个端点的，假设我们定义 f[i] 为以第i个元素为起点的最长递增子序列，那么 f[i]和f[j]之间没有必然联系，这个状态不好用。
-
-定义f[i]为以第i个元素为终点的最长递增子序列，那么如果`i<j`且`nums[i]<nums[j]`，则f[i]一定是f[j]的前缀。这个状态能表示子问题之间的关系，可以接着深入下去。
-
-现在正式开始定义，我们定义状态f[i]为第i个元素为终点的最长递增子序列的长度，那么状态转移方程是
-
-`f[j] = max{f[i], 0 <= i < j && f[i] < f[j]} + 1`
-
-时间复杂度O(n^2)，空间复杂度O(n)
-
-NOTE: initialize all dp to be 1!!!!
-
-```
-        int[] dp = new int[nums.length];
-        Arrays.fill(dp, 1); // this is important!!!
-        int result = 1;
-        for (int j = 1; j < nums.length; j++) {
-            for (int i = 0; i < j; i++) {
-                if (nums[i] < nums[j]) {
-                    dp[j] = Math.max(dp[j], dp[i] + 1);
-                }
-            }
-            result = Math.max(result, dp[j]);
-        }
-        return result;
-```
-
-#### [LC] 377. Combination Sum IV
-https://leetcode.com/problems/combination-sum-iv/
-
-top-down idea: recusion + memory
-
-- whenever we choose one element from array, we can minus the element from target, then recusive call the function.
-- when `nums[i] == target`, we reach the end, do `count++`
-- using memory to speed up the recursion
-
-
-#### [LC] 403. Frog Jump
-https://leetcode.com/problems/frog-jump/
-
-Define a bi-dimensional boolean array to record on stone i whether by step j we can reach it.  
-e.g.   
-if we have 7 stones, then we can at most make 7 distance per one jump, so we can create a `7*7` array to record true/false we can reach it.
-
-NOTE:  
-- though there were 3-layer for loop, the time complexity is acutally O(n^2)
-
-## Sort
-### Default
-
-#### [LC] 33. Search in Rotated Sorted Array
-https://leetcode.com/problems/search-in-rotated-sorted-array/
-
-1. recover the array to be ascending.
-2. do binary search, and compare `A[mid]` and `A[A.length-1]` to check which half is in order
-
-#### [LC] 49. Group Anagrams
-https://leetcode.com/problems/group-anagrams/
-
-bucket sort to find all anagrams
-
-#### [LC] 973. K Closest Points to Origin
-https://leetcode.com/problems/k-closest-points-to-origin/
-
-sort or heap
-
-
-## Interval
-### Default
-
-#### [LC] 56. Merge Intervals
-https://leetcode.com/problems/merge-intervals/
-
-Sort 2d array or array of object:
-```
-Arrays.sort(arrays, (a, b) -> {
-  return a[0] - b[0]; // ascending -- positive means b->a, negative means a->b
-});
-```
-
-Sort objects:
-```
-Collections.sort(posList, (a, b) -> {
-  return a.index - b.index; // return positive means b->a, negateive means a->b
-});
-```
-
-#### [LC] 252. Meeting Rooms
-https://leetcode.com/problems/meeting-rooms/
-
-Simple solution with Array.sort
-```
-        Arrays.sort(intervals, (a, b)->{
-            if (a[0] != b[0]) {
-                return a[0] - b[0];
+public int networkDelayTime(int[][] times, int n, int k) {
+    // dist[i] means node i+1 
+    int[] dist = new int[n]; 
+    Arrays.fill(dist, Integer.MAX_VALUE); // initialize dist to be INF
+    dist[k-1] = 0; // initialize node k to be dist 0
+    
+    // NOTE: n-1 relaxation is the outer loop!!
+    for (int i = 1; i <= n -1; i++) { // relax n-1 times
+        for (int[] edge : times) {
+            int from = edge[0];
+            int to = edge[1];
+            int weight = edge[2];
+            if (dist[from-1] == Integer.MAX_VALUE) {
+                continue;
             } else {
-                return a[1] - b[1];
+                dist[to-1] = Math.min(dist[from-1] + weight, dist[to-1]);
             }
-        });
-``` 
+        }
+    }
 
-#### [LintCode] 850. Employee Free Time
-
-https://www.lintcode.com/problem/850/
-
-Use custom comapritor, and be careful when union two intervals, set the end of the new interval to be the max one of original two intervals.
-
-
-#### [LC] 986. Interval List Intersections
-https://leetcode.com/problems/interval-list-intersections/
-
-NOTE: 
-- only need to compare p1 and p2, no need to compare with last element in result list --> they would never have overlap since we always move the pointer of smaller interval
-- how to tell if they are intersected?
-  - `int low = Math.max(firstList[p1][0], secondList[p2][0]);`
-  - `int high = Math.min(firstList[p1][1], secondList[p2][1]);`
-  - `if (low <= high) {return true;}`
-- how to move the pointer of the smaller interval?
-  - `if (firstList[p1][1] <= secondList[p2][1]) {p1++;}`
-
-
-## HashMap
-### Default
-#### [LC] 1. Two Sum
-Why "two sum" is not a two-pointers problem? To use two-pointers, we need to know when should we move the pointer, and for problem like "two sum", we cannot know it without sorting the array. But sorting would result in at least O(nlgn) time complexity. Considering by using hashmap we can already achieve O(n) time complexity, there is no need to use two-pointer here.
-
-#### [LC] 128. Longest Consecutive Sequence
-https://leetcode.com/problems/longest-consecutive-sequence/
-
-HashSet.
-
-#### [LC] 138. Copy List with Random Pointer
-https://leetcode.com/problems/copy-list-with-random-pointer/
-
-HashMap to store original node to new node mapping.
-
-#### [LC] 387 First Unique Character in a String 
-https://leetcode.com/problems/first-unique-character-in-a-string/
-
-Easy question, 1st round to go through all characters and count each of them, 2nd round to find the 1st one with count 1;
-
-#### [LC] 788. Rotated Digits
-https://leetcode.com/problems/rotated-digits/
-
-- option1: brute force to calculate each digit to check if it is `2/5/6/9` or `0/1/8`， the time complexity is `O(nlogn)` since we traverse n numbers and for each num we do `logN` times of checking on each digit.  
-The code to check each digit:
-
-```java
-for (int j = 0; j < 5; j++) {
-    int digit = i % 10;
-    i = i / 10;
+    int max = 0;
+    for (int node : dist) {
+        if (node == Integer.MAX_VALUE) {
+            return -1;
+        } else {
+            max = Math.max(max, node);
+        }
+    }
+    return max;
 }
 ```
 
-- option2: DP
+### Floyd
 
 
-#### [LC] 953. Verifying an Alien Dictionary
-https://leetcode.com/problems/verifying-an-alien-dictionary/
+#### [LC] 743. Network Delay Time
+https://leetcode.com/problems/network-delay-time/
 
-Using hashmap to store the dictionary.
+Using Dijkstra's algorithm template.
 
-#### [LC] 1152. Analyze User Website Visit Pattern
-https://leetcode.com/problems/analyze-user-website-visit-pattern/
+#### [LC] 505. The Maze II
+https://leetcode.com/problems/the-maze-ii/
 
-For each user, brute force find all 3-sequence and using hashmap to record it, the time compleity is `O(N^3)` since we do `CN3 = n * (n-1) * (n-2)`.
+Using Dijkstra's algorithm.
+
+Build the graph in this way: whenever ball reaches a corner, store the path as an edge and the length as weight.
+
+Time complexity is `O(mnlog(mn))`, space complexity is `O(mn)`.
+
+The reason is that Dijkstra's time complexity is `O(ElogE)`, for a `m*n` matrix and we can only move up/down/left/right, the max # of edges would be `4*m*n`, so it's `O(mnlog(mn))`.
+
+#### [LC] 787. Cheapest Flights Within K Stops
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+
+This solution is really smart by using Bellman-Ford. 
+Since by original Bellman-Ford, we may relax multiple times in one iteration, and we want to avoid it:
+```java
+e.g.
+Graph: 1 -> 2 -> 3 -> 4
+Edges: 1 -> 2; 2 -> 3; 3 -> 4
+
+Then by 1st iteration we can relax 3 times.  
+``` 
+But in this question, we only want to relax one time by checking `1->2`, and not doing `2->3` since that since that would give us `1->2->3`.  
+
+The trick is to use a backup array to store previous state of dist, then using the backup data int the Math.min() comparison.  
+In this way, after we checked `1->2` in dist[2], we will still ceheck `2->3`, but dist[3] would not use updated dist[2] but the backup[2] which is MAX_VALUE !!! 
+so that `1->2` and `2->3` are distinct event!!!
+
+```java
+        for (int j = 1; j <= K + 1; j++) {// relax K+1 times
+            int[] backup = Arrays.copyOf(dist, n+1);
+            for (int[] flight : flights) {
+                int from = flight[0], to = flight[1], weight = flight[2];
+                if (backup[from] != Integer.MAX_VALUE) {
+                    // we update dist[to], but using the last round result (which is backup[from]), since we need to make sure only relax once at one stop, otherwise we may relax multiple times at this round and goes above j stops 
+                    dist[to] = Math.min(dist[to], backup[from] + weight);
+                }
+            }
+        }
+```
 
 
-#### [LC] 1606. Find Servers That Handled Most Number of Requests
-
-https://leetcode.com/problems/find-servers-that-handled-most-number-of-requests/
-
-per https://leetcode.com/problems/find-servers-that-handled-most-number-of-requests/discuss/1054308/Java-Easy-to-understand-solution-with-explanation, we can use `TreeSet` and `TreeMap`
-
-## LinkedList
-### Default
-#### [LC] 2. Add Two Numbers
-https://leetcode.com/problems/add-two-numbers/
-
-Be careful on the corner case, like carryOver may result in a new node.
+#### [LC] 847. Shortest Path Visiting All Nodes
+https://leetcode.com/problems/shortest-path-visiting-all-nodes/
 
 
-#### [LC] 24. Swap Nodes in Pairs
-https://leetcode.com/problems/swap-nodes-in-pairs/
+#### [LC] 1514. Path with Maximum Probability
+https://leetcode.com/problems/path-with-maximum-probability/
 
-Simple version is to swithc node value, harder version is to switch nodes, remember to add preHead node, super version is to do it recursively.
+#### [LC] 1786. Number of Restricted Paths From First to Last Node
+https://leetcode.com/problems/number-of-restricted-paths-from-first-to-last-node/
 
+This algorithm needs to run Dijkstra first to find a `int[] dist` that records shortest dist from each node to node `n`, then using DFS to find all paths that meet the requirement.
 
-#### [LC] 21. Merge Two Sorted Lists
-https://leetcode.com/problems/merge-two-sorted-lists/
+Two tricks here to pass TLE:
+1. using memorization in DFS
+2. re-constrcut the graph to be adjacency table instead of 2D matrix
 
-Just find the head node first, then add node in l1 or l2 sequencially (compare their val) to the head.next.
-
-
-#### [LC] 109. Convert Sorted List to Binary Search Tree
-https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
-
-#### [LC] 203. Remove Linked List Elements
-https://leetcode.com/problems/remove-linked-list-elements/
-
+Also be careful where to use the `modulo 10^9 + 7`
+- the Dijkstra algorithm would not result in overflow 
+  - reason is that the shortest path has maximum "n-1" edges,  `n <= 2 * 10^4` and `weighti <= 10^5`, so the max dist would be `2*10^9` which is less than Integer.MAX_VALUE
+- the DFS may result in overflow
+  - reason is that each path from 1 to n would have "n-1" edges, and # of edges could be 2 times of nodes, which means the combination could be "C 2n n" which is `n^n` that is easily overflow
+  - `result = (result + dfs(...)) % 1000000007`
 
 ## Topological Sort
+
+In a Directed Acyclic Graph (DAG), there must exist Topological Sort. 
+ - 且若在有向图 G 中从顶点 u -> v有一条路径，则在拓扑排序中顶点 u 一定在顶点 v 之前，而因为在DAG图中没有环，所以按照DAG图的拓扑排序进行序列最短路径的更新，一定能求出最短路径。
+ - if each vertex has weight, we can convert it into edge weight
+ - then Topological Sort can find a shortest edge weighted path.
+
+Topological Sort 也应用了BFS遍历思想、以达成按依赖关系排序的目的.
+
 ### Default
 Psudocode:
 ```
@@ -1485,7 +578,7 @@ NOTE:
 - maintain a queue to store all `0-ingress node` 
 - maintain a result list to store final result in order
 
-```
+```java
 
 // put ingressMap
 Integer count = ingressMap.getOrDefault(to, 0);
@@ -1527,592 +620,101 @@ https://leetcode.com/problems/add-two-numbers-ii/
 
 Use stack to reverse list and finally reverse it back.
 
-## String
+
+## Sort
 ### Default
 
-#### [LC] 65. Valid Number
-https://leetcode.com/problems/valid-number/
+#### [LC] 49. Group Anagrams
+https://leetcode.com/problems/group-anagrams/
 
-NOTE for `string.split()`
-- when spliting special characters like `.`, need to escape it like `string.split(\\.)`
-- when only right-hand side has characters, result array is of size 2
-  - `String s = ".1"; String[] arr = s.split("\\.");`
-  - `arr` length is 2
-  - `arr[0] == ""; arr[1] == "1"`
-- when only left-hand side has characters, result array is of size 1
-  - `String s = "1."; String[] arr = s.split("\\.");`
-  - `arr` length is 1
-  - `arr[0] == "1";`
-- when nothing at left-hand side and right-hand side, result array is of size 0
-  - `String s = "."; String[] arr = s.split("\\.");`
-  - `arr` length is 0
-- we can also force `split()` to return 2-element array by `string.split(delimiter, limit)`
-  - `String s = "."; String[] arr = s.split("\\.", 2);`
-  - `arr` length is 2 and both elements are empty
-  - `arr[0] == ""; arr[1] == ""`
-
-#### [LC] 43. Multiply Strings
-https://leetcode.com/problems/multiply-strings/
-
-- use `stringBuilder.insert(index, char)` to append character to the front
-- be careful when encounterting 0, we can use shortcut
-
-#### [LC] 67. Add Binary
-https://leetcode.com/problems/add-binary/
-
-- For String, StringBuffer, and StringBuilder, charAt() is a constant-time operation O(1).
-- For StringBuffer and StringBuilder, deleteCharAt(), insert(index,char) and reverse() are linear-time operation O(n).
-
-#### [LC] 408. Valid Word Abbreviation
-https://leetcode.com/problems/valid-word-abbreviation/
-
-Using two pointers to point to original word and abbr, then move both pointers in different scenarios: isLetter() or isDigit(). Finally if the two pointers are not at the bottom of corresponding string, it's invalid so that we return false;
-
-Be careful:
-- the abbr could have multi-digit count, e.g. `a12b` means there are 12 characters after `a`
-- there is a special case that the abbr may have adjacent digit or invalid digits like `a01b` where `01` is invalid.
-
-
-#### [LC] 415. Add Strings
-https://leetcode.com/problems/add-strings/
-
-- Return the result by `stringBuilder.reverse().toString()`
-
-#### [LC] 616. Add Bold Tag in String
-https://leetcode.com/problems/add-bold-tag-in-string/
-
-It is the same as `758. Bold Words in String `
-
-#### [LC] 758. Bold Words in String  
-https://leetcode.com/problems/bold-words-in-string/
-
-
-It is a combination of problem "find matched substring" and problem "merge interval".
-1. solution 1: find and store all label pairs and do interval merge
-  1. define a new object Pos to store index and left-or-right flag
-    1. NOTE: cannot use TreeMap since pairs could share index 
-  2. find all pairs of labels by traversing the string -- O(MNK) where M is # of characters in string, N is # of dict words and K is average size of dict words
-    1. can use `int foundIndex = s.indexOf(key, index);`, where index is the starting position in string
-  3. sort the list of Pos object by index
-  4. do interval merge by stack
-  5. add label to string by using `stringbuilder.insert(offset, "<br>")`
-2. solution 2: define a boolean array to record whether character is in dict
-  1. use `s.substring(i, i + dictWord.length()).equals(dictWord)`
-
-NOTE:  
-1. The complexity of Java's implementation of indexOf is O(m*n) where n and m are the length of the search string and pattern respectively.
-2. The insert operation on a StringBuffer is O(n). This is because it must shift up to n characters out of the way to make room for the element to be inserted.
-3. A faster way to match substring is to use trie, or using KMP algorithm to reach O(n) (which is too hard to remember during interview).
-  1. https://www.tutorialspoint.com/Knuth-Morris-Pratt-Algorithm#:~:text=Knuth%20Morris%20Pratt%20(KMP)%20is,KMP%20is%20O(n).
-
-
-Way to compare object:
-```java
-        Collections.sort(positions, new Comparator<Pos>() {
-            @Override
-            public int compare(Pos p1, Pos p2) {
-                if (p1.index > p2.index) {
-                    return 1; // p2 before p1
-                } else if (p1.index == p2.index) {
-                    if (p1.isLeft) {
-                        return -1; // p1 before p2
-                    } else {
-                        return 1; // p2 before p1
-                    }
-                } else {
-                    return -1; // p1 before p2
-                }
-            }
-        });
-```
-
-## Stack
-### Default
-#### [LC] 20. Valid Parentheses
-
-https://leetcode.com/problems/valid-parentheses/
-
-#### [LC] 224. Basic Calculator
-https://leetcode.com/problems/basic-calculator/
-
-A good blog about it: http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html
-
-1st, how to to collect continuous digits in one run?
-
-```java
-// e.g. 125
-while(Character.isDigit(c)) {
-  currentNum = currentNum * 10 + c - '0';
-}
-```
-
-2nd, how to track the sign? Sign would be `1` by default, and would change to be `-1` when seeing `-`
-
-```java
-sign = (ch == '-') ? -1 : 1; // set sign 
-```
-
-3rd, if without parenthesis, how can we calculate it? -- when it's digits, collect them as num, while it's not digits, add up the num to result with sign
-
-```java
-// e.g. 1 + 2 - 3
-int currentResult = 0;
-int currentNum = 0;
-int currentSign = 1; // by default is positive
-for (char c : s.toCharArray()) {
-    if (Character.isDigit(c)) { // always start with digits!!!
-        currentNum = currentNum*10 + c - '0'; 
-    } else { // if not digits, then we can addup currentResult
-        currentResult = currentResult + currentNum * currentSign;
-        currentNum = 0; // reset currentNum!!!
-        if (c == '+' || c == '-') {
-          currentSign = (c == '+' ? 1 : -1);
-        }
-    }
-}
-
-```
-
-4th, how to handle parenthesis? -- we only push/pop when seeing parenthses 
-  - when seeing `(`, we push the currentResult and sign (the sign for next parenthesis) to stack, and reset currentResult and sign 
-  - when seeing `)`, we pop the previous sign and previous num
-
-
-
-#### [LC] 227 Basic Calculator II  
-https://leetcode.com/problems/basic-calculator-ii/
-
-
-Similar like `224. Basic Calculator`, we need to recrod `sign` and `currentNum`.  
-The difference is that, instead of pushing numbers when seeing left bracket, we need to push stack when seeing `*` or `/`, and record the current operation as `*` or `/`, then next time we collect enough `currentNum`, we can check the operation to decide what to do
-- if operation is `+`, simply push the `currentNum` to stack
-- if operation is `*`, pop the stack and times with `currentNum`, then push the result to stack
-- if operation is `/`, pop the stack and dividended by the `currentNum`, then push result to stack
-- finally we add up every num in stack
-
-Some trick we can play:   
-1. how to ignore space? --> do not include space in the if conditions at all  
-
-```java
-if (Character.isDigit(c)) { 
-    currentNum = 10 * currentNum + c - '0';
-} 
-if (i == arr.length - 1 || c == '+' || c == '-' || c == '*' || c =='/') {
-   // do something
-}
-```
-
-2. how to cover the final `currentNum` when reaching end of the sting?
-See the above code snippet, we include the `i == arr.length - 1` as condition together with other symbols, it helps to handle the last `currentNum`
-
-3. how to save space complexity?  
-Actaully we don't need a stack, we just need a `prevNum` variable to record previous number for `*` and `+`, and another variable `result` to add up all `+` and `+`, then finally return `result` 
-
-#### [LC] 772. Basic Calculator III
-https://leetcode.com/problems/basic-calculator-iii/
-
-This is a mix of `224. Basic Calculator` and `227 Basic Calculator II`, since we have both `*` `/` and `(``)`, we cannot use a simple one round to solve it since brackets and `*/` have the same priority.
-
-One idea is that, if not considering brackets, we can use the method in `227 Basic Calculator II`, and whenever seeing bracket, we put whole brackets into recursive function and treat the result at `currentNum`.
-
-Be careful to find the bracketed substring, since it may have two scenatios like `1+(2+(3+4))` or `(1+2)+(3+4)`.  
-
-Here is the code with `O(n^2)` since we need to search for `)` for every `(` with at most `n-1` steps, so `n-1 + n-2 + n-3 + ... is n^2` 
-
-```java
-  if (c == '(') {
-      int j = i + 1;
-      int leftCount = 1; // count "("
-      int rightCount = 0; // count ")"
-      while(rightCount != leftCount) {
-          if (s.charAt(j) == '(') {
-              leftCount++;
-          } else if (s.charAt(j) == ')') {
-              rightCount++;
-          }
-          j++;
-      }
-      // j-1 is the ")"
-      currentNum = calculate(s.substring(i+1,j-1));
-      i = j-1; // move i to ")"
-  }
-```
-
-#### [LC] 636. Exclusive Time of Functions
-https://leetcode.com/problems/exclusive-time-of-functions/
-
-Treat the problem like `224. Basic Calculator`, and build the stack element by `List<Integer>` like this:  
-
-- list.get(0) --> process id --> actually it's not required, since process ends and pop() must be a pair
-- list.get(1) --> start timestamp
-- list.get(2) --> durationPendingRemove --> whenever an element being pop(), need to increment the `duratiothe nPendingRemove` of next top element in stack
-
-```
-        /** 
-             ________________
-            |   ___________  |
-            |  |   _    _  | |
-            |  |  | |  | | | |
-            0  1  3 4  5 6 7 8
-        **/
-```
-
-#### [LC] 1249. Minimum Remove to Make Valid Parentheses
-https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
-
-Using stack to check valid parenthese pairs, and using a hashset to record valid parentheses index, then use another for loop and StringBuilder to build the new string.
-
-## Heap
-### Default
-
-
-#### [LC] 23. Merge k Sorted Lists
-https://leetcode.com/problems/merge-k-sorted-lists/
-
-heap
-
-#### [LC] 215. Kth Largest Element in an Array
-https://leetcode.com/problems/kth-largest-element-in-an-array/
-
-min heap --> top/first is the minimum --> so ascending in list
-
-
-#### [LC] 767. Reorganize String
-https://leetcode.com/problems/reorganize-string/
-
-```python
-        // aaaccc --> acacac
-        // aaacccc --> cacacac
-        // aaaccccc --> ""
-        // find most common letter, then split it by rest of the letters
-        // if difference >= 2, not possible
-        
-        // option1: count all unique letters (O(N)), sort them (O(MlogM) if M is the # of unique letters) , then asembling string, total time complexity is O(N + MlogM)
-        // option2: count and sort all unique letters by TreeMap (O(NlogM)), then asembling string
-        // option3: count all unique letters (O(N)), building max-heap to maintain the max at heap top (O(MlogM)); when asembling string, we will do N times pulling from heap, and each pulling takes O(logM) for the heap to reorganize, so the asembling time is O(NlogM).
-        // option4: bucket sort, maintain a 500 list of characters
-        // since we would have most have 26 characters, so the M could be fixed and at most 26, which makes all the options close to O(N)
-```
-
-NOTE:  
-PriorityQueue can support `Map.Entry` like:
-```
-        PriorityQueue<Map.Entry<Character,Integer>> pq = new PriorityQueue<>((a,b) -> {
-            return b.getValue() - a.getValue(); // descending
-        });
-```
-
-Then traverse map like:
-```
-for (Map.Entry<Character, Integer> entry : map.entrySet()) {}
-```
+bucket sort to find all anagrams
 
 #### [LC] 973. K Closest Points to Origin
 https://leetcode.com/problems/k-closest-points-to-origin/
 
-Be careful when traverse heap, do not use `for (int i=0; i<heap.size();i++)`, since after you do `heap.poll()` the `heap.size()` would change -- set the heap size before the for loop!!!
+sort or heap
 
-## Array
+
+## Interval
 ### Default
-#### [LC] 41. First Missing Positive
 
-- The trick is: the max possible "min positve num" is `nums.length + 1`.
-- To achieve constant space, we can reuse existing array to change value in place
+#### [LC] 56. Merge Intervals
+https://leetcode.com/problems/merge-intervals/
 
-NOTE: be careful on the algorithm to swap nums in place, need to break when there are duplicate numbers
-
+Sort 2d array or array of object:
 ```java
-        //     i     0 1  2 3
-        // expected  1 2  3 4
-        // actual    3 4 -1 1
-        for (int i = 0; i < nums.length; i++) {
-            while (nums[i] > 0) {
-                if (nums[i] - i == 1) { // already matched
-                    break;
-                } else { // swap
-                    int tmp = nums[nums[i] - 1];
-                    if (tmp == nums[i]) {
-                        break; // same number, skip here in case infinite loop
-                    }
-                    nums[nums[i] - 1] = nums[i];
-                    nums[i] = tmp;
-                }
-            }
-        }
+Arrays.sort(arrays, (a, b) -> {
+  return a[0] - b[0]; // ascending -- positive means b->a, negative means a->b
+});
 ```
 
-#### [LC] 88. Merge Sorted Array
-https://leetcode.com/problems/merge-sorted-array/
-
-- option1: merge two array then `Arrays.sort()`
-- option2: copy one of the array into `nums1Copy`, then use 3 pointers to move into final array one by one
-
-## Design
-### Default
-https://stackoverflow.com/questions/43145395/time-complexity-while-deleting-last-element-from-arraylist-and-linkedlist
-
-| Operation                   | LinkedList  | AraryList  | 
-| --------------------------- |:-----------:| ----------:|
-| add(Integer obj)            | *O(1)*      | *O(1)*     | 
-| add(int index, Integer obj) | O(N)        | O(N)       |
-| contains(Integer obj)       | O(N)        | O(N)       |
-| get(int index)              | O(N)        | *O(1)*     |
-| set(int index, Integer obj) | O(N)        | *O(1)*     |
-| remove(int index) -- last   | *O(1)*      | *O(1)*     |
-| remove(int index) -- any    | O(N)        | O(N)       |
-| remove(Integer obj)         | O(N)        | O(N)       |
-
-
-Some tricks when using Collections:
-1. remove range of list by `O(N)`
+Sort objects:
 ```java
-arayList.subList(inclusiveIndex, exclusiveIndex).clear();
+Collections.sort(posList, (a, b) -> {
+  return a.index - b.index; // return positive means b->a, negateive means a->b
+});
 ```
 
-2. get max key of TreeMap --> by default TreeMap is asceding, so last is the max and first is min:  
+#### [LC] 252. Meeting Rooms
+https://leetcode.com/problems/meeting-rooms/
+
+Simple solution with Array.sort
 ```java
-treeMap.getLastKey();
-```
-
-
-#### [LC] 146. LRU Cache
-https://leetcode.com/problems/lru-cache/
-
-- option1: linkedhashmap 
-- option2: custome class to define double-linked-list and hashmap
-
-
-
-#### [LC] 157. Read N Characters Given Read4
-https://leetcode.com/problems/read-n-characters-given-read4/
-
-#### [LC] 158. Read N Characters Given Read4 II - Call multiple times
-https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
-
-- define 3 global variables `carryOverOrBuf4`, `carryOverValidSize` and `carryOverValidIndex`
-- then copy the character from `carryOverOrBuf4` array to result buf array, until the processed number reaches n
-
-```
-char[] carryOverOrBuf4 = new char[4]; // we can only carryOver 3 char at most, but we set the space to be 4 to reuse it for read4
-int carryOverValidSize = 0; // valid carryOver char in carryOverOrBuf4 array
-int carryOverValidIndex = 0; // last time we stop here in carryOverOrBuf4 array
-```
-
-
-#### [LC] 295. Find Median from Data Stream
-https://leetcode.com/problems/find-median-from-data-stream/
-
-the followings come from: https://www.sohu.com/a/363477662_355142
-
-Two heap:
-
-最小堆保存较大的一半元素，最小值位于根元素
-最大堆保存较小的一半元素，最大值位于根元素
-现在，可以把传入的整数与最小堆根元素进行比较，并加到对应的一半数列中。接下来，如果插入后两个堆大小差距大于1，可以为堆进行重新平衡，让差距最大等于1：
-
-if (size(minHeap)> size(maxHeap)+ 1) {
-  // 移除minHeap根元素,插入maxHeap
-}
-
-if (size(maxHeap)> size(minHeap)+ 1) {
-  // 移除maxHeap根元素,插入minHeap
-}
-
-通过这种方法，如果得到的两个堆大小相等，可以中位数等于两个堆的根元素平均值。否则，元素多的那个堆，其根元素就是中位数。
-
-#### [LC] 304. Range Sum Query 2D - Immutable
-https://leetcode.com/problems/range-sum-query-2d-immutable/
-
-This is not a real DP question actually, it is only that `sumRegion()` would be called multiple times, so that we don't need to recalcualte overlap regions.
-
-The idea is to maintain a `dp[][]` arrar which stores sum from `0,0` to all `i,j`, then the region sum could be calculated in this way:
-
-`Sum(ABCD)=Sum(0D)−Sum(0B)−Sum(OC)+Sum(0A)`
-
-#### [LC] 341. Flatten Nested List Iterator
-https://leetcode.com/problems/flatten-nested-list-iterator/
-
-- option1: using recursion
-  - Constructor: O(N + L)
-  - next(): O(1)
-  - hasNext(): O(1)
-  - Space complexity : O(N + D) where D is the nesting depth
-```java
-    private void flattern(List<NestedInteger> nestedList) {
-        if (nestedList == null) {
-            return;
-        }
-        for (NestedInteger ni : nestedList) {
-            if (ni.isInteger()) {
-                nums.add(ni.getInteger());
+        Arrays.sort(intervals, (a, b)->{
+            if (a[0] != b[0]) {
+                return a[0] - b[0];
             } else {
-                flattern(ni.getList());
+                return a[1] - b[1];
             }
-        }
-    }
-```
+        });
+``` 
 
-- option2: using 2 stack
+#### [LintCode] 850. Employee Free Time
 
-#### [LC] 380. Insert Delete GetRandom O(1)
-https://leetcode.com/problems/insert-delete-getrandom-o1/
+https://www.lintcode.com/problem/850/
 
-NOTE:
-- to achieve random index to val mapping in `O(1)`, we need `ArrayList`
-- to achieve checking val existence in `O(1)`, we need `HashMap`
-- to achieve delete arbitrary index from ArrayList, we need to swap val with last element in list, and then remove last element from list
-- always update map when doing list operation (add/delete/set)
-
-#### [LC] 381. Insert Delete GetRandom O(1) - Duplicates allowed
-https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/
-
-Similar like `380. Insert Delete GetRandom O(1)`, when deleting element, swap with end element to achieve `O(1)`
-
-```java
-ArrayList<Integer> list;
-HashMap<Integer, Set<Integer>> valToPosSetMap;
-```
-
-Be careful  
-1. hashset cannot remove by index, has to use iterator like this `int val = hashset.iterator().next()`
-2. be careful to not use `list.size() - 1` at multiple places, especially when we need to delete it from both list and hashset, since the list size would have already changed when it's removed once.
-
-e.g.
-
-```java
-int pos = posList.iterator().next();
-int end = list.size() - 1;
-swap(pos, end, list, map);
-list.remove(end); 
-posList.remove(end); // we cannot use "list.size() - 1", since list size has changed!!!
-```
+Use custom comapritor, and be careful when union two intervals, set the end of the new interval to be the max one of original two intervals.
 
 
-#### [LC] 398. Random Pick Index
-https://leetcode.com/problems/random-pick-index/
+#### [LC] 986. Interval List Intersections
+https://leetcode.com/problems/interval-list-intersections/
 
-hashmap to store num[i] to list of index, then random pick an index in list by target.
+NOTE: 
+- only need to compare p1 and p2, no need to compare with last element in result list --> they would never have overlap since we always move the pointer of smaller interval
+- how to tell if they are intersected?
+  - `int low = Math.max(firstList[p1][0], secondList[p2][0]);`
+  - `int high = Math.min(firstList[p1][1], secondList[p2][1]);`
+  - `if (low <= high) {return true;}`
+- how to move the pointer of the smaller interval?
+  - `if (firstList[p1][1] <= secondList[p2][1]) {p1++;}`
 
 
-#### [LC] 528. Random Pick with Weight
-https://leetcode.com/problems/random-pick-with-weight/
-
-prefixSum + search (better to use binary search to improve searching complexity to logN)
-
-```java
-    //        w =    1    2      3       4 
-    //prefiSum  = 0  1    3      6       10
-    //percentage= 0% 10%  30%    60%     100%
-    // 100% --> random <= 10  --> 6 < random <= 10 --> 40% chance --> 4
-    // 60%  --> random <= 6   --> 3 < random <= 6  --> 30% chance --> 3
-    // 30%  --> random <= 3   --> 1 < random <= 3  --> 20% chance --> 2
-    // 10%  --> random <= 1   --> 0 < random <= 1  --> 10% chance --> 1
-```
-
-NOTE:  
-When using random function, need to have brackets for both `(int)` and `(Math.random() * (max - min + 1))`
-```java
-    // both end inclusive
-    protected int getRandom(int min, int max) {
-        return min + (int) (Math.random() * (max - min + 1));
-    }
-```
-
-#### [LC] 588. Design In-Memory File System
-https://leetcode.com/problems/design-in-memory-file-system/
-
-- using TreeMap since the question wants to return file/directories in lexicographic order.
-- be careful when using `s.slpit("/")`, the first element in the array would be empty string `""`, need to skip this one
-
-#### [LC] 716. Max Stack
-https://leetcode.com/problems/max-stack/
-
-- option1: using two stacks, one to store the original nums, and one to store max num at current level
-  - when push(), push the `Math.max(maxStack.peek(), num)` to maxStack
-  - when popMax(), using a tmpStck to store original nums, then pop both original stack and maxStack until `numStack.peek().equals(maxStack.peek())` which means we find the top most max value
-    - it is `O(N)`
-    - NOTE: Integer cannot use `==`, using `equals()` instead!!!
-- option2: using cusomized class doubleLinkedList and TreeMap,
-  - TreeMap keeps the num sorted in keySet, and the values are list of `DoubleLinkedNode`
-  - the trick is that, when we do `popMax()`, treeMap can return a list of `DoubleLinkedNode`, and the node can find it self in the doubleLinkedList by `O(1)`, and then remove itself in the doubleLinkedList
-    - it makes pop(), push(), popMax() are all `O(logN)` since TreeMap needs to sort, while peek() and peekMax() are `O(1)`
-
-#### [LC] 155. Min Stack
-https://leetcode.com/problems/min-stack/
-
-Similar like `716. Max Stack`, but we can play a trick here, since we don't need to maintain 2 stack, but using one stack to store `int[]` like this to store both original num and min num so far.
-
-```java
-Deque<int[]> stack = new LinkedList<>(); 
-```
-
-#### [LC] 729 My Calendar I
-https://leetcode.com/problems/my-calendar-i/
-
-- Using TreeMap
-  - key is start of interval, value is the end of interval
-  - then check the ordered previous and next interval of the pending interval by `ceilingKey(K key)` and `floorKey(K key)`
-- Time Complexity: O(NlogN),where N is the number of events booked. For each new event, we search that the event is legal in O(logN) time, then insert it in O(1) time.
-- Space Complexity: O(N), the size of the data structures used.
-
-#### [LC] 731. My Calendar II
-https://leetcode.com/problems/my-calendar-ii/
-
-- Using two treemap here, one to store general meetings, another one to store overalapped areas as new intervals
- 
-
-#### [LC] 1472. Design Browser History
-https://leetcode.com/problems/design-browser-history/
-
-Just using an ArrayList to store history and pointer for current position. Whenver visit() is called, we remove everything from `current+1` to end of the history, and then append the visited url.
-
-```java
-history.subList(current+1, history.size()).clear();
-```
-
-#### [LC] 1570. Dot Product of Two Sparse Vectors
-https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
-
-- option1: define a class to store num-index pairs for non-0 nums in LinkedList 
-- option2: using HashMap to store index-num pairs for non-0 nums
-
-## Math
+## LinkedList
 ### Default
+#### [LC] 2. Add Two Numbers
+https://leetcode.com/problems/add-two-numbers/
 
-#### [LC] 172. Factorial Trailing Zeroes
-https://leetcode.com/problems/factorial-trailing-zeroes/
+Be careful on the corner case, like carryOver may result in a new node.
 
-```java
-    // option1: using BigInteger
-    // option2: count factors of 5 and 2, then use min(# of 5, # of 2)
-    // option3: only count 5, since 2 is always more than 5
-    // option4: only count 5, and not traverse 1 to n, traverse at 5 interval
-    // option5: count how many "n /= 5" exists, result in O(logn)
-```
 
-#### [LC] 273. Integer to English Words
-https://leetcode.com/problems/integer-to-english-words/
+#### [LC] 24. Swap Nodes in Pairs
+https://leetcode.com/problems/swap-nodes-in-pairs/
 
-Not very hard, just divide by billion/million/thousand, and then process less than 1000 situation.
+Simple version is to swithc node value, harder version is to switch nodes, remember to add preHead node, super version is to do it recursively.
 
-#### [LC] 311. Sparse Matrix Multiplication
-https://leetcode.com/problems/sparse-matrix-multiplication/
 
-Generally time complexity is `O(m*n*k)`, but the followup is to handle super large matrix.
-- one improvement is to record all-0 rows and all-0 col so that we can skip them
-- another way is to use Strassen algorithm, to use some "plus" to replace "multiple", since multiple is more expensive 
-  - https://sites.google.com/a/chaoskey.com/algorithm/02/03
+#### [LC] 21. Merge Two Sorted Lists
+https://leetcode.com/problems/merge-two-sorted-lists/
 
-#### [LC] 537. Complex Number Multiplication
-https://leetcode.com/problems/complex-number-multiplication/
+Just find the head node first, then add node in l1 or l2 sequencially (compare their val) to the head.next.
 
-- split by "+" or "i" using `String[] x = a.split("\\+|i");`
-- split by space using `String[] x = a.split("\\s+");`
 
-#### [LC] 781. Rabbits in Forest
-https://leetcode.com/problems/rabbits-in-forest/
+#### [LC] 109. Convert Sorted List to Binary Search Tree
+https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution/
 
-Brain teasers.
+#### [LC] 203. Remove Linked List Elements
+https://leetcode.com/problems/remove-linked-list-elements/
+
 
 ## Trie/Prefix Tree/Digital Tree
 
@@ -2310,500 +912,7 @@ Now, in order to remove the duplicate function calls, we can make use of a 2-D m
 ```
 
 
-## BitWise
-### Default
-#### 201. Bitwise AND of Numbers Range
-https://leetcode.com/problems/bitwise-and-of-numbers-range/
 
-- option1: stupid way: `Integer.toBinaryString(int i)`
-- option2:
-
-```java
-  public int rangeBitwiseAnd(int m, int n) {
-    int shift = 0;
-    // find the common 1-bits
-    while (m != n) { // remove all different bits in m and n, until they are the same (so that 1 & 1 or  0 & 0 would have no change)
-      m = m >>1; 
-      n = n >>1;
-      ++shift;
-    }
-    return m << shift; // now shift back
-  }
-```
-
-## BinarySearch
-### Default
-
-https://zhuanlan.zhihu.com/p/79553968
-
-https://blog.csdn.net/Bean771606540/article/details/107533165
-
-NOTE: need to understand `searching space` for binary searching problem, since we cannot use the template blindly, somtimes the searching space requries us to set `right = mid`  instead of `right = mid-1` since the `mid` could also be the final result
-  - e.g. `153. Find Minimum in Rotated Sorted Array`
-
-Binary Search looks easy, but it could be very hard in details, since most ppl don't know  
-- initially, whether to use `right = nums.length` or `right = nums.length - 1`
-- in while method, whether to use `left < right` or `left <= right` 
-- when move left and right pointer, whether to do `left = mid` or `left = mid + 1`
-- after while loop is done, can I use `left` or `right` directly?
-
-Explaination:  
-- what does `right = nums.length` or `right = nums.length - 1` mean?
-  - when `right = nums.length`
-    - it means our searching space is `[left,right)` 
-    - we have to use `while(left < right)` 
-      - it means the ending condition is when `left == right`
-  - when `right = nums.length - 1`
-    - it means our searching space is `[left, right]`
-    - we have to use `while(left <= right)`
-      - it means the ending condition is when `left == right + 1`
-
-Consider it in this way (using right inclusive algorithm):  
-```
-Finally we have searching space [right+1, right], so the "middle" of left and right must be the boundary:
-
-if target exists (target==5), we find left most boundary (left points to target):
-
-[1,    3,       |        5,     5,    7,    9]
-     right  (boundary)  left
-
-
-if taget exists (taget==5), we find right most boundary (right points to target):
-
-[1,    3,      5,     5,       |        7,    9]
-                    right  (boundary)  left
-
-
-if key not exists (key==4), we can also find the boundary (left or right at two sides of target):
-[1,    3,       |        5,     5,      7,    9]
-     right  (boundary)  left
-
-
-if key out of boundary (key==10)
-
-[1,    3,     5,     5,      7,    9]      |
-                                right  (boundary)  left
-
-if key out of boundary (key==0)
-           |        [1,    3,     5,     5,      7,    9]
-right  (boundary)  left
-
-```
- 
-
-If we use all-inclusive searching space, here are the code:
-```java
-int left_bound(int[] nums, int target) {
-    int left = 0, right = nums.length - 1; // right inclusive
-    while (left <= right) { // searching space is [left,right]
-        int mid = left + (right - left) / 2;
-        if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid - 1;
-        } else if (nums[mid] == target) {
-            right = mid - 1; // move left
-        }
-    }
-    /**
-      * now searching space is [right+1, right], nothing is searchable, so we end.
-      * if target exists, nums[left] should equal to the target
-      * if not, check overflow situation
-      * 1. when target is larger than any num, then left is at length --> [length, length-1]
-      * 2. when target is less than any num, then right is at -1 --> [-1, 0]
-      *
-      * NOTE: can also return right finally, then we need to check if right < 0
-    **/
-    if (left >= nums.length || nums[left] != target)
-        return -1;
-    return left;
-}
-```
-
-```java
-int right_bound(int[] nums, int target) {
-    int left = 0, right = nums.length - 1; // right inclusive
-    while (left <= right) { // searching space is [left,right]
-        int mid = left + (right - left) / 2;
-        if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid - 1;
-        } else if (nums[mid] == target) {
-            left = mid + 1; // move right
-        }
-    }
-    /**
-      * now searching space is [right+1, right], nothing is searchable, so we end.
-      * if target exists, nums[right] should equal to the target
-      * if not, check overflow situation
-      * 1. when target is larger than any num, then left is at length --> [length, length-1]
-      * 2. when target is less than any num, then right is at -1 --> [-1, 0]
-      *
-      * NOTE: can also return left finally, then we need to check if left > length-1
-    **/
-    if (right < 0 || nums[right] != target)
-        return -1;
-    return right;
-}
-```
-
-
-If we use right-exclusive searching space, here are the code:
-
-```java
-int left_bound(int[] nums, int target) {
-    if (nums.length == 0) return -1;
-    int left = 0;
-    int right = nums.length; // right exclusive
-
-    while (left < right) { // // searching space is [left,right)
-        int mid = left + (right - left) / 2; 
-        if (nums[mid] == target) {
-            right = mid; // move left
-        } else if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid; // NOTE!!!!
-        }
-    }
-  // target is larger than all num
-  if (left == nums.length) return -1;
-  return nums[left] == target ? left : -1;
-}
-```
-
-```java
-int right_bound(int[] nums, int target) {
-    if (nums.length == 0) return -1; 
-    int left = 0, right = nums.length; // right exclusive
-
-    while (left < right) { // searching space is [left,right)
-        int mid = (left + right) / 2;
-        if (nums[mid] == target) {
-            left = mid + 1; // move right
-        } else if (nums[mid] < target) {
-            left = mid + 1;
-        } else if (nums[mid] > target) {
-            right = mid;
-        }
-    }
-    // target is less than all num
-    if (left == 0) return -1;
-    return nums[left-1] == target ? (left-1) : -1;
-}
-```
-
-#### [LC] 4. Median of Two Sorted Arrays
-https://leetcode.com/problems/median-of-two-sorted-arrays/
-
-Try to find the partition in two arrays, that makes nums in left section (both a and b) equals to nums in right section (both a and b).  
-NOTE: the partition could be in different position in a or b, but the total num must be the same.  
-e.g.  
-When total number is odd
-- a has 5 nums, b has 8 nums, total is 13 nums 
-  - --> expected median is 13/2=6th num 
-    - --> the left-hand side should have 6 + 1 = 7 nums, and right-hand side should have 6
-- if we put partition in a by 5/2 = 2 (in front of a2), then we have 2 nums in left-hand side
-- then the partiion in b must be 7 - 2 = 5 (in front of b5) 
-
-```
-(7 nums)         (6 nums)   
-a0 a1          | a2 a3 a4   
-b0 b1 b2 b3 b4 | b5 b6 b7   
-
-now check if a1<=b5 && b4<=a2, if yes, then we found the median by max(a1,b4)  
-if not, then check if we need to move partition in a to left or right, and change b correspondingly
-```
-
-When total number is even
-- a has 6 nums, b has 8 nums, total is 14 nums
-  - --> expected median is average of 14/2 = 7th and 7+1=8th nums
-    - --> the left-hand side should have 7 nums, and right-hand side should also have 7
-- if we put partion in a by 6/3=3, then we have 3 in left-hand side
-- then the partition in b must be 7 - 3 = 4 (in front of b4) 
-
-```
-(7 nums)      (7 nums)    
-a0 a1 a2    | a3 a4 a5  
-b0 b1 b2 b3 | b4 b5 b6 b7   
-
-now check if a2<=b4 && b3<=a3, if yes, then we found the median by avg (max(a2,b3), min(a3,b4))
-```
-
-For a corner case that we moved partition in a to the end of array  
-
-```python
-If total number is even:
-
-(7 nums)            (7 nums)   
-a0 a1 a2 a3 a4 a5 | MAX_VALUE  
-b0                | b1 b2 b3 b4 b5 b6 b7  
-
-median = avg(max(a5, b0), min(MAX_VALUE, b1))
-
-we set the empty right-hand set of a as MAX_VALUE, and vice versa for empty left-hand-side emtpy set which should be MIN_VALUE
-
-(7 nums)               (7 nums)  
-MIN_VALUE            | a0 a1 a2 a3 a4 a5  
-b0 b1 b2 b3 b4 b5 b6 | b7  
-
-median = avg(max(MIN_VALUE, b0), min(a0, b7))
-
-If total number is odd:
-
-(7 nums)         (6 nums)  
-a0 a1 a2 a3 a4 | MAX_VALUE  
-b0 b1          | b2 b3 b4 b5 b6 b7   
-
-median = max(a4, b1)
-
-(7 nums)                (6 nums)  
-MIN_VALUE             | a0 a1 a2 a3 a4   
-b0 b1 b2 b3 b4 b5 b6  | b7  
-
-median = max(MIN_VALUE, b6)
-```
-
-#### [LC] 29. Divide Two Integers
-https://leetcode.com/problems/divide-two-integers/
-
-NOTE: 
-
-- convert all int to long first, since `MIN_VALUE * -1` would be overflow
-- do not use `Math.abs()`, since `Math.abs()` only works for int, using naive solution to convert long value to be absolute long value
-- using "binary search" idea to addup `divisorAbs` over and over itself, until it reaches the "max fit" or `dividendAbs`
-  - e.g. `dividendAbs = 25` and `divisorAbs = 4`
-    - 1st round, the max fit is `(4 + 4) + (4 + 4) = 16`, quotient would `+=4`, and the reminder is `25-16=9`
-    - 2nd round, the max fit is `(4 + 4) = 8`, quotient would `+=2`, and the reminder is `9-8=1`
-    - since `1 < 4`, we reach the end, the final quotient is `4 + 2 = 6`
-- there is an improvement here, by using a list to store all multiplies of `divisorAbs`, since the max fit to the reminder must be the previous multiple in the list!!!!
-  - we can prove it in math
-    - 25 --> max fit is 16, and reminder is 9
-    - 9 --> max fit is 8, which is the previous multiple of 4 (4 --> 8 --> 16)
-
-```java
-// NOTE: must convert to long first!!! otherwise MIN_VALUE * -1 would be overflow
-long dividendCopy = dividend;
-long divisorCopy = divisor;
-
-long quotient = 0;
-// NOTE: Math.abs() would not work since it only works for int
-long dividendAbs = dividendCopy > 0 ? dividendCopy : (dividendCopy * -1);
-long divisorAbs = divisorCopy > 0 ? divisorCopy : (divisorCopy * -1);
-```
-
-```java
-long quotient = 0;
-while (dividendAbs >= divisorAbs) {
-    long divisorAbsMultiple = divisorAbs;
-    long multiple = 1;
-    while (dividendAbs >=  divisorAbsMultiple) {
-        if (dividendAbs < divisorAbsMultiple + divisorAbsMultiple) {
-            break;
-        } else {
-            divisorAbsMultiple += divisorAbsMultiple;
-            multiple += multiple;
-        }
-    }
-    dividendAbs -= divisorAbsMultiple;
-    quotient+=multiple;
-}
-```
-
-#### [LC] 34. Find First and Last Position of Element in Sorted Array
-https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
-
-
-#### [LC] 50. Pow(x, n)
-https://leetcode.com/problems/powx-n/
-
-- for `i = n ~ 1`
-  - if `i % 2 == 0`, the can reuse recursive result of `i/2`, 
-  - if `i % 2 != 0`, then multiple x once and then leverage binary search
-- be careful to set n to be `long`!!!
-  - since n could be Integer.MIN_VALUE, when we remove the symbol to make `Math.abs(n)`, it would be over Integer.MAX_VALUE
-
-
-#### [LC] 153. Find Minimum in Rotated Sorted Array
-https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
-
-The template need to be adjusted here: 
-
---> the problem is like: where is the min num? left hand of `mid` or right hand of `mid` or just `mid`?   
---> then we can set `right = mid` when finding that min could be at left-hand side or mid or the mid itself
---> finally we can break at `left==right` since that is the min we found.
-
-#### [LC] 270. Closest Binary Search Tree Value
-https://leetcode.com/problems/closest-binary-search-tree-value/
-
-Binary search in a BST is very easy:
-
-```java
-        while(root != null) {
-            if (root.val <= target) {
-                // do something
-                root = root.right;
-            } else {
-                // do something
-                root = root.left;
-            }
-        }
-```
-
-#### [LC] 278. First Bad Version
-https://leetcode.com/problems/first-bad-version/
-
-NOTE!!!
-- use `mid = left + (right - left) / 2` instead of `mid = (left + right) / 2`, since when it's over Integer.MAX_VALUE, mid becomes negative due to overflow, that will result in calling the API a lot of times without getting the actual result
-
-
-#### [LC] 875. Koko Eating Bananas
-https://leetcode.com/problems/koko-eating-bananas/
-
-We use binary search, set `l = 1` and `r = max(nums[i])`, using h as target, and function `getHourByK()` as the nums funtion.
-
-Be careful:
-
-```python
-the final situation is the l = r + 1, but lHour and rHour are reversed, since the larger the k is, the smaller the hour would be, so we should return r finally 
-
-h = 4, 
-        r   <    l
-nums: 1 3   |    5  7 9
-        lH  kH  rH
-
-h = 5
-        r   <    l
-nums: 1 3   |    5  7 9
-        lH  kH   rH
-
-h = 1
-nums:   |    3  5 7 9 11
-     lH kH  rH
-```
-
-#### [LC] 1428. Leftmost Column with at Least a One
-https://leetcode.com/problems/leftmost-column-with-at-least-a-one/
-
-An improvement on the binary searching function: if at row i we found leftmost 1 at j, then we can check `(i+1,j)` directly 
-- if `(i+1,j)` is 0, then we can skip this row and move to `i+2`
-- if `(i+1,j)` is 1, then do binary search at row `i+1` from 0 to j
-
-
-#### [LC] 1539. Kth Missing Positive Number
-https://leetcode.com/problems/kth-missing-positive-number/
-
-Find left-most by binary search. 
-
-## PrefixSum-Product
-### Default
-
-#### [LC] 238. Product of Array Except Self
-https://leetcode.com/problems/product-of-array-except-self/
-
-Using array get prefix-product left to right, then using another array from right to left, the `result[i] = leftToRight[i] * rightToLeft[i+1]`.
-- an improvement here is to not use array for rightToLeft, we can calculate it on the fly when traversing from right to left (after we store leftToRight array in result array).
-
-#### [LC] 523. Continuous Subarray Sum
-https://leetcode.com/problems/continuous-subarray-sum/
-
-Using prefixSum and HashMap to store the mapping from `prefixSum % k` to `index`.  
-- we must use hashmap instead of hashset!!! since we need to know if the index distance is >= 2
-- there is a special case that prefixSum itself can mod k to get 0, it is also a true case
-
-#### [LC] 325. Maximum Size Subarray Sum Equals k
-https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
-
-1. It is similar like "560. Subarray Sum Equals K", but is harder since there could be duplicate records in prefixSum, we need to only keep the earliest index in hashmap for the same prefixSum.
-2. Not only consider the "prefixSum[i] - k" situation, we can also consider "prefixSum[i] == k" situation, it means the prefixSum itself is the longest distance so fra
-3. Also, we don't need to maintain prefixSum array, we can calcualte the cumulative sum in the same for loop as calculating "prefixSum[i] - k"
-
-#### [LC] 560. Subarray Sum Equals K
-https://leetcode.com/problems/subarray-sum-equals-k/
-
-1. It is similar like "325. Maximum Size Subarray Sum Equals k"
-2. using hashmap to maintain "prefixSum[i] to its occurence" mapping
-3. using a global variable to maintain prefixSum (no need to maintain a prefixSum array)
-4. if `prefixSum==k`, count++
-5. if `prefixSum-k` exists, count+=(occurence of prefixSum-k)
-6. if `prefixSum` already in hashmap, increment the occurence in hashmap
-
-
-## Greedy
-### Default
-
-#### [LC] 134. Gas Station
-https://leetcode.com/problems/gas-station/
-
-If the starting point exists, it must start from the position where we lose the most of the gas, so that it can start to gain gas first to gather all the gas we need before we start losing.
-
-Take an example like (here the number refers to the value gas[i] - cost[i])
-
-[3,4,-12,4,-5,6]
-
-The minimum tank value will happen at index 4, where the value is -5, because at there our tank is at the minimum value -6, which means if the result exists, it must start to gather gas at index 5 so that we can cover all the gas loss before we reach index 4.
-
-#### [LC] 253. Meeting Rooms II
-https://leetcode.com/problems/meeting-rooms-ii/
-
-Using `Arrays.sort()` to sort by start time, then use PriorityQueue to maintain earliest ending interval at top of heap, then traverse the meetings:
-  - if no overlap, then extend the end time of top meeting in the queue
-  - if found overlap, then enqueue both meetings
-  - the final result is the intervals in the heap.
-
-NOTE:
-- `int[]` is also an generic type that can be used in PriorityQueue
-
-```
-PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{
-    return a[1]-b[1]; // ascending order
-});
-```
-
-#### [LC] 455. Assign Cookies
-https://leetcode.com/problems/assign-cookies/
-
-Sort the two arrays and then using two pointers to move from largest to smallest.
-
-Be careful, for primirity array, that `Arrays.sort()` can only work for ascending order, for descending order we cannot use comparator directly --> we have to convert it into `Integer[]`:
-
-```java
-int[] arr = Arrays.stream(originalArr) // convert to stream
-                  .boxed() // convert to Integer[]
-                  .sort((a,b) -> {b - a;}) // descending
-                  .mapToInt(i -> i) // convert to int[]
-                  .toArray();
-```
-
-#### [LC] 621. Task Scheduler
-https://leetcode.com/problems/task-scheduler/
-
-```python
-if we only consider the char with max frequence:
-A4 B4 C3 D3 E2
-n=3
-A _ _ _ A _ _ _ A _ _ _ A 
-potentially we have max (4 - 1) * 3 = 9 idle slots, we need to fill the slots by other char
-
-check B: B can contribute 3 to fill slots (B has one more left, but that can be executed after last A, so no worry)
-check C: C can contribute 3
-check D: D can contribute 3
-check E: E can contirbute 2
-
-so in total we have 9 - 3 - 3 - 3 - 2 = -2 idel slots left, it means we can fill all idle, and the rest chars can be executed after last A by one permutation
-
-the total unit of time we need would be max(0, -2) + tasks.length = 16
-```
-
-#### [LC] 1094. Car Pooling
-https://leetcode.com/problems/car-pooling/
-
-The idea is that: 
-
-- treat each start_location and end_location as index to `++passanger` or `--passanger`
-- then we can use either TreeMap or bucket sort (using `new int[1000]`) to store the total operation at each location --> either add xx passangers or remove yy passangers
-- then we go through the TreeMap or `new int[1000]` to check if the initial capacity is enough
 
 ## Union-Find / Disjoint-Set
 https://segmentfault.com/a/1190000022952886
@@ -2937,7 +1046,7 @@ For this type of problem, we usually use hashmap to group string, and use an `en
 #### [LC] 49. Group Anagrams
 https://leetcode.com/problems/group-anagrams/
 
-The encoding function is "char-count#".
+The encoding function is "char-count#". Using `int[] dict = new int[26]` since it could have duplicate char.
 
 #### [LC] 249. Group Shifted Strings
 https://leetcode.com/problems/group-shifted-strings/
@@ -2964,7 +1073,95 @@ https://leetcode.com/problems/find-all-anagrams-in-a-string/
 
 We can use the same "encoding funtion" idea to check if they are anagrams, and while moving from left to right, we can using "sliding window" so that we don't need to recalculate every char, then we can use this magic array equals function!!!!
 
-```
+```java
 Arrays.equals(pCount, sCount); // time complexity is O(n), when n is 26, it's O(26)=O(1)
 ```  
+
+#### [LC] 242. Valid Anagram
+https://leetcode.com/problems/valid-anagram/
+
+Similar like `438. Find All Anagrams in a String`, using `new int[26]` to build two array, and then using the `Arrays.equals()` to compare.
+
+For the follow-up question about handling Unicode char, we can use HashMap to record char to couner mapping. NOTE that we only need 1 HashMap, and we can increase count by traversing one string and then decrease count when traversing anohter.
+
+## Floyd's Algorithm
+### Default
+
+```java
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null) {
+            return null;
+        }
+        // phase 1: 
+        // detects the cycle by finding intersection of fast and slow
+        // fast pointer traverss 2x faster than slow pointer
+        ListNode fast = head;
+        ListNode slow = head;
+        do {
+            if (fast.next != null && fast.next.next != null) {
+                fast = fast.next.next;
+                slow = slow.next;
+            } else {
+                return null;
+            }
+        } while(fast != slow);
+
+        // if we hit here then there is a cycle, we can find cycle entrance in phase 2
+        // phase2:
+        // let slow pointer starts from beginning, fast pointer starts from intersection 
+        // they traverse in same speed
+        slow = head;
+        while(slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow; // or fast
+    }
+```
+
+#### [LC] 141. Linked List Cycle
+https://leetcode.com/problems/linked-list-cycle/
+
+Using Floyd's algorithm template, since we only need to tell if there is a cycle or not, we can simply using phase 1 to tell it.
+
+#### [LC] 142. Linked List Cycle II
+https://leetcode.com/problems/linked-list-cycle-ii/
+
+Using Floyd's algorithm template, using 2 phase to find the cycle entrance.
+
+#### [LC] 287. Find the Duplicate Number
+https://leetcode.com/problems/find-the-duplicate-number/
+
+Also using the Floyd's algorithm, using fast pointer (or hare pointer) 2x faster like `hare = nums[nums[hare]]`, and slow pointer (or tortois pointer) in normal speed like `tortois = nums[tortois]`. Then using 2-phase to find the entrance of cycle.
+
+
+## TreeMap
+
+### Default
+
+#### [LC] 239. Sliding Window Maximum
+https://leetcode.com/problems/sliding-window-maximum/
+
+Option1: TreeMap is `O((N-k+1)*logN)`
+
+`TreeMap<Integer,HashSet<Integer>>` can be used as multiset in C++ to maintain order of elements and also the occurence (index of elements) as value.
+
+
+Option2: Monotonic Queue is `amortized O(1)`
+
+The algorithm is quite straigthforward, only maintains nums in the window in the queue, and whenever offering new num, remove all the nums less than it, since those deleted num would never has chance being used .
+
+```
+Window position              Monotonic Queue     Max
+---------------                                 -----
+[1] 3  -1 -3  5  3  6  7        [1]               -
+[1  3] -1 -3  5  3  6  7        [3]               -
+[1  3  -1] -3  5  3  6  7       [3 -1]            3
+ 1 [3  -1  -3] 5  3  6  7       [3 -1 -3]         3
+ 1  3 [-1  -3  5] 3  6  7       [5]               5
+ 1  3  -1 [-3  5  3] 6  7       [5 3]             5
+ 1  3  -1  -3 [5  3  6] 7       [6]               6
+ 1  3  -1  -3  5 [3  6  7]      [7]               7
+```
+
 
