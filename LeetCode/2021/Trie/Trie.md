@@ -62,63 +62,23 @@ class TrieNode {
 ```
 
 ```java
-class Trie {
-    private TrieNode root;
-
-    public Trie() {
-        root = new TrieNode();
-    }
-
-    // Inserts a word into the trie.
-    public void insert(String word) {
-        TrieNode node = root;
-        for (int i = 0; i < word.length(); i++) {
-            char currentChar = word.charAt(i);
-            if (!node.containsKey(currentChar)) {
-                node.put(currentChar, new TrieNode());
-            }
-            node = node.get(currentChar);
+    private static class TrieNode {
+        public HashMap<Character, TrieNode> children;
+        public String word;
+        public TrieNode() {
+            this.children = new HashMap<>();
         }
-        node.setEnd();
     }
-
-    // search a prefix or whole key in trie and
-    // returns the node where search ends
-    private TrieNode searchPrefix(String word) {
-        TrieNode node = root;
-        for (int i = 0; i < word.length(); i++) {
-           char curLetter = word.charAt(i);
-           if (node.containsKey(curLetter)) {
-               node = node.get(curLetter);
-           } else {
-               return null;
-           }
-        }
-        return node;
-    }
-
-    // Returns if the word is in the trie.
-    public boolean search(String word) {
-       TrieNode node = searchPrefix(word);
-       return node != null && node.isEnd();
-    }
-
-    // Returns if there is any word in the trie
-    // that starts with the given prefix.
-    public boolean startsWith(String prefix) {
-        TrieNode node = searchPrefix(prefix);
-        return node != null;
-    }
-}
 ```
 
-#### [LC] 211. Design Add and Search Words Data Structure
+#### [LC][Medium] 211. Design Add and Search Words Data Structure
 https://leetcode.com/problems/design-add-and-search-words-data-structure/
 
 Since it supports "." to match any character, we can make search() a recursive function to try every trie.children when seeing "."
 
 - Time complexity: `O(M)` for the "well-defined" words without dots, where M is the key length, and N is a number of keys, and `O(N*26 ^ M)` for the "undefined" words. 
 - Space complexity: `O(1)` for the search of "well-defined" words without dots, and up to `O(M)` for the "undefined" words, to keep the recursion stack.
+
 
 #### [LC] 212. Word Search II
 https://leetcode.com/problems/word-search-ii/
@@ -132,7 +92,7 @@ NOTE:
 4. using hashset to maintain global solution, since there could be duplicate words
 5. in backtracking method, do not return immediately after finding the word, since we could search further sometimes, e.g. `dict = {oa, oaa} `
 
-```
+```java
     private static class Trie{
         public HashMap<Character,Trie> children = new HashMap<>();
         public String word = null;

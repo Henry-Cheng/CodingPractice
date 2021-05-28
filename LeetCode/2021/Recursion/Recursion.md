@@ -84,6 +84,13 @@ NOTE2:
 - https://stackoverflow.com/questions/10078912/best-practices-performance-mixing-stringbuilder-append-with-string-concat
 
 
+#### [LC][Medium] 394. Decode String
+https://leetcode.com/problems/decode-string/
+
+This problem is not easy...  
+
+It can use the same idea as `[Hard] 772. Basic Calculator III`, whenever seeing left bracket "[", find the corresponding right bracket and recusively do it.
+
 #### [LC] 1137. N-th Tribonacci Number
 https://leetcode.com/problems/n-th-tribonacci-number/
 

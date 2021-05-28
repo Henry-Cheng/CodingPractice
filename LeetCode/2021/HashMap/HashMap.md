@@ -29,7 +29,7 @@ e.g.
         map.put("M", 1000);
 ```
 
-#### [LC] 76. Minimum Window Substring
+#### [LC][Hard] 76. Minimum Window Substring
 https://leetcode.com/problems/minimum-window-substring/
 
 This is a smart use of HashMap and sliding window!!
@@ -82,7 +82,7 @@ https://leetcode.com/problems/longest-consecutive-sequence/
 
 HashSet.
 
-#### [LC] 138. Copy List with Random Pointer
+#### [LC][Medium] 138. Copy List with Random Pointer
 https://leetcode.com/problems/copy-list-with-random-pointer/
 
 HashMap to store original node to new node mapping.
@@ -124,7 +124,9 @@ Be careful for the ppl with same age, we also need to do eligbility checking!!! 
 #### [LC] 953. Verifying an Alien Dictionary
 https://leetcode.com/problems/verifying-an-alien-dictionary/
 
-Using hashmap to store the dictionary.
+Using hashmap to store the characer to sequence mapping, then compare each 2 words.
+
+O(N + ML);
 
 #### [LC] 1152. Analyze User Website Visit Pattern
 https://leetcode.com/problems/analyze-user-website-visit-pattern/

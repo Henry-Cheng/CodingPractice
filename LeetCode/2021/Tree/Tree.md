@@ -55,14 +55,94 @@ https://leetcode.com/problems/path-sum-ii/
 
 when using backtrack, remember to remove last element in path when return to previous stack.
 
-#### [LC] 124. Binary Tree Maximum Path Sum
+#### [LC][Medium] 437. Path Sum III
+https://leetcode.com/problems/path-sum-iii/
+
+This one looks easy, but actually a bit hard....  
+
+In this question, any "subpath" in a tree needs to be considered.  
+1. Naive solution  
+  - using a `List<Integer> prefixSum` to maintain the previous sum before reaching this loop, then using a for loop to addup each num in `prefixSum` with `root.val`, if equals to target then do `count++`;  then do the same thing for left and right subtree
+2. Naive solution + hashMap
+  - instead of using a list to record prefixSum, we can use HashMap instead to record the count
+3. Magic recursive
+  - too hard to understand this one... just record it here:
+
+```java
+public int pathSum(TreeNode root, int sum) {
+    if (root == null) {
+        return 0;
+    }
+    return findPath(root, sum) + pathSum(root.left, sum) + pathSum(root.right, sum);
+}
+
+public int findPath(TreeNode root, int sum) {
+    int result = 0;
+    if (root == null) {
+        return result;
+    }
+    if (sum == root.val) {
+         result++;
+    }
+    result += findPath(root.left, sum-root.val);
+    result += findPath(root.right, sum-root.val);
+    return result;
+}
+```
+
+#### [LC][Hard] 124. Binary Tree Maximum Path Sum
 https://leetcode.com/problems/binary-tree-maximum-path-sum/
+
+This question is interseting, here the "path" is defined as any number of connect node:
+e.g. for a tree like this, the max path is just node "3"
+
+```java
+     -1
+  -2    3
+      -4  -5
+
+```
+
+e.g. for a tree like this, the max path is "15-20-7"
+
+```java
+    -10
+  9      20
+      15    7
+```
 
 - using the same idea like kadane's algorithm
   - maintain a currentMaxSum, and then compare with current node, we can choose to only use current node (by throwing away currentMaxSum), or addup current node
 - but this question is a bit different, not like kadane's algorithm which has only one direction, here we have two directions
 - `currentMaxSum = max(root, root+left, root+right)` -- we can return it to parent stack in dfs 
 - `totalMaxSum = max(totalMaxSum, currentMaxSum, root+left+right)` -- we need to check whether we can directly use `root+left+right`
+
+```java
+    private int dfs(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int leftSum = dfs(root.left);
+        int rightSum = dfs(root.right);
+        int currentMax = Math.max(
+            root.val, // only use root node, since child node could be negative
+            Math.max(
+                root.val + leftSum,  // only use right subtree
+                root.val + rightSum  // only use left subtree
+            )
+        );
+
+        totalMax = Math.max(
+            totalMax, 
+            Math.max(
+                currentMax, 
+                root.val + leftSum + rightSum
+            )
+        );
+
+        return currentMax;
+    }
+```
 
 #### [LC][Medium] 129. Sum Root to Leaf Numbers
 https://leetcode.com/problems/sum-root-to-leaf-numbers/
@@ -83,7 +163,7 @@ BFS, then output the rightmost node at each layer.
 https://leetcode.com/problems/invert-binary-tree/
 
 
-#### [LC] 236. Lowest Common Ancestor of a Binary Tree
+#### [LC][Medium] 236. Lowest Common Ancestor of a Binary Tree
 https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
 
 The trick is: if root is p or q, return root; if left or right is p or q, return left or right. The idea is that left or right can represent the top node of a subtree that contains p or q.
@@ -104,7 +184,7 @@ NOTE: the time complexity is O(n) since it traverse all nodes, but its space com
 https://leetcode.com/problems/closest-binary-search-tree-value/
 
 
-#### [LC] 297. Serialize and Deserialize Binary Tree
+#### [LC][Hard] 297. Serialize and Deserialize Binary Tree
 https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
 
 - seralize with preOrder
@@ -145,11 +225,12 @@ Define a new TreeNode to record coordinate x and y, then using TreeMap to sort t
 TreeMap<Integer, List<Integer>> orderedMap = new TreeMap<>((a,b) -> {return a-b;});
 ```
 
-#### [LC] 426. Convert Binary Search Tree to Sorted Doubly Linked List
+#### [LC][Medium] 426. Convert Binary Search Tree to Sorted Doubly Linked List
 https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
 
 - set a dummyHead node first, then use a global variabl `prev` to build the double connection with inOrder node
 - be careful when we only have one node in the tree, the one node needs to have circle left/right to itself
+
 
 #### [LC] 449. Serialize and Deserialize BST
 https://leetcode.com/problems/serialize-and-deserialize-bst/
@@ -197,7 +278,7 @@ https://leetcode.com/problems/find-largest-value-in-each-tree-row/
 
 Be careful when using ++variable, it would addup the variable itself! It's better to use variable + 1 most of the time;
 
-#### [LC] 536. Construct Binary Tree from String
+#### [LC][Medium] 536. Construct Binary Tree from String
 https://leetcode.com/problems/construct-binary-tree-from-string/
 
 Using the same idea as `772. Basic Calculator III`, we treat the string like this:  
@@ -216,8 +297,10 @@ As for the num, we can use `currentNum = currentNum * 10 + c - '0'`.
 
 The finaly time complexity is `O(NlogN)`, since we need to traverse the whole string at each layer, and there are `logN` layer in total --> here `logN == height of the tree`
 
-#### [LC] 543. Diameter of Binary Tree
+#### [LC][Easy] 543. Diameter of Binary Tree
 https://leetcode.com/problems/diameter-of-binary-tree/
+
+This is not easy at all...
 
 It is similar like "124. Binary Tree Maximum Path Sum".
 
@@ -263,7 +346,7 @@ NOTE:
 2. Maybe no need to use a custom class as Result in `findMaxNum`, the `maxPos` could reflect `maxValue`
 
 
-#### [LC] 863. All Nodes Distance K in Binary Tree
+#### [LC][Medium] 863. All Nodes Distance K in Binary Tree
 https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
 
 This is a tree question, but it's also a very standard DFS+BFS.  
@@ -286,8 +369,10 @@ https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
 
 Exactly the same as `[Medium] 865. Smallest Subtree with all the Deepest Nodes`.
 
-#### [LC] 938. Range Sum of BST
+#### [LC][Easy] 938. Range Sum of BST
 https://leetcode.com/problems/range-sum-of-bst/
+
+This is easy, just check each node if the val is within the range, if yes then add up to global variable.
 
 #### [LC] 958. Check Completeness of a Binary Tree
 https://leetcode.com/problems/check-completeness-of-a-binary-tree/
@@ -310,7 +395,7 @@ e.g. the following 2 trees are not a complete tree, since when doing BFS, we can
 
 ```
 
-#### [LC] 987. Vertical Order Traversal of a Binary Tree
+#### [LC][Hard] 987. Vertical Order Traversal of a Binary Tree
 https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
 
 Sort the node by `x coordinate, y coordinate, val` using BFS + TreeMap + Collections.sort().
@@ -356,7 +441,7 @@ Here is an example that tells why we have to use DFS or BFS:
 ``` 
 
 
-#### [LC] 1650. Lowest Common Ancestor of a Binary Tree III
+#### [LC][Medium] 1650. Lowest Common Ancestor of a Binary Tree III
 https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
 
 1. find the height of p and q

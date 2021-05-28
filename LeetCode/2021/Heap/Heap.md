@@ -2,17 +2,18 @@
 ### Default
 
 
-#### [LC] 23. Merge k Sorted Lists
+#### [LC][Hard] 23. Merge k Sorted Lists
 https://leetcode.com/problems/merge-k-sorted-lists/
 
-heap
+It is marked as hard but actually easy by using heap.
 
-#### [LC] 215. Kth Largest Element in an Array
+
+#### [LC][Medium] 215. Kth Largest Element in an Array
 https://leetcode.com/problems/kth-largest-element-in-an-array/
 
 min heap --> top/first is the minimum --> so ascending in list
 
-#### [LC] 347. Top K Frequent Elements
+#### [LC][Medium] 347. Top K Frequent Elements
 https://leetcode.com/problems/top-k-frequent-elements/
 
 Very classical heap use!!! 
@@ -24,6 +25,27 @@ Using hashmap to counter unique num, then using min-heap to keep top-k frequence
             return a.getValue() - b.getValue(); // ascending, min-heap
         });
 ```
+
+#### [LC][Hard] 295. Find Median from Data Stream
+https://leetcode.com/problems/find-median-from-data-stream/
+
+the followings come from: https://www.sohu.com/a/363477662_355142
+
+Two heap:
+
+最小堆保存较大的一半元素，最小值位于根元素
+最大堆保存较小的一半元素，最大值位于根元素
+现在，可以把传入的整数与最小堆根元素进行比较，并加到对应的一半数列中。接下来，如果插入后两个堆大小差距大于1，可以为堆进行重新平衡，让差距最大等于1：
+
+if (size(minHeap)> size(maxHeap)+ 1) {
+  // 移除minHeap根元素,插入maxHeap
+}
+
+if (size(maxHeap)> size(minHeap)+ 1) {
+  // 移除maxHeap根元素,插入minHeap
+}
+
+通过这种方法，如果得到的两个堆大小相等，可以中位数等于两个堆的根元素平均值。否则，元素多的那个堆，其根元素就是中位数。
 
 #### [LC][Hard] 480. Sliding Window Median
 https://leetcode.com/problems/sliding-window-median/
@@ -68,7 +90,7 @@ If we defin heap in this way, the when a or b is MAX_VALUE and MIN_VALUE, it wou
 
 ```java
 PriorityQueue<Integer> low = new PriorityQueue<Integer>((a,b)->{return b-a;});
-PriorityQueue<Integer> high = new PriorityQueue<Integer>((a,b)->{return a-ab;});
+PriorityQueue<Integer> high = new PriorityQueue<Integer>((a,b)->{return a-b;});
 ```
 
 it is better to use this way:
@@ -122,3 +144,6 @@ for (Map.Entry<Character, Integer> entry : map.entrySet()) {}
 https://leetcode.com/problems/k-closest-points-to-origin/
 
 Be careful when traverse heap, do not use `for (int i=0; i<heap.size();i++)`, since after you do `heap.poll()` the `heap.size()` would change -- set the heap size before the for loop!!!
+
+1. store `heap.size()` in a variable, like what we did for BFS
+2. simply do `while(!heap.isEmpty()) {heap.poll();}`

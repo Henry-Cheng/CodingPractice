@@ -7,7 +7,7 @@ https://leetcode.com/problems/group-anagrams/
 
 The encoding function is "char-count#". Using `int[] dict = new int[26]` since it could have duplicate char.
 
-#### [LC] 249. Group Shifted Strings
+#### [LC][Medium] 249. Group Shifted Strings
 https://leetcode.com/problems/group-shifted-strings/
 
 The idea is to use HashMap key to maintain distance of characters in a string. But the tricky part is the the string could be rotated. So we need to `+ 26` is the next char is smaller than previous char:  

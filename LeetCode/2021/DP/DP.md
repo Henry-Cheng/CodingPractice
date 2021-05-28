@@ -120,7 +120,7 @@ https://leetcode.com/problems/minimum-path-sum/
 
 Be careful to check boundary scenarios when `i == -1 && j == -1`.
 
-#### [LC] 72. Edit Distance
+#### [LC][Hard] 72. Edit Distance
 https://leetcode.com/problems/edit-distance/
 
 Very classical two-sequence DP problem. We firstly think about recursion way, and then derive into DP.
@@ -165,7 +165,7 @@ if (c1 == c2) {
 
 ```
 
-#### [LC] 44. Wildcard Matching
+#### [LC][Hard] 44. Wildcard Matching
 https://leetcode.com/problems/wildcard-matching/
 
 Very classical two-sequence DP problem like `72. Edit Distance`.
@@ -254,7 +254,7 @@ meaning: -6: buy at day 0 and sell at day 1
 convert it to find max sum of subarray
 ``` 
 
-#### [LC] 139. Word Break
+#### [LC][Medium] 139. Word Break
 https://leetcode.com/problems/word-break/
 
 dp[i] = dp[j] && substring(j,i) in wordDict
@@ -262,13 +262,26 @@ dp[i] = dp[j] && substring(j,i) in wordDict
 - Time complexity : O(n^3). There are two nested loops, and substring computation at each iteration. Overall that results in O(n^3) time complexity.
 - Space complexity : O(n). Length of dp array is n+1
 
-#### [LC] 140. Word Break II
+```java
+        boolean dp[] = new boolean[n + 1];
+        dp[0] = true; // dp[0] is a dummy node at beginning
+        for (int i = 1; i < n + 1; i++) { // check if dp[i] could be true, i points to i-1 in s
+            for (int j = 0; j < i; j++) { // check whether 0~i is true
+                if (dp[j] && wordDict.contains(s.substring(j,i))) {
+                    dp[i] = true;
+                }
+            }
+        }
+```
+
+#### [LC][Hard] 140. Word Break II
 https://leetcode.com/problems/word-break-ii/
 
 Using the same recursion way as 139, but add a beautiful step to append current found word to all of the previous found word list.
 
 NOTE:
 -  using hashmap computeIfAbsent: `allWordPos.computeIfAbsent(i, words-> new ArrayList<String>());`, if key `i` does not exist, put i and new object there
+
 
 #### [LC] 152. Maximum Product Subarray
 https://leetcode.com/problems/maximum-product-subarray/
@@ -336,6 +349,22 @@ NOTE: initialize all dp to be 1!!!!
         return result;
 ```
 
+#### [LC][Medium] 337. House Robber III
+https://leetcode.com/problems/house-robber-iii/
+
+A very classic way of using DP in a tree.  
+
+1. if the parent of root is robbed
+  - cannot rob root
+  - check root.left and root.right with `isParentRobbed = false`
+2. if the parent of root is not robbed, there are 2 options
+  1. rob root, then set `isParentRobbed = false` for root.left and root.right
+  2. not rob root, then we can check root.left and root.right with `isParentRobbed = false`
+  3. return the max of #2.1 and #2.2 
+
+When using memorization, we can use separate hashmap for robbed and notRobbed memo.
+
+
 #### [LC] 377. Combination Sum IV
 https://leetcode.com/problems/combination-sum-iv/
 
@@ -374,6 +403,18 @@ https://leetcode.com/problems/coin-change/
 
 Similar like `[Medium] 983. Minimum Cost For Tickets`, but this time we will try all coins instead of all passes, and we count the number of coins instead of the price.  
 Be careful that if amount could not be made, we need to set it to be -1.
+
+#### [LC][Medium] 494. Target Sum
+https://leetcode.com/problems/target-sum/
+
+This is a standard DP problem.  
+
+The recusion + memorization ideas is simple, for each num in the array, try `num * 1` and `num * -1` on the target, then do the recursion.  
+
+NOTE: the memorization could be 2D array like `new int[nums.length][target + maxSum(nums[i])]`
+
+The bottom up idea is a reversed version of recusion + memorization.  
+--> We can use `dp[i][j]` to present the count of operations if using nums array `0~i` to reach `target j` 
 
 
 #### [LC] 1155. Number of Dice Rolls With Target Sum

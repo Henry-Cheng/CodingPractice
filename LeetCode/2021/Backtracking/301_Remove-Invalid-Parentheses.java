@@ -1,57 +1,55 @@
-// https://leetcode.com/problems/remove-invalid-parentheses/
+//https://leetcode.com/problems/remove-invalid-parentheses/
 class Solution {
-    Set<String> result = new HashSet<>(); 
-    boolean[] deleted;
+    HashSet<String> result = new HashSet<>(); 
+    HashSet<String> visited = new HashSet<>();
     public List<String> removeInvalidParentheses(String s) {
-        // 0. initialize boolean array
-        deleted = new boolean[s.length()];
-        // 1. find num of invalid left and right parenthese
-        List<Integer> invalidLeftAndRight = getInvalidLeftRight(s);
-        int left = invalidLeftAndRight.get(0);
-        int right = invalidLeftAndRight.get(1);
-        if (left == 0 && right == 0) {
-            result.add(s);
-            return result.stream().collect(Collectors.toList());
-        }
-        // 2. backtracking/dfs to delete '(' or ')'' until left and right be 0
-        backtrack(s, 0, left, right);
+        // 0. get invalid left and right count
+        int[] invalidLeftAndRight = getInvalidLeftRight(s);
+        
+        // 1. backtracking/dfs to delete '(' or ')'' until left and right be 0
+        backtrack(s, invalidLeftAndRight[0], invalidLeftAndRight[1], visited);
         return result.stream().collect(Collectors.toList());
     }
     
-    // if left and right are 0, it does not mean s is valid already e.g. ()()((
-    
-    private void backtrack(String s, int start, int left, int right) {
-        // check if s is already valid
+    private void backtrack(String s, int left, int right, HashSet<String> visited) {
+        // if left and right are 0, still need to check if s is valid 
+        // e.g. ()( -> )(
+        visited.add(s);
         if (left == 0 && right == 0) {
-            List<Integer> invalidLeftAndRight = getInvalidLeftRight(s);
-            if (invalidLeftAndRight.get(0) == 0 && invalidLeftAndRight.get(1) == 0) {
+            if (isValid(s)) {
                 result.add(s);
             }
+            return;
         }
-        // remove the left or right parenthesis
-        for (int i = start; i < s.length(); i++) {
-            if (!deleted[i]) {
-                char c = s.charAt(i);
-                if (c == ')') { // remove right parentheses first
-                    if (right > 0) {
-                        // try remove this one
-                        String newString = s.substring(0,i) + s.substring(i+1,s.length());
-                        backtrack(newString, i, left, right - 1);
-                        // now come back to try other options
+        // try to remove any left or right brackets 
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(') {
+                if (left > 0) {
+                    // try remove this one
+                    String newString = s.substring(0,i) + s.substring(i+1,s.length());
+                    if (!visited.contains(newString)) {
+                        backtrack(newString, left - 1, right, visited);
                     }
-                } else if (c == '(') {
-                    if (left > 0) {
-                        // try remove this one
-                        String newString = s.substring(0,i) + s.substring(i+1,s.length());
-                        backtrack(newString, i, left - 1, right);
-                        // now come back to try other options
+                }
+            } else if (c == ')') {
+                if (right > 0) {
+                    // try remove this one
+                    String newString = s.substring(0,i) + s.substring(i+1,s.length());
+                    if (!visited.contains(newString)) {
+                        backtrack(newString, left, right - 1, visited);
                     }
-                } 
+                }
             }
         }
     }
     
-    private List<Integer> getInvalidLeftRight(String s) {
+    private boolean isValid(String s) {
+        int[] invalidCount = getInvalidLeftRight(s);
+        return invalidCount[0] == 0 && invalidCount[1] == 0;
+    }
+    
+    private int[] getInvalidLeftRight(String s) {
         int left = 0;
         int right = 0;
         // (()))(
@@ -67,10 +65,6 @@ class Solution {
                 }
             }   
         }
-        
-        List<Integer> invalidLeftAndRight = new LinkedList<>();
-        invalidLeftAndRight.add(left);
-        invalidLeftAndRight.add(right);
-        return invalidLeftAndRight;
+        return new int[]{left, right};
     }
 }

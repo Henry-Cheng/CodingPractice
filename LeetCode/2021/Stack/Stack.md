@@ -1,10 +1,7 @@
 ## Stack
 ### Default
-#### [LC] 20. Valid Parentheses
 
-https://leetcode.com/problems/valid-parentheses/
-
-#### [LC] 224. Basic Calculator
+#### [LC][Hard] 224. Basic Calculator
 https://leetcode.com/problems/basic-calculator/
 
 A good blog about it: http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html
@@ -51,7 +48,7 @@ for (char c : s.toCharArray()) {
 
 
 
-#### [LC] 227 Basic Calculator II  
+#### [LC][Medium] 227 Basic Calculator II  
 https://leetcode.com/problems/basic-calculator-ii/
 
 
@@ -80,7 +77,7 @@ See the above code snippet, we include the `i == arr.length - 1` as condition to
 3. how to save space complexity?  
 Actaully we don't need a stack, we just need a `prevNum` variable to record previous number for `*` and `+`, and another variable `result` to add up all `+` and `+`, then finally return `result` 
 
-#### [LC] 772. Basic Calculator III
+#### [LC][Hard] 772. Basic Calculator III
 https://leetcode.com/problems/basic-calculator-iii/
 
 This is a mix of `224. Basic Calculator` and `227 Basic Calculator II`, since we have both `*` `/` and `(``)`, we cannot use a simple one round to solve it since brackets and `*/` have the same priority.
@@ -110,7 +107,7 @@ Here is the code with `O(n^2)` since we need to search for `)` for every `(` wit
   }
 ```
 
-#### [LC] 71. Simplify Path
+#### [LC][Medium] 71. Simplify Path
 https://leetcode.com/problems/simplify-path/
 
 Similar like `224. Basic Calculator`.
@@ -142,43 +139,124 @@ https://leetcode.com/problems/backspace-string-compare/
 - Option2: Two pointers
   - Traversing from end to start of both string, if seeing "#" then we jump to the previous character
 
-#### [LC] 636. Exclusive Time of Functions
+#### [LC][Medium] 636. Exclusive Time of Functions
 https://leetcode.com/problems/exclusive-time-of-functions/
 
 Treat the problem like `224. Basic Calculator`, and build the stack element by `List<Integer>` like this:  
 
 - list.get(0) --> process id --> actually it's not required, since process ends and pop() must be a pair
 - list.get(1) --> start timestamp
-- list.get(2) --> durationPendingRemove --> whenever an element being pop(), need to increment the `duratiothe nPendingRemove` of next top element in stack
+- list.get(2) --> durationPendingRemove --> whenever an element being pop(), need to increment the `durationPendingRemove` of next top element in stack
+
+```java
+ ________________
+|   ___________  |
+|  |   _    _  | |
+|  |  | |  | | | |
+0  1  3 4  5 6 7 8
 
 ```
-        /** 
-             ________________
-            |   ___________  |
-            |  |   _    _  | |
-            |  |  | |  | | | |
-            0  1  3 4  5 6 7 8
-        **/
-```
 
-#### [LC] 921. Minimum Add to Make Parentheses Valid
+
+#### [LC][Easy] 20. Valid Parentheses
+https://leetcode.com/problems/valid-parentheses/
+
+- Using stack to push all left brackets "(" or "[" or "{"
+- when seeing right bracket, check the stack.peek() whether it is the corresponding left bracket
+- if not, then return false
+
+NOTE:  
+- since this problem only needs to return a boolean result, we don't need to use `leftCount` and `rightCount`, just compare the right bracket with `stack.peek()` is good enough.
+
+time complexity: O(n)
+
+#### [LC][Medium] 921. Minimum Add to Make Parentheses Valid
 https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/
 
-Similar idea like to use a stack to validate parenthesis, whenever see right-bracket we pop-up.  
+Similar to `[Easy] 20. Valid Parentheses`, but this time we don't need to use stack, but using 2 counters for left and right like the following code:
 
-But actually we don't need stack, we just need a leftCounter to do `leftCounter++` when seeing `(`, and do `leftCounter--` when seeing `)`.  
-Also before doing the `leftCounter--`, we need to check if `leftCounter==0`, if yes then we can do `result++` which means we need to add a bracket here.
+```java
+for(char c : s.toCharArray()) {
+    if (c == '(') { // found left bracket
+        left++;
+    } else { // found right bracket
+        if (left > 0) {
+            left--; // decrement since we found valid pair
+        } else {
+            right++; // found invalid right bracket
+        }
+    }
+}
+return left + right;
+```
 
+There is an harder version `[Hard] 301. Remove Invalid Parentheses`, which requires to return all possible results.  
+We can use the same idea to find all invalid left and right count, then backtrack to get all brackets. 
+NOTE: the leftCount and rightCount only tells the # of invalid brackets, we still need to do `isValid` to make sure the brackets order are correct!!!
 
-#### [LC] 1249. Minimum Remove to Make Valid Parentheses
+e.g. `()(((` this one tells us we have 3 invalid left, but we cannot remove any of the 3 brackets!! need to use `isValid` to check!!
+
+time complexity: O(n)
+
+#### [LC][Medium] 1249. Minimum Remove to Make Valid Parentheses
 https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
 
-Using stack to check valid parenthese pairs, and using a hashset to record valid parentheses index, then use another for loop and StringBuilder to build the new string.
+This is not a stack problem... but it is parenthese related.
 
+This problem is different from `[Medium] 921. Minimum Add to Make Parentheses Valid`, since we need to return a valid result (any valid result).  
+It means, we should not only worry the number of invalid left and right, we also worry about the order of brackets to make sure they are valid.
 
-#### [LC] 1047. Remove All Adjacent Duplicates In String
+Here we use `leftCount` and `rightCount` to record the current number of brackets, and we need to traverse 3 rounds:  
+1. left to right, remove extra right brackets if `rightCount > leftCount`
+2. right to left, remove extra left brackets if `leftCount > rightCount`
+3. reverse string and print it
+
+time complexity: O(n)
+
+#### [LC][Hard] 32. Longest Valid Parentheses
+https://leetcode.com/problems/longest-valid-parentheses/
+
+This is really hard. Have to force remembering this one.  
+
+It can still use stack, but not like `[Easy] 20. Valid Parentheses` to push brackets, we need to push index of the left brackets to help calculate the distance.  
+We also need to maintain a global variable `start` to record the start position of the `current leftMost index of left bracket`.  
+
+```java
+for(int i = 0; i < s.length(); i++) {
+    char c = s.charAt(i);
+    if (c == '(') { // push left bracket
+        stack.push(i);
+    } else {
+        if (stack.isEmpty()) {
+            start = i + 1; // invalid, reset leftMost pos
+        } else { // valid
+            stack.pop(); // pop every time
+            if (stack.isEmpty()) { // e.g. ()(())
+                result = Math.max(result, i - start + 1);
+            } else { // e.g. (()
+                result = Math.max(result, i - stack.peek());
+            }
+        }
+    }
+}
+```
+
+time complexity: O(n)
+
+#### [LC][Medium] 678. Valid Parenthesis String
+https://leetcode.com/problems/valid-parenthesis-string/
+
+This problem use the same idea as `[Hard] 32. Longest Valid Parentheses`, using stack to store the index of left brackets and `*`.  
+When seeing right bracket, we can using leftBracket or `*` to match it --> if both leftBracket stack and `*` stack are empty, then it's invalid.  
+Finally we need to check the rest leftBracket in stack, we need to check whether the rest `*` can be used to match it: 
+ - if the `*` index is larger than leftBracket index, then we can match
+ - if not, it is invalid
+
+time complexity: O(n)
+
+#### [LC][Easy] 1047. Remove All Adjacent Duplicates In String
 https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
 
 Using stack to check `stack.peek()` and `currentChar`, if equals then `stack.pop()`, otherwise `stack.push()`.  Finally pop all character in stack into stringbuilder and reverse it.
 
-
+time complexity: O(n)

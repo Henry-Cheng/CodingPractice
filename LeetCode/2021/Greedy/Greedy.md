@@ -1,7 +1,7 @@
 ## Greedy
 ### Default
 
-#### [LC] 31. Next Permutation
+#### [LC][Medium] 31. Next Permutation
 https://leetcode.com/problems/next-permutation/
 
 It is a greedy solution, since we initially needs to find the first descending pos when looking from right to left: 
@@ -90,8 +90,10 @@ Take an example like (here the number refers to the value gas[i] - cost[i])
 
 The minimum tank value will happen at index 4, where the value is -5, because at there our tank is at the minimum value -6, which means if the result exists, it must start to gather gas at index 5 so that we can cover all the gas loss before we reach index 4.
 
-#### [LC] 253. Meeting Rooms II
+#### [LC][Medium] 253. Meeting Rooms II
 https://leetcode.com/problems/meeting-rooms-ii/
+
+This problem is hard to think about.  
 
 Using `Arrays.sort()` to sort by start time, then use PriorityQueue to maintain earliest ending interval at top of heap, then traverse the meetings:
   - if no overlap, then extend the end time of top meeting in the queue
@@ -159,7 +161,7 @@ This is simple.
 Using 2 flags `boolean leftOk` and `boolean rightOk` to check if the pos ok, if yes, do count++ and set the pos to be 1.
 
 
-#### [LC] 621. Task Scheduler
+#### [LC][Medium] 621. Task Scheduler
 https://leetcode.com/problems/task-scheduler/
 
 ```python
@@ -179,7 +181,7 @@ so in total we have 9 - 3 - 3 - 3 - 2 = -2 idel slots left, it means we can fill
 the total unit of time we need would be max(0, -2) + tasks.length = 16
 ```
 
-#### [LC] 670. Maximum Swap
+#### [LC][Medium] 670. Maximum Swap
 https://leetcode.com/problems/maximum-swap/
 
 This question looks easy, but definitely NOT easy...
@@ -215,7 +217,7 @@ The idea is that:
 - then we can use either TreeMap or bucket sort (using `new int[1000]`) to store the total operation at each location --> either add xx passangers or remove yy passangers
 - then we go through the TreeMap or `new int[1000]` to check if the initial capacity is enough
 
-#### [LC] 1762. Buildings With an Ocean View
+#### [LC][Medium] 1762. Buildings With an Ocean View
 https://leetcode.com/problems/buildings-with-an-ocean-view/
 
 This is very simple, just traverse from right to left and record the current max value.

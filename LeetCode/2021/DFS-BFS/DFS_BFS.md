@@ -186,7 +186,7 @@ https://leetcode.com/problems/word-search/
 - option2: backtracking, similar like DFS, but using only one visited array and reset the `visited[i][j]` if not found for a character
 - option3: trie
 
-#### [LC] 126. Word Ladder II
+#### [LC][Hard] 126. Word Ladder II
 https://leetcode.com/problems/word-ladder-ii/
 
 This problem would easity got "Time Limit Exceeded", so simply using BFS to maintain shortest path is not doable, we need to do the following improvement:
@@ -237,7 +237,7 @@ NOTE:
 3. Time Complexity: `O(M^2*N)`, where MM is the length of each word and NN is the total number of words in the input word list.
 4. Space Complexity: `O(M^2*N)`
 
-#### [LC] 133. Clone Graph
+#### [LC][Medium] 133. Clone Graph
 https://leetcode.com/problems/clone-graph/
 
 Both DFS and BFS are T(M + N) and S(N), where N is the number of nodes and M is number of edges.
@@ -265,7 +265,7 @@ There is a trick here by using BFS and treate all gates together as entrypoints 
 The time complexity is `O(m*n)` since we only need to traverse all room once (if a room is already marked by one gate, then it must already be the shortest path, we can ignore).
 
 
-#### [LC] 317. Shortest Distance from All Buildings
+#### [LC][Hard] 317. Shortest Distance from All Buildings
 https://leetcode.com/problems/shortest-distance-from-all-buildings/
 
 Similar like `286. Walls and Gates`, we can start with all buildings at once with BFS, to find dist from buildings to each land.
@@ -295,7 +295,7 @@ Trick to travse up/down/left/right
 
 
 
-#### [LC] 339. Nested List Weight Sum
+#### [LC][Medium] 339. Nested List Weight Sum
 https://leetcode.com/problems/nested-list-weight-sum/
 
 This is a good question that shows a special use case of BFS!!!  
@@ -373,7 +373,18 @@ This is a question to find shortest path, which is perfect for BFS:
 
 NOTE: StringBuilder could append integer!!!
 
-#### [LC] 785. Is Graph Bipartite?
+
+#### [LC][Hard] 778. Swim in Rising Water
+https://leetcode.com/problems/swim-in-rising-water/
+
+This is hard since we need to blindly try all water elevation from 0 to `N*N-1`, and for each evelation we need to do DFS to traverse from (0,0) to (N-1,N-1).  
+
+We can use binary search to try evelation faster, it would give us `O(log(N^2)) = O(logN)`.  
+Then by DFS we need to traverse each node by `O(N*N)`, since we use visited matrix to gurantee each node would only be visited once.
+
+The total time complexity is `O(N*N*log(N))`
+
+#### [LC][Medium] 785. Is Graph Bipartite?
 https://leetcode.com/problems/is-graph-bipartite/
 
 Maintain 2 hashset left and right to record nodes in left and nodes in right.  
@@ -382,8 +393,10 @@ NOTE!!!
 1. rememebr the DFS template, all nodes can be entry point!!!! we will use visited array to record visited edges
 2. for this question, we can skip disconnected nodes whose edges is empty
 
-#### [LC] 827. Making A Large Island
+#### [LC][Hard] 827. Making A Large Island
 https://leetcode.com/problems/making-a-large-island/
+
+This is an interesting problem, even though it's marked as hard, but not that hard, since the problem is straightforward, don't be panic.
 
 1. for each 1 grid, using dfs to label all 1-grid and record the size in hashmap
 2. for each 0 grid, check its neighbor to see if we can connect labels

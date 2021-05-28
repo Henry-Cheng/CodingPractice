@@ -1,7 +1,7 @@
 ## String
 ### Default
 
-#### [LC] 65. Valid Number
+#### [LC][Hard] 65. Valid Number
 https://leetcode.com/problems/valid-number/
 
 NOTE for `string.split()`
@@ -22,7 +22,7 @@ NOTE for `string.split()`
   - `arr` length is 2 and both elements are empty
   - `arr[0] == ""; arr[1] == ""`
 
-#### [LC] 43. Multiply Strings
+#### [LC][Medium] 43. Multiply Strings
 https://leetcode.com/problems/multiply-strings/
 
 - use `stringBuilder.insert(index, char)` to append character to the front
@@ -52,12 +52,12 @@ Be careful:
 - there is a special case that the abbr may have adjacent digit or invalid digits like `a01b` where `01` is invalid.
 
 
-#### [LC] 415. Add Strings
+#### [LC][Easy] 415. Add Strings
 https://leetcode.com/problems/add-strings/
 
 - Return the result by `stringBuilder.reverse().toString()`
 
-#### [LC] 616. Add Bold Tag in String
+#### [LC][Medium] 616. Add Bold Tag in String
 https://leetcode.com/problems/add-bold-tag-in-string/
 
 It is the same as `758. Bold Words in String `

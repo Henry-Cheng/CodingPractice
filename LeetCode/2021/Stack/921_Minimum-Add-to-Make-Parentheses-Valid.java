@@ -1,20 +1,19 @@
 // https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/
 class Solution {
-    public int minAddToMakeValid(String S) {
-        int leftCount = 0;
-        int rightCount = 0;
-        int result = 0;
-        for(char c : S.toCharArray()) {
+    public int minAddToMakeValid(String s) {
+        int left = 0;
+        int right = 0;
+        for(char c : s.toCharArray()) {
             if (c == '(') {
-                leftCount++;
-            } else if (c ==')') {
-                if (leftCount == 0) {
-                    result++;
+                left++;
+            } else {
+                if (left > 0) {
+                    left--;
                 } else {
-                    leftCount--;
+                    right++;
                 }
             }
         }
-        return result + leftCount;
+        return left + right;
     }
 }

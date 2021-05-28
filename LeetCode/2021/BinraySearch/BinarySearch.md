@@ -5,7 +5,7 @@ https://zhuanlan.zhihu.com/p/79553968
 
 https://blog.csdn.net/Bean771606540/article/details/107533165
 
-NOTE: need to understand `searching space` for binary searching problem, since we cannot use the template blindly, somtimes the searching space requries us to set `right = mid`  instead of `right = mid-1` since the `mid` could also be the final result
+NOTE: need to understand `searching space` for binary searching problem, since we cannot use the template blindly, somtimes the searching space requries us to set `right = mid`  instead of `right = mid-1` since the `mid` could also be the final result (aka in the searching space)
   - e.g. `153. Find Minimum in Rotated Sorted Array`
 
 Binary Search looks easy, but it could be very hard in details, since most ppl don't know  
@@ -232,7 +232,7 @@ b0 b1 b2 b3 b4 b5 b6  | b7
 median = max(MIN_VALUE, b6)
 ```
 
-#### [LC] 29. Divide Two Integers
+#### [LC][Medium] 29. Divide Two Integers
 https://leetcode.com/problems/divide-two-integers/
 
 NOTE: 
@@ -278,7 +278,16 @@ while (dividendAbs >= divisorAbs) {
 }
 ```
 
-#### [LC] 33. Search in Rotated Sorted Array
+#### [LC][Medium] 153. Find Minimum in Rotated Sorted Array
+https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+
+The template need to be adjusted here: 
+
+--> the problem is like: where is the min num? left hand of `mid` or right hand of `mid` or just `mid`?   
+--> then we can set `right = mid` when finding that min could be at left-hand side or mid or the mid itself
+--> finally we can break at `left==right` since that is the min we found.
+
+#### [LC][Medium] 33. Search in Rotated Sorted Array
 https://leetcode.com/problems/search-in-rotated-sorted-array/
 
 Similar like `153. Find Minimum in Rotated Sorted Array`, using binary search template, and inside the loop, check which side is sorted:  
@@ -301,15 +310,26 @@ Time complexity is `O(log(m) + log(n))`.
 #### [LC][Medium] 162. Find Peak Element
 https://leetcode.com/problems/find-peak-element/
 
-This is an interesting question.  
-THe question has constraints that no 2 num next to each other are the same.  
-So we can safely tell that, any num satisfies this should be an availble peak:  `nums[i-1] < num[i] < num[i+1]`.  
+This is a very smart question, and hard to think about using binary earch. 
 
 Now how can we find the peak?  
 1. Linear search
 2. Binary search
 
-For Binary search, we just need to compare mid with mid+1, then move the left and right pointers untill left > right, and finally return left.  
+
+THe question has 2 constraints that gives us the hints to use binary search:  
+- no 2 num next to each other are the same, aka `nums[i] != nums[i-1] && nums[i] != nums[i+1]`
+- the out-of-index num is infinite, aka `nums[-1] = -∞`, and `nums[nums.length] = +∞`
+
+In this way, we can tell that:  
+1. if `nums[mid-1] < nums[mid] > nums[mid+1]`, mid is a peak
+2. if `nums[mid-1] > nums[mid]`, then left-hand side must exist a peak
+3. if `nums[mid+1] > nums[mid]`, then right-hand side must exist a peak
+
+We can prove #2 and #3 by Disproval(反证法):
+https://www.kancloud.cn/kancloud/data-structure-and-algorithm-notes/72972  
+e.g. 若左侧不存在peak，则A[mid]左侧元素必满足A[-1] > A[0] > A[1] > ... > A[mid -1] > A[mid]，与已知A[-1] < A[0]矛盾，证毕。
+
 
 Be careful the mid+1 could be over array length, that means left==right by then, we can simply return left at the point.
 
@@ -381,18 +401,9 @@ The worst time complexity is  `O(N)` but averagely it is `O(logN)`
 #### [LC] 34. Find First and Last Position of Element in Sorted Array
 https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 
-#### [LC] 153. Find Minimum in Rotated Sorted Array
-https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
-
-The template need to be adjusted here: 
-
---> the problem is like: where is the min num? left hand of `mid` or right hand of `mid` or just `mid`?   
---> then we can set `right = mid` when finding that min could be at left-hand side or mid or the mid itself
---> finally we can break at `left==right` since that is the min we found.
 
 
-
-#### [LC] 50. Pow(x, n)
+#### [LC][Medium] 50. Pow(x, n)
 https://leetcode.com/problems/powx-n/
 
 - for `i = n ~ 1`
@@ -419,7 +430,7 @@ Binary search in a BST is very easy:
         }
 ```
 
-#### [LC] 278. First Bad Version
+#### [LC][Easy] 278. First Bad Version
 https://leetcode.com/problems/first-bad-version/
 
 NOTE!!!
@@ -437,7 +448,7 @@ If x is within range, do binary search to find closest index for x.
 Now we can use two pointers to search left-hand k pos and right-hand k pos, and finally return the `[left+1, right)` subarry
 
 
-#### [LC] 875. Koko Eating Bananas
+#### [LC][Medium] 875. Koko Eating Bananas
 https://leetcode.com/problems/koko-eating-bananas/
 
 We use binary search, set `l = 1` and `r = max(nums[i])`, using h as target, and function `getHourByK()` as the nums funtion.
@@ -470,15 +481,17 @@ An improvement on the binary searching function: if at row i we found leftmost 1
 - if `(i+1,j)` is 1, then do binary search at row `i+1` from 0 to j
 
 
-#### [LC] 1539. Kth Missing Positive Number
+#### [LC][Easy] 1539. Kth Missing Positive Number
 https://leetcode.com/problems/kth-missing-positive-number/
 
-This is a tricky binary search algorithm use case.  
+This is definitely not an easy solution.  
+
+This is a tricky binary search algorithm use case.   
 Since here the evaluation function is not to compare arr[mid] with target, but to compare "missing positive from 0 till arr[mid]" with target.  
 
 Also, we need to find the leftmost mid that meets the requriement, and then return the `arr[r] + k - missingFromZero(arr, r)`. --> if r is less than 0, then just return k.
 
-#### [LC] 1060. Missing Element in Sorted Array
+#### [LC][Medium] 1060. Missing Element in Sorted Array
 https://leetcode.com/problems/missing-element-in-sorted-array/
 
 Similar like `1539. Kth Missing Positive Number`, but a bit harder on the evaluation function.  

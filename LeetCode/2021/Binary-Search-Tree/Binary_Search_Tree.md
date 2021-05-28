@@ -50,7 +50,7 @@ https://leetcode.com/problems/largest-bst-subtree/
 
 Using standard template, and add one more field in `BST` to record the num of nodes if it is BST.
 
-#### [LC] 173. Binary Search Tree Iterator
+#### [LC][Medium] 173. Binary Search Tree Iterator
 https://leetcode.com/problems/binary-search-tree-iterator/
 
 Option1 is to flattern the tree into an arrayList, then move pointer to next. It makes constructor to be O(N) and all the others to be O(1).
@@ -68,26 +68,27 @@ NOTE: why next() is `amortized O(1)` ? --> next() involves two major operations
 
 ```java
 class BSTIterator {
-    Deque<TreeNode> stack = null;
+
+    Deque<TreeNode> stack;
+    
     public BSTIterator(TreeNode root) {
         stack = new LinkedList<>();
-        TreeNode node = root; // push all left nodes to stack
-        while(node != null) {
-            stack.push(node);
-            node = node.left;
+        while(root != null) { // push root and all its left to stack
+            stack.push(root);
+            root = root.left;
         }
-    }   
+    }
+    
     public int next() {
-        TreeNode next = stack.pop();
-        if (next.right != null) { 
-            TreeNode node = next.right; // push all left of next.right to stack
-            while(node != null) {
-                stack.push(node);
-                node = node.left;
-            }
+        TreeNode pop = stack.pop();
+        TreeNode right = pop.right;
+        while(right != null) { // push pop.right and all its left to stack
+            stack.push(right);
+            right = right.left;
         }
-        return next.val;
-    } 
+        return pop.val;
+    }
+    
     public boolean hasNext() {
         return !stack.isEmpty();
     }

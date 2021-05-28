@@ -1,46 +1,46 @@
 // https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
 class Solution {
     public String minRemoveToMakeValid(String s) {
-        Deque<Pos> stack = new LinkedList<>();
-        HashSet<Integer> keptBracketPos = new HashSet<>();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == ')') {
-                // try to find '(' in stack
-                while (!stack.isEmpty()) { // e.g. (ab(cde
-                    Pos top = stack.pop();
-                    if (top.c == '(') {
-                        keptBracketPos.add(top.index); // add index of left bracket
-                        keptBracketPos.add(i);// add right bracket
-                        break; 
-                    }
-                } 
-            } else { // if it is letter or '('
-                stack.push(new Pos(i, c));
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == ')' || c == '(') {
-                if (keptBracketPos.contains(i)) {
-                    sb.append(c);
+        Deque<Character> stack = new LinkedList<>();
+        int leftCount = 0;
+        int rightCount = 0;
+        // 1st pass left to right: remove extra right brackets 
+        for (char c : s.toCharArray()) {
+            if (c != '(' && c != ')') {
+                stack.push(c);
+            } else if (c == '(') {
+                leftCount++;
+                stack.push(c);
+            } else if (c == ')') {
+                if (rightCount + 1 > leftCount) {
+                    continue; // ignore this one
                 } else {
-                    continue;
+                    rightCount++;
+                    stack.push(c);
                 }
-            } else {
-                sb.append(c);
             }
         }
-        return sb.toString();
-    }
-    
-    private static class Pos {
-        public int index;
-        public char c;
-        public Pos(int index, char c) {
-            this.index = index;
-            this.c = c;
+        // 2nd pass right to left: remove extra left brackets
+        leftCount = 0;
+        rightCount = 0;
+        StringBuilder sb = new StringBuilder();
+        while(!stack.isEmpty()) {
+            Character c = stack.pop();
+            if (c != '(' && c != ')') {
+                sb.append(c);
+            } else if (c == ')') {
+                rightCount++;
+                sb.append(c);
+            } else if (c == '(') {
+                if (leftCount + 1 > rightCount) {
+                    continue; // ignore left bracket
+                } else {
+                    leftCount++;
+                    sb.append(c);
+                }
+            }
         }
+        // 3rd pass: reverse string builder
+        return sb.reverse().toString();
     }
 }

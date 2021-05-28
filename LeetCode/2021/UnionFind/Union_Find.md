@@ -117,8 +117,11 @@ https://leetcode.com/problems/redundant-connection/
 
 Be careful that in `union()` method, everythign is done at parentX/parentY level.
 
-#### [LC] 721. Accounts Merge
+#### [LC][Medium] 721. Accounts Merge
 https://leetcode.com/problems/accounts-merge/
 
 Be careful that after all `union()` are called, we cannot directly use `parent[x]` since the parent may not be the finaly parent, we need to use `find(x)` to get parent when traversing.
+
+Time Complexity: O(AlogA), where A = \sum a_iA=∑a .  this complexity improves to O(Aα(A))≈O(A), where \alphaα is the Inverse-Ackermann function.
+
 

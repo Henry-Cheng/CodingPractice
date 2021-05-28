@@ -27,7 +27,7 @@ https://leetcode.com/problems/remove-nth-node-from-end-of-list/
 
 Be careful on corner case, when n equals to size of list, and when n is only 1
 
-#### [LC] 42. Trapping Rain Water
+#### [LC][Hard] 42. Trapping Rain Water
 https://leetcode.com/problems/trapping-rain-water/
 
 Move both front and end pointers when the corresponding wall is lower.
@@ -140,7 +140,7 @@ https://leetcode.com/problems/confusing-number/
 
 The same as `246. Strobogrammatic Number`, but not only check if it's valid, but also check if it's different than original one. 
 
-#### [LC] 340. Longest Substring with At Most K Distinct Characters
+#### [LC][Medium] 340. Longest Substring with At Most K Distinct Characters
 https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
 
 ```java
@@ -213,16 +213,8 @@ https://leetcode.com/problems/find-all-anagrams-in-a-string/solution/
          need to replace from 3 to 8
 ```
 
-#### [LC] 680. Valid Palindrome II
-https://leetcode.com/problems/valid-palindrome-ii/
 
-- use a global boolean variable to check whether the chance to skip has been used
-- use recusion to do something like this when encountering 1st mismatch in two-pointer round.
-```
-return validPalindrome(s, left + 1, right) || validPalindrome(s, left, right-1);  
-``` 
-
-#### [LC] 708. Insert into a Sorted Circular Linked List
+#### [LC][Medium] 708. Insert into a Sorted Circular Linked List
 https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
 
 This is not a standard two-pointer problem, in this question we only need pointer as flag to mark some place for us:
@@ -260,7 +252,7 @@ It needs to sort square value of a sorted array, and the array could have negati
 ```
 we can use two pointers, one at beginning and another at the end, then move into center together, and add the larger one to the end of new array.
 
-#### [LC] 1004. Max Consecutive Ones III
+#### [LC][Medium] 1004. Max Consecutive Ones III
 https://leetcode.com/problems/max-consecutive-ones-iii/
 
 

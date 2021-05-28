@@ -1,4 +1,4 @@
-// https://leetcode.com/problems/leftmost-column-with-at-least-a-one/
+//https://leetcode.com/problems/leftmost-column-with-at-least-a-one/
 /**
  * // This is the BinaryMatrix's API interface.
  * // You should not implement it, or speculate about its implementation
@@ -10,29 +10,39 @@
 
 class Solution {
     public int leftMostColumnWithOne(BinaryMatrix binaryMatrix) {
-        List<Integer> dimensions = binaryMatrix.dimensions();
-        int rows = dimensions.get(0);
-        int cols = dimensions.get(1);
-        int leftMostCol = Integer.MAX_VALUE;
-        // rows has not relationship between each other, need to traverse one by one
-        for (int i = 0; i < rows; i++) {
-            // do binary search to find 1
-            int left = 0;
-            int right = cols - 1;
-            while (left < right) {
-                int mid = (left + right) / 2;
-                int midElement = binaryMatrix.get(i, mid);
-                if (midElement == 1) { 
-                    right = mid; // find leftMost
-                } else {
-                    left = mid + 1;
-                }
-            }
-            // now left == right
-            if (binaryMatrix.get(i, left) == 1) {
-                leftMostCol = Math.min(leftMostCol, left);
+        List<Integer> len = binaryMatrix.dimensions();
+        int result = Integer.MAX_VALUE;
+        for(int i = 0; i < len.get(0); i++) {
+            int leftMost1 = binarySearch(binaryMatrix, i, 0, result == Integer.MAX_VALUE ? len.get(1) - 1 : result, len.get(1));
+            if (leftMost1 < len.get(1)) { // found 1
+                result = Math.min(leftMost1, result);
             }
         }
-        return leftMostCol == Integer.MAX_VALUE ? -1 : leftMostCol;
+        return result == Integer.MAX_VALUE ? -1 : result;
+    }
+    
+    private int binarySearch(BinaryMatrix binaryMatrix, int row, int left, int right, int colLen) {
+        while(left <= right) {
+            int mid = left + (right - left)/2;
+            //System.out.println("get row " + row + " col " + mid);
+            int val = binaryMatrix.get(row, mid);
+            if (val == 0) {
+                left = mid+1;
+            } else if (val == 1) {
+                right = mid-1;
+            }
+        }
+        /**
+            0 0 0 1 1
+                  l
+                r
+            0 0 0 0 0
+                      l
+                    r
+            1 1 1 1 1
+            l
+           r
+        **/
+        return left;
     }
 }

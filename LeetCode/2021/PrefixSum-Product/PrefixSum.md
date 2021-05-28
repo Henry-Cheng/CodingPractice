@@ -1,14 +1,18 @@
 ## PrefixSum-Product
 ### Default
 
-#### [LC] 238. Product of Array Except Self
+#### [LC][Medium] 238. Product of Array Except Self
 https://leetcode.com/problems/product-of-array-except-self/
 
 Using array get prefix-product left to right, then using another array from right to left, the `result[i] = leftToRight[i] * rightToLeft[i+1]`.
 - an improvement here is to not use array for rightToLeft, we can calculate it on the fly when traversing from right to left (after we store leftToRight array in result array).
 
-#### [LC] 523. Continuous Subarray Sum
+Time complexity is `O(n)`
+
+#### [LC][Medium] 523. Continuous Subarray Sum
 https://leetcode.com/problems/continuous-subarray-sum/
+
+The solution is really smart. Instead of store the prefixSum to hashmap, we need to store `prefixSum % k`
 
 Using prefixSum and HashMap to store the mapping from `prefixSum % k` to `index`.  
 - we must use hashmap instead of hashset!!! since we need to know if the index distance is >= 2
@@ -30,6 +34,23 @@ https://leetcode.com/problems/subarray-sum-equals-k/
 4. if `prefixSum==k`, count++
 5. if `prefixSum-k` exists, count+=(occurence of prefixSum-k)
 6. if `prefixSum` already in hashmap, increment the occurence in hashmap
+
+The code is beautiful!!
+
+```java
+for(int i = 0; i < nums.length; i++) {
+    prefixSum += nums[i];
+    if (prefixSum == k) {
+        count++;
+    } 
+    if (map.containsKey(prefixSum - k)) {
+        count+=map.get(prefixSum - k);
+    }
+    map.put(prefixSum, map.getOrDefault(prefixSum, 0) + 1);
+}
+```
+
+Time complexity is `O(n)`
 
 #### [LC][Medium] 525. Contiguous Array
 https://leetcode.com/problems/contiguous-array/
@@ -58,7 +79,7 @@ NOTE:
 - using long here since Integer.MAX_VALUE is 2.1*10^9, but A[i] * A.length < 5*10^9
 - prefixSum[0] = 0; // set it to be 0, which means sum before index 0 is 0
 
-#### [LC] 528. Random Pick with Weight
+#### [LC][Medium] 528. Random Pick with Weight
 https://leetcode.com/problems/random-pick-with-weight/
 
 prefixSum + search (better to use binary search to improve searching complexity to logN)
@@ -82,6 +103,8 @@ NOTE:
         return min + (int) (Math.random() * (max - min + 1));
     }
 ```
+
+Time complexity is `O(n)` if using linear search, and O(logn) is using binary search.
 
 ##### [LC][Easy] 724. Find Pivot Index
 https://leetcode.com/problems/find-pivot-index/

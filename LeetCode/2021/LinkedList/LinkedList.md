@@ -23,3 +23,23 @@ https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/solution
 
 #### [LC] 203. Remove Linked List Elements
 https://leetcode.com/problems/remove-linked-list-elements/
+
+#### [LC][Medium] 445. Add Two Numbers II
+https://leetcode.com/problems/add-two-numbers-ii/
+
+Use stack to reverse list and finally reverse it back.
+
+```java
+    // 1--> 2 --> 3
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        while(head.next != null) {
+            ListNode next = head.next;
+            head.next = prev;
+            prev = head;
+            head = next;
+        }
+        head.next = prev;
+        return head;
+    }
+```

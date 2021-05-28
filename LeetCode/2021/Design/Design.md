@@ -64,7 +64,7 @@ An interesting thing is that, even though `ArrayQueue` can have `O(1)` for arbit
 It makes no much different when choosing between `ArrayQueue` and `LinkedList`, not to mention that `LinkedList` can provide `indexOf(object)` or `remove(index)`.
 
 
-#### [LC] 146. LRU Cache
+#### [LC][Medium] 146. LRU Cache
 https://leetcode.com/problems/lru-cache/
 
 - option1: linkedhashmap 
@@ -119,7 +119,7 @@ It's too hard, since it needs to define custom `Layer` class and another custom 
 #### [LC] 157. Read N Characters Given Read4
 https://leetcode.com/problems/read-n-characters-given-read4/
 
-#### [LC] 158. Read N Characters Given Read4 II - Call multiple times
+#### [LC][Hard] 158. Read N Characters Given Read4 II - Call multiple times
 https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
 
 - define 3 global variables `carryOverOrBuf4`, `carryOverValidSize` and `carryOverValidIndex`
@@ -191,7 +191,7 @@ The idea is to maintain a `dp[][]` arrar which stores sum from `0,0` to all `i,j
 
 `Sum(ABCD)=Sum(0D)−Sum(0B)−Sum(OC)+Sum(0A)`
 
-#### [LC] 341. Flatten Nested List Iterator
+#### [LC][Medium] 341. Flatten Nested List Iterator
 https://leetcode.com/problems/flatten-nested-list-iterator/
 
 - option1: using recursion
@@ -335,8 +335,19 @@ Just using an ArrayList to store history and pointer for current position. Whenv
 history.subList(current+1, history.size()).clear();
 ```
 
-#### [LC] 1570. Dot Product of Two Sparse Vectors
+#### [LC][Medium] 1570. Dot Product of Two Sparse Vectors
 https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
 
-- option1: define a class to store num-index pairs for non-0 nums in LinkedList 
-- option2: using HashMap to store index-num pairs for non-0 nums
+using HashMap to store `non-0-index to num` mapping, when doing dot product, just check if the index key exists in both vectors.
+
+#### [LC][Medium] 311. Sparse Matrix Multiplication
+https://leetcode.com/problems/sparse-matrix-multiplication/
+
+Similar like `1570. Dot Product of Two Sparse Vectors`, we can maintain hashmap for each row of matrix1, and hashmap for each col of matrix2, then do the multiplication.  
+
+Without any optimization it is `O(m*n*k)`, but after our improvement it can be improved (hard to tell how much improvement, depends on sparse it is).
+
+
+Another way is to use Strassen algorithm, to use some "plus" to replace "multiple", since multiple is more expensive 
+  - https://sites.google.com/a/chaoskey.com/algorithm/02/03
+

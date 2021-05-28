@@ -40,19 +40,10 @@ https://leetcode.com/problems/factorial-trailing-zeroes/
     // option5: count how many "n /= 5" exists, result in O(logn)
 ```
 
-#### [LC] 273. Integer to English Words
+#### [LC][Hard] 273. Integer to English Words
 https://leetcode.com/problems/integer-to-english-words/
 
 Not very hard, just divide by billion/million/thousand, and then process less than 1000 situation.
-
-#### [LC] 311. Sparse Matrix Multiplication
-https://leetcode.com/problems/sparse-matrix-multiplication/
-
-Generally time complexity is `O(m*n*k)`, but the followup is to handle super large matrix.
-- one improvement is to record all-0 rows and all-0 col so that we can skip them
-- another way is to use Strassen algorithm, to use some "plus" to replace "multiple", since multiple is more expensive 
-  - https://sites.google.com/a/chaoskey.com/algorithm/02/03
-
 
 #### [LC] 537. Complex Number Multiplication
 https://leetcode.com/problems/complex-number-multiplication/
@@ -64,3 +55,28 @@ https://leetcode.com/problems/complex-number-multiplication/
 https://leetcode.com/problems/rabbits-in-forest/
 
 Brain teasers.
+
+#### [LC][Easy] 448. Find All Numbers Disappeared in an Array
+https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
+
+This question is not that easy, since it needs some thoughts to resolve without extra space.  
+
+1. option1: 2 loops, replace num in place
+- 1st loop: for each i in nums arr, while `nums[i] != nums[nums[i]-1]`, move num[i] to nums[nums[i]-1], repeat it until nums[i] equals to the num at index nums[i]-1
+- 2nd loop: for each i in nums arr, if `nums[i] != nums[nums[i]-1]`, then nums[i] is the missing number
+
+2. option2: 2 loops, set nums to be negative and recover afterwards
+- 1st loop: for each i in nums arr, set its `nums[nums[i]-1]` to be negative
+- 2nd loop: for each i in nums arr, if `nums[i]>0`, then nums[i] is the missing num
+
+Option2 is better, since option1 is not easy to recover original array, while option2 could. Option2 can also be used in another question `442. Find All Duplicates in an Array`
+
+
+#### [LC][Medium] 442. Find All Duplicates in an Array
+https://leetcode.com/problems/find-all-duplicates-in-an-array/
+
+This is marked as medium, but actually easier than `[Easy] 448. Find All Numbers Disappeared in an Array`, since this question only needs to use option2 in question 448 by checking whether num is already negative, and the record it.
+
+
+
+

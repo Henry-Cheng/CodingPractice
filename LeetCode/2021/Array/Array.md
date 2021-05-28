@@ -34,7 +34,7 @@ This is simple.
 
 Remmebr to use `Arrays.copyOfRange(result, 1, result.length);`
 
-#### [LC] 88. Merge Sorted Array
+#### [LC][Easy] 88. Merge Sorted Array
 https://leetcode.com/problems/merge-sorted-array/
 
 - option1: merge two array then `Arrays.sort()`

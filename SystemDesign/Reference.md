@@ -7,8 +7,15 @@ System design interview is a happy show-off of our knowledge on technologies and
 [Crack the System Design Interview](https://tianpan.co/notes/2016-02-13-crack-the-system-design-interview)
 
 
+[system-design-primer](https://github.com/donnemartin/system-design-primer)
 
-[DevOps Tools](https://www.ctl.io/developers/blog/post/60-best-open-source-tools-to-do-devops/) (another one in Chinese [DevOps Tools](https://www.gaott.top/toolkit/)
+[grokking-the-system-design-interview](https://www.educative.io/courses/grokking-the-system-design-interview?aid=5082902844932096&utm_source=google&utm_medium=cpc&utm_campaign=grokking-manual&gclid=CjwKCAjwm7mEBhBsEiwA_of-TI90yan7J8EpoWdYQ0S_qit4h2DnCU9vsLvUk1oPU97drQv_c8aEgBoC-aYQAvD_BwE)
+
+[System Design Cheatsheet](https://gist.github.com/vasanthk/485d1c25737e8e72759f)
+
+[cheatsheet-systemdesign](https://cheatsheet.dennyzhang.com/cheatsheet-systemdesign-a4)
+
+[A good diagram shows DevOps tools](https://www.ctl.io/developers/blog/post/60-best-open-source-tools-to-do-devops/) (another one in Chinese [DevOps Tools](https://www.gaott.top/toolkit/))
 ![Image](https://github.com/Henry-Cheng/CodingPractice/raw/master/SystemDesign/Images/Cloud-Application-Manager-DevOps_Open_Source_Tools.png)
 - Configuration Management
   - [Puppet](https://puppet.com/) – Puppet is an open-source configuration management tool.
@@ -35,4 +42,22 @@ System design interview is a happy show-off of our knowledge on technologies and
   - Fargate
   - AWS Batch
 
+
+[SNAKE Principles](https://zhuanlan.zhihu.com/p/20712931)
+- Scenario
+- Necessary
+- Application
+- Kilobit
+- Evolve
+
+
+[4S Steps](https://jiayi797.github.io/2018/02/03/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1-%E8%AE%BE%E8%AE%A1%E7%9F%AD%E7%BD%91%E5%9D%80%E7%B3%BB%E7%BB%9FTiny-URL/)
+- ask question --> <Scenario> --> analyze functional requrement, TPS, storage size, etc.
+- draw diagram --> <Service+Storage> --> design MVP
+- evolve       --> <Scale> --> based on different concern/problem, scale and improve system
+
+Avoid doing the following stuff:  
+1. system must be very huge
+2. must use NoSQL
+3. must be distributed 
 

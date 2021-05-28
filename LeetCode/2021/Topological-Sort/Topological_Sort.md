@@ -7,6 +7,13 @@ In a Directed Acyclic Graph (DAG), there must exist Topological Sort.
 
 Topological Sort 也应用了BFS遍历思想、以达成按依赖关系排序的目的.
 
+
+### Time complexity
+
+Time Complexity: `O(∣E∣+∣V∣)` where `|V|` is the number of courses, and `∣E∣` is the number of dependencies.
+
+Space Complexity: `O(∣E∣+∣V∣)`
+
 ### Default
 Psudocode:
 ```
@@ -48,18 +55,13 @@ while (!queue.isEmpty()) {
 - the question does not require to return a "patial path", so either return full path or empty (if there is cycle inside)
 - convert List<Integer> to int[] by `resultList.stream().mapToInt(i->i).toArray()`
 
-#### [LC] 207. Course Schedule
+#### [LC][Medium] 207. Course Schedule
 https://leetcode.com/problems/course-schedule/
 
-#### [LC] 210. Course Schedule II
+#### [LC][Medium] 210. Course Schedule II
 https://leetcode.com/problems/course-schedule-ii/
 
-#### [LC] 269. Alien Dictionary
+#### [LC][Hard] 269. Alien Dictionary
 https://leetcode.com/problems/alien-dictionary/
 
 Convert the order between words into adjacencyList or egressMap.
-
-#### [LC] 445. Add Two Numbers II
-https://leetcode.com/problems/add-two-numbers-ii/
-
-Use stack to reverse list and finally reverse it back.

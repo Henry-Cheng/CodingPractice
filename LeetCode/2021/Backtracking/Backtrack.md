@@ -109,6 +109,8 @@ Remember to use `StringBuilder` to remove character by `currentSolution.deleteCh
 #### [LC] 22. Generate Parentheses
 https://leetcode.com/problems/generate-parentheses/submissions/
 
+time complexity `O(n!)`
+
 #### [LC] 37. Sudoku Solver
 https://leetcode.com/problems/sudoku-solver/
 
@@ -194,14 +196,23 @@ For `123`, try all options for `+`, `-` and `*` like `1+2+3`.
 NOTE:
 - when validate the operation, we can skip numbers like "05"
 
-#### [LC] 301. Remove Invalid Parentheses
+#### [LC][Hard] 301. Remove Invalid Parentheses
 https://leetcode.com/problems/remove-invalid-parentheses/
 
-1. find num of invalid left and right parenthesis
-2. do backtrack for all char in string, try to remove "(" when left>0 (or remove ")" when right>0)
+This is harder version of `[Medium] 921. Minimum Add to Make Parentheses Valid`, since after we find the num of invalid left and right brackets, we need to do backtracking to try delete every left and right bracket
+
+1. find num of invalid left and right parenthesis like `[Medium] 921. Minimum Add to Make Parentheses Valid`
+2. do backtrack for all char in string, try to remove `(` when left>0, and try to remove `)` when right>0
 3. inside backtrack method, if `left==0 && right==0 && isValid(s)`, add the string to result set
-  - be careful the result could be duplicated, so we can use HashSet to dedup (an improvement here is to try only removing the last bracket once for consecutive ones)
+  - the `isValid(s)` is required
+    - because we may got `left==0 && right==0` and the s is invalid
+    - e.g. ()( --> if we remove 1st left bracket --> )( --> now left and right count are 0, but it's invalid
+  - there could be duplicate results, use `HashSet<String> visited`
+    - an improvement here is to try only removing the last bracket once for consecutive ones
   - to remove a char in string, use `s.substring(0,i) + s.substring(i+1, s.length())`
+
+
+Time complexity is `O(2^n)`, since each bracket would have chance to be removed.
 
 #### [LC] 399. Evaluate Division
 https://leetcode.com/problems/evaluate-division/

@@ -19,7 +19,7 @@ https://leetcode.com/problems/bitwise-and-of-numbers-range/
   }
 ```
 
-#### 393. UTF-8 Validation
+#### [LC][Medium] 393. UTF-8 Validation
 https://leetcode.com/problems/utf-8-validation/
 
 Using `Integer.toBinaryString(int i)` to get the binary string.  
@@ -38,3 +38,18 @@ In this quesiton, we just need to check
 - if the string starts with 0 (if it's less than length 8) --> 1-byte
 - if prefix 1 is more than 4 --> invalid
 - if prefix 1 is less than 4 (let's say n) --> check the # of strings including this one is n, if not then it's invalid
+
+#### [LC][Medium] 338. Counting Bits
+https://leetcode.com/problems/counting-bits/
+
+This is very interesting.  
+It looks like a bitwise problem, but actually is a DP problem.  
+
+1. if dp[i] is odd, dp[i] = dp[i-1] + 1;
+  - e.g. 2 --> 10, 3 --> 11
+2. if dp[i] is even, dp[i] = dp[i/2];
+  - e.g. 10 --> 1010, dividend by 2 equals to shift right, which results in 101 --> 5
+
+
+
+
