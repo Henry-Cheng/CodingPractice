@@ -1,5 +1,9 @@
 System design interview is a happy show-off of our knowledge on technologies and their tradeoffs. Ideally, keep talking what the interviewer expect throughout the interview, before they ask questions.
 
+[A good system design blog](https://www.raychase.net/6312)
+
+[grokking-the-system-design-interview](https://www.educative.io/courses/grokking-the-system-design-interview?aid=5082902844932096&utm_source=google&utm_medium=cpc&utm_campaign=grokking-manual&gclid=CjwKCAjwm7mEBhBsEiwA_of-TI90yan7J8EpoWdYQ0S_qit4h2DnCU9vsLvUk1oPU97drQv_c8aEgBoC-aYQAvD_BwE)
+
 
 [100 open source Big Data architecture papers for data professionals](https://www.linkedin.com/pulse/100-open-source-big-data-architecture-papers-anil-madan)
 
@@ -9,7 +13,6 @@ System design interview is a happy show-off of our knowledge on technologies and
 
 [system-design-primer](https://github.com/donnemartin/system-design-primer)
 
-[grokking-the-system-design-interview](https://www.educative.io/courses/grokking-the-system-design-interview?aid=5082902844932096&utm_source=google&utm_medium=cpc&utm_campaign=grokking-manual&gclid=CjwKCAjwm7mEBhBsEiwA_of-TI90yan7J8EpoWdYQ0S_qit4h2DnCU9vsLvUk1oPU97drQv_c8aEgBoC-aYQAvD_BwE)
 
 [System Design Cheatsheet](https://gist.github.com/vasanthk/485d1c25737e8e72759f)
 
